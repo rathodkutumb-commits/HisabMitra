@@ -120,20 +120,27 @@ jobs:
           sha256sum "$NAME" > "$NAME.sha256"
           CERT=$(sed -nE 's/.*certificate SHA-256 digest: //p' signing.txt | head -1)
           {
-            echo "## HisabMitra ${GITHUB_REF_NAME}"
-            echo
-            echo "Download \`$NAME\` and open it on your Android phone."
-            echo "Installing it does not give access to anyone's data: shared groups"
-            echo "need phone sign-in and an invitation."
-            echo
-            echo "| | |"
-            echo "|---|---|"
-            echo "| APK SHA-256 | \`$(cut -d' ' -f1 "$NAME.sha256")\` |"
-            echo "| Signing certificate SHA-256 | \`$CERT\` |"
             if [ -f "docs/release-notes/${GITHUB_REF_NAME}.md" ]; then
-              echo
               cat "docs/release-notes/${GITHUB_REF_NAME}.md"
+              echo
             fi
+            echo "### Install"
+            echo
+            echo "Download \`$NAME\` below and open it on your Android phone (Android 7.0 or newer)."
+            echo "Already using HisabMitra? Open **More → About → Check for updates**."
+            echo
+            echo "Your personal records stay on your phone. Installing the app gives no"
+            echo "access to anyone's data: shared groups need a verified account and an"
+            echo "invitation from the group."
+            echo
+            echo "### Verify the download"
+            echo
+            echo "| Check | SHA-256 |"
+            echo "|---|---|"
+            echo "| \`$NAME\` | \`$(cut -d' ' -f1 "$NAME.sha256")\` |"
+            echo "| Signing certificate | \`$CERT\` |"
+            echo
+            echo "The app checks both before it installs an update."
           } > release_notes.md
           echo "APK_NAME=$NAME" >> "$GITHUB_ENV"
 

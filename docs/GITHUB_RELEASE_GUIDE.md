@@ -2,7 +2,7 @@
 
 Releases are public: anyone can download the APK. That gives no access to
 anyone's data — personal data stays on each phone, and shared groups need
-phone sign-in plus an invitation (RLS on the server).
+a verified account plus an invitation (RLS on the server).
 
 ## One-time setup
 
