@@ -31,6 +31,8 @@ class CategoriesScreen extends StatelessWidget {
             ),
           ),
           floatingActionButton: FloatingActionButton.extended(
+            // Unique: the tab shell keeps several FAB screens alive.
+            heroTag: 'fab-categories',
             onPressed: () {
               final index = DefaultTabController.of(context).index;
               context.push(

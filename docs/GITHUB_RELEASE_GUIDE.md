@@ -6,36 +6,22 @@ phone sign-in plus an invitation (RLS on the server).
 
 ## One-time setup
 
-1. **Repository:** `https://github.com/rathodkutumb-commits/HisabMitra`
-   (public; created 2026-11-19, contains only a LICENSE so far). The local
-   `dart_defines.json` already points the update checker at it, and the
-   release workflow fills `GITHUB_OWNER` / `GITHUB_REPO` from the repository
-   automatically. Push the code with an account that has write access (the
-   GitHub CLI on the development PC is signed in as `Hemang67`, which has
-   read-only access).
-2. **Create the release keystore** (keep it forever — every update must be
-   signed with the same key, or Android refuses to install it over the old
-   app):
+Status 2026-11-19: **done.**
 
-   ```bash
-   keytool -genkeypair -v -keystore hisabmitra-release.jks \
-     -alias hisabmitra -keyalg RSA -keysize 4096 -validity 10000
-   ```
+| Item | State |
+|---|---|
+| Repository | `https://github.com/rathodkutumb-commits/HisabMitra` (public), code pushed |
+| Release keystore | `D:\Hemang\Keys\HisabMitra\hisabmitra-release.jks`, alias `hisabmitra`, password in `key.properties` next to it (PKCS12: store password = key password). Back this folder up; never commit it. |
+| Local signing | `android/key.properties` (git-ignored) points at that keystore, so local `flutter build apk --release` is release-signed |
+| Repository secrets | `HISABMITRA_KEYSTORE_BASE64`, `HISABMITRA_KEYSTORE_PASSWORD`, `HISABMITRA_KEY_ALIAS`, `HISABMITRA_KEY_PASSWORD`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` — all set |
+| Release certificate SHA-256 | `37c8f9fd01a1e05ce3e2fb47129a181124ece92b95d326545c4d3b0af39deef9` |
 
-   Store the `.jks` and both passwords in a password manager plus an
-   offline copy. **Never commit them** (`.gitignore` covers `*.jks`,
-   `key.properties`).
-3. **Repository secrets** (Settings → Secrets and variables → Actions):
+To set everything up again from scratch (new keystore = new app identity;
+existing installs could not update):
 
-   | Secret | Value |
-   |---|---|
-   | `HISABMITRA_KEYSTORE_BASE64` | `base64 -w0 hisabmitra-release.jks` |
-   | `HISABMITRA_KEYSTORE_PASSWORD` | store password |
-   | `HISABMITRA_KEY_ALIAS` | `hisabmitra` |
-   | `HISABMITRA_KEY_PASSWORD` | key password |
-   | `SUPABASE_URL` | `https://zjidwksngkxcsryzgnoe.supabase.co` |
-   | `SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_…` (never the secret key) |
-
+1. `keytool -genkeypair -v -keystore hisabmitra-release.jks -storetype PKCS12 -alias hisabmitra -keyalg RSA -keysize 4096 -validity 10000`
+2. Add the six secrets above (Settings → Secrets and variables → Actions),
+   `HISABMITRA_KEYSTORE_BASE64` = `base64 -w0 hisabmitra-release.jks`.
    Optional repository variables: `PRIVACY_POLICY_URL`, `TERMS_URL`.
 
 ## Publishing a release

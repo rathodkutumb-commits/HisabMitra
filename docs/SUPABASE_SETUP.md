@@ -150,9 +150,9 @@ read and upload; nobody can update or delete through the API.
 - [x] Project created, migrations applied (4), RLS verified
 - [x] Publishable key in `dart_defines.json` (local, git-ignored)
 - [x] Email provider enabled
-- [ ] Redirect URL `hisabmitra://login-callback` added (§4.2)
-- [ ] Custom SMTP sender configured (§4.3) — required for users outside the project team
-- [ ] Confirm signup + Magic Link templates contain `{{ .Token }}` (§4.4)
+- [x] Redirect URL `hisabmitra://login-callback` added (§4.2)
+- [x] Custom SMTP sender configured (§4.3) — Gmail, port 587
+- [x] Confirm signup template contains `{{ .Token }}` (§4.4) — check Magic Link too
 - [ ] `delete-account` Edge Function deployed (§5)
 - [ ] Database password reset (it was shared in chat)
-- [ ] GitHub secrets `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` for release builds
+- [x] GitHub secrets `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` for release builds

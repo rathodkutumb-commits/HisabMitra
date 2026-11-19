@@ -232,6 +232,8 @@ class RemindersScreen extends ConsumerWidget {
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
+          // Unique: the tab shell keeps several FAB screens alive.
+          heroTag: 'fab-reminders',
           onPressed: () => context.push(Routes.newReminder()),
           icon: const Icon(Icons.alarm_add_rounded),
           label: Text(l.addReminder),

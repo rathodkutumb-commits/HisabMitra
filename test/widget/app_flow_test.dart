@@ -263,6 +263,13 @@ void main() {
     await tester.tap(description);
     await tester.pumpAndSettle();
     expect(find.byType(GujaratiKeypad), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+    // The field must stay visible above the keypad while typing.
+    expect(
+      tester.getRect(description).bottom,
+      lessThanOrEqualTo(tester.getRect(find.byType(GujaratiKeypad)).top),
+    );
 
     Finder key(String label) => find.descendant(
       of: find.byType(GujaratiKeypad),
@@ -416,6 +423,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(await db.select(db.groupsCache).get(), isEmpty);
     expect(find.text('You are looking at sample data.'), findsNothing);
+  });
+
+  testApp('opening a page after visiting several tabs has no hero clash', (
+    tester,
+  ) async {
+    // Found on the emulator: tabs with floating buttons stay alive in the
+    // shell, and identical default hero tags broke page transitions.
+    await pumpHisabMitra(tester);
+    for (final tab in ['Hisab', 'Khata', 'Groups']) {
+      await tester.tap(find.text(tab).last);
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Create group'), findsWidgets);
   });
 }
 

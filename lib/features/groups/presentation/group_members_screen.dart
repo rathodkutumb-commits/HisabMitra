@@ -64,6 +64,8 @@ class GroupMembersScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l.groupMembers)),
       floatingActionButton: FloatingActionButton.extended(
+        // Unique: the tab shell keeps several FAB screens alive.
+        heroTag: 'fab-group-members',
         onPressed: () async {
           final choice = await showModalBottomSheet<String>(
             context: context,

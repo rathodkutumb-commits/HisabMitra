@@ -62,6 +62,8 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        // Unique: the tab shell keeps several FAB screens alive.
+        heroTag: 'fab-people',
         onPressed: () => _showAddSheet(context),
         icon: const Icon(Icons.add_rounded),
         label: Text(l.addEntry),

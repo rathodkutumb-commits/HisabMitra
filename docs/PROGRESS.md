@@ -20,6 +20,29 @@ Last updated: 2026-11-19.
 
 ## Session log
 
+### 2026-11-19 (README and emulator fixes)
+
+- README rewritten for the public repo with nine screenshots of the main
+  screens (captured on the emulator by `screenshots/app_screenshots_test.dart`
+  with the tour's sample data).
+- **Found on the emulator and fixed:** (1) opening a page after visiting
+  several tabs raised "multiple heroes share the same tag" — every floating
+  button now has its own hero tag (regression test added); (2) with the
+  Gujarati keypad open, a field low on the form stayed hidden behind the
+  keypad — the field now reserves the keypad's height and scrolls above it
+  (test checks the field is visible above the keypad).
+
+### 2026-11-19 (release)
+
+- Code pushed to `rathodkutumb-commits/HisabMitra` (public). CI green on
+  GitHub (format, generated code, analyzer, tests, 53 SQL checks).
+- Release keystore created (`D:\Hemang\Keys\HisabMitra\`), local
+  release builds signed with it, six repository secrets set.
+- Tag `v1.0.0` pushed → `Release APK` workflow publishes the signed APK and
+  its `.sha256` for in-app updates.
+- Supabase: custom SMTP (Gmail), code email template and redirect URL
+  configured by the owner.
+
 ### 2026-11-19 (afternoon)
 
 - **Compulsory account, verified by email** (owner decision): name, email
@@ -37,7 +60,7 @@ Last updated: 2026-11-19.
   (local `dart_defines.json`; the release workflow sets it on GitHub).
 - Background sync after sign-up no longer blocks the verify screen; the sync
   controller is safe if the app shuts down mid-sync.
-- Results: `flutter analyze` clean; `flutter test` **312 passing**; SQL
+- Results: `flutter analyze` clean; `flutter test` **312 passing** (313 after the README fixes); SQL
   53/53. Device tests not re-run after these changes (emulator was closed;
   last device run: 10/10 before the account and tour work).
 
@@ -79,9 +102,8 @@ Palettes (7, light-only), widget test fixes, live Supabase set-up
 
 | Item | Needed from the owner |
 |---|---|
-| Email verification for all users | Redirect URL `hisabmitra://login-callback`; custom SMTP sender (Gmail App Password or Brevo); `{{ .Token }}` in the Confirm signup + Magic Link templates (SUPABASE_SETUP.md §4) |
+| Email verification | Done by the owner (SMTP, template, redirect URL). Confirm the Magic Link template also contains `{{ .Token }}`. |
 | Cloud account deletion | Deploy `delete-account` (`supabase functions deploy delete-account`) or provide an access token |
-| Releases & update checker | Push the code to `rathodkutumb-commits/HisabMitra` (needs write access), release keystore, repository secrets, then tag `v1.0.0` |
 | Privacy policy / terms links | Public URLs |
 | Security | Reset the Supabase database password (shared in chat) |
 

@@ -151,6 +151,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        // Unique: the tab shell keeps several FAB screens alive.
+        heroTag: 'fab-transactions',
         onPressed: () => showAddTransactionSheet(context),
         icon: const Icon(Icons.add_rounded),
         label: Text(l.add),

@@ -49,6 +49,8 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        // Unique: the tab shell keeps several FAB screens alive.
+        heroTag: 'fab-groups',
         onPressed: () => context.push(Routes.newGroup),
         icon: const Icon(Icons.group_add_rounded),
         label: Text(l.createGroup),

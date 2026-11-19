@@ -139,6 +139,8 @@ class GroupDetailScreen extends ConsumerWidget {
               ),
             ),
             floatingActionButton: FloatingActionButton.extended(
+              // Unique: the tab shell keeps several FAB screens alive.
+              heroTag: 'fab-group-detail',
               onPressed: () => context.push(Routes.newGroupExpense(groupId)),
               icon: const Icon(Icons.add_rounded),
               label: Text(l.addGroupExpense),

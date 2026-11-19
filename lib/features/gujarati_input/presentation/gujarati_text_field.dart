@@ -44,6 +44,12 @@ class _GujaratiTextFieldState extends ConsumerState<GujaratiTextField> {
   final _formatter = TransliterationFormatter();
   bool _forceSystem = false;
   PersistentBottomSheetController? _keypad;
+  final _fieldKey = GlobalKey();
+  final _keypadKey = GlobalKey();
+
+  /// Space reserved below the field while the keypad covers the bottom of
+  /// the screen, so the form can scroll the field above the keypad.
+  double _keypadSpace = 0;
 
   @override
   void initState() {
@@ -77,22 +83,33 @@ class _GujaratiTextFieldState extends ConsumerState<GujaratiTextField> {
     if (scaffold == null) return;
     _keypad = scaffold.showBottomSheet(
       (ctx) => GujaratiKeypad(
+        key: _keypadKey,
         controller: widget.controller,
         onChanged: (v) => widget.onChanged?.call(v),
         onClose: () => _focus.unfocus(),
       ),
       enableDrag: false,
     );
-    _keypad!.closed.then((_) => _keypad = null);
-    // The keypad sheet overlays the bottom of the screen; move the field
+    _keypad!.closed.then((_) {
+      _keypad = null;
+      if (mounted && _keypadSpace != 0) setState(() => _keypadSpace = 0);
+    });
+    // The keypad sheet overlays the bottom of the screen (the body is not
+    // resized): reserve its height below the field, then scroll the field
     // near the top so it stays visible while typing.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      Scrollable.ensureVisible(
-        context,
-        alignment: 0.1,
-        duration: const Duration(milliseconds: 200),
-      );
+      if (!mounted || _keypad == null) return;
+      final height = _keypadKey.currentContext?.size?.height ?? 380;
+      setState(() => _keypadSpace = height);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final field = _fieldKey.currentContext;
+        if (!mounted || field == null) return;
+        Scrollable.ensureVisible(
+          field,
+          alignment: 0.1,
+          duration: const Duration(milliseconds: 200),
+        );
+      });
     });
   }
 
@@ -128,7 +145,8 @@ class _GujaratiTextFieldState extends ConsumerState<GujaratiTextField> {
             },
           );
 
-    return TextFormField(
+    final field = TextFormField(
+      key: _fieldKey,
       controller: widget.controller,
       focusNode: _focus,
       autofocus: widget.autofocus,
@@ -161,6 +179,15 @@ class _GujaratiTextFieldState extends ConsumerState<GujaratiTextField> {
       },
       onChanged: widget.onChanged,
       validator: widget.validator,
+    );
+    // Always a Column so the field keeps its place (and focus) in the tree.
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        field,
+        SizedBox(height: _keypadSpace),
+      ],
     );
   }
 }
