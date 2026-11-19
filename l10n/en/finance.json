@@ -1,0 +1,152 @@
+{
+  "greeting": "Namaste, {name}",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingNoName": "Namaste!",
+  "dashboardBalanceLabel": "Savings this period",
+  "dashboardToReceive": "To receive",
+  "dashboardToPay": "To pay",
+  "quickActions": "Quick actions",
+  "actionAddIncome": "Add income",
+  "actionAddExpense": "Add expense",
+  "actionGiveMoney": "Give money",
+  "actionReceiveMoney": "Receive money",
+  "actionCreateGroup": "Create group",
+  "actionGroupExpense": "Group expense",
+  "actionReports": "Reports",
+  "incomeVsExpense": "Income vs expense",
+  "lastSixMonths": "Last 6 months",
+  "recentTransactions": "Recent transactions",
+  "pendingRepayments": "Pending repayments",
+  "upcomingReminders": "Upcoming reminders",
+  "groupSummaryTitle": "Your groups",
+  "groupSummaryLine": "{count, plural, =0{No active groups} =1{1 active group} other{{count} active groups}}",
+  "@groupSummaryLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "youOwe": "You owe",
+  "youAreOwed": "You are owed",
+  "welcomeEmptyTitle": "Let's start your hisab",
+  "welcomeEmptyBody": "Add your first expense or income. It takes just a few seconds.",
+  "noTransactionsTitle": "No entries yet",
+  "noTransactionsBody": "Entries you add will appear here, grouped by date.",
+  "noResultsTitle": "Nothing matches",
+  "noResultsBody": "Try a different search or clear the filters.",
+  "selectPickPeriod": "Choose period",
+  "transactionsTitle": "Hisab",
+  "searchTransactionsHint": "Search description, notes, category, person",
+  "filterAll": "All",
+  "filterType": "Type",
+  "filterClearAll": "Clear filters",
+  "addIncomeTitle": "Add income",
+  "addExpenseTitle": "Add expense",
+  "editTransactionTitle": "Edit entry",
+  "transactionDetailsTitle": "Entry details",
+  "amountHint": "0.00",
+  "descriptionHint": "e.g. Vegetables from market",
+  "personOptional": "Person (optional)",
+  "addNewPerson": "Add new person",
+  "manageCategories": "Manage",
+  "chooseCategory": "Choose a category",
+  "transactionSaved": "Entry saved",
+  "transactionDeleted": "Entry deleted",
+  "deleteTransactionMessage": "This entry and its attachments will be deleted from this phone.",
+  "dayNet": "Net {amount}",
+  "@dayNet": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "monthIncomeShort": "In",
+  "monthExpenseShort": "Out",
+  "categoriesTitle": "Categories",
+  "addCategory": "Add category",
+  "editCategory": "Edit category",
+  "categoryName": "Category name",
+  "categoryIcon": "Icon",
+  "categoryColor": "Colour",
+  "categoryType": "Type",
+  "categoryUsage": "{count, plural, =0{Not used yet} =1{Used in 1 entry} other{Used in {count} entries}}",
+  "@categoryUsage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "categoryDeleteInUseTitle": "Move entries before deleting",
+  "categoryDeleteInUseBody": "{count, plural, =1{1 entry uses this category.} other{{count} entries use this category.}} Choose where to move them.",
+  "@categoryDeleteInUseBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "categoryMoveAndDelete": "Move & delete",
+  "calculatorTitle": "Calculator",
+  "calculatorBasic": "Calculator",
+  "calculatorUnit": "Price × Qty",
+  "unitPrice": "Unit price",
+  "quantity": "Quantity",
+  "calculatorUseAmount": "Use {amount}",
+  "@calculatorUseAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatorInvalid": "Incomplete expression",
+  "calculatorCopy": "Copy result",
+  "copied": "Copied",
+  "catFood": "Food & Dining",
+  "catGroceries": "Groceries",
+  "catTransport": "Transport",
+  "catFuel": "Fuel",
+  "catShopping": "Shopping",
+  "catBills": "Bills & Utilities",
+  "catRent": "Rent",
+  "catHealth": "Health",
+  "catEducation": "Education",
+  "catEntertainment": "Entertainment",
+  "catTravel": "Travel",
+  "catFestivals": "Festivals & Gifts",
+  "catHousehold": "Household",
+  "catMobile": "Mobile & Internet",
+  "catPersonalCare": "Personal Care",
+  "catDonation": "Donation",
+  "catOtherExpense": "Other Expense",
+  "catSalary": "Salary",
+  "catBusiness": "Business",
+  "catFreelance": "Freelance",
+  "catInterest": "Interest",
+  "catRentalIncome": "Rental Income",
+  "catGiftsReceived": "Gifts Received",
+  "catRefund": "Refunds",
+  "catOtherIncome": "Other Income",
+  "errorRepaymentExceeds": "The amount is more than what is still due.",
+  "errorSplitInvalid": "The split does not add up to the total.",
+  "errorCategoryType": "Choose a category of the same type.",
+  "errorPersonOutstanding": "Settle all pending amounts with this person before deleting.",
+  "errorPrincipalBelowRepaid": "The amount cannot be less than what has already been repaid.",
+  "errorMemberInUse": "This member has expenses or settlements, so they cannot be removed.",
+  "errorSettlementExceeds": "This is more than the payer owes or the receiver is owed.",
+  "errorSameMember": "Payer and receiver must be different.",
+  "errorGroupShared": "Shared groups cannot be deleted. Archive it instead.",
+  "transactionsShowList": "Show as list",
+  "transactionsShowSheet": "Show as sheet",
+  "runningBalance": "Running balance",
+  "sheetTip": "Oldest first, like a khata. Tap a row to open it."
+}

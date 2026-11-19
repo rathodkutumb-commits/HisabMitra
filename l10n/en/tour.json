@@ -1,0 +1,46 @@
+{
+  "tourPromptTitle": "Take a quick tour?",
+  "tourPromptBody": "See HisabMitra with sample data: two months of income and expenses, money lent and borrowed, and a Goa trip split with friends. You can remove the sample data at the end.",
+  "tourStart": "Start tour",
+  "tourNotNow": "Not now",
+  "tourLoading": "Adding sample data…",
+  "tourStepOf": "{current} of {total}",
+  "@tourStepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "tourNext": "Next",
+  "tourBack": "Back",
+  "tourSkip": "Skip tour",
+  "tour1Title": "Your month at a glance",
+  "tour1Body": "Savings = income − expenses for the period. Switch between this month, last month and this year with the chips above.",
+  "tour2Title": "Money to receive and to pay",
+  "tour2Body": "Totals from your khata: money you lent and money you borrowed. Loans are kept separate from income and expenses.",
+  "tour3Title": "Quick actions",
+  "tour3Body": "Add income or an expense, give or receive money, create a group, split a group expense or open reports — one tap each.",
+  "tour4Title": "Your hisab, also as a sheet",
+  "tour4Body": "Every entry, day by day. Tap this table icon for an Excel-like sheet with income, expense and a running balance.",
+  "tour5Title": "Khata: people and loans",
+  "tour5Body": "See who owes you and whom you owe. Open a person for the full ledger, partial repayments and due dates.",
+  "tour6Title": "Groups: split and settle",
+  "tour6Body": "Split trips and family costs equally, by amounts, percentages or shares. Open the sample Goa Trip to see balances and settle-ups.",
+  "tour7Title": "More tools",
+  "tour7Body": "Reports with PDF and CSV export, calculator, reminders, backup, the AI assistant, and settings for colour theme, language and the Gujarati keyboard.",
+  "tourFinishTitle": "You are all set!",
+  "tourFinishBody": "Keep the sample data to explore a little more, or remove it and start your own hisab. You can replay the tour any time from More.",
+  "tourRemoveSample": "Remove sample data",
+  "tourKeepSample": "Keep for now",
+  "sampleBanner": "You are looking at sample data.",
+  "sampleRemove": "Remove",
+  "sampleRemoveTitle": "Remove sample data?",
+  "sampleRemoveBody": "Sample entries, people and the sample group are removed. Everything you added yourself stays — a sample person or group you used is kept.",
+  "sampleRemoved": "Sample data removed",
+  "moreAppTour": "App tour",
+  "moreAppTourDesc": "A one-minute guided tour with sample data"
+}

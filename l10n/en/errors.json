@@ -1,0 +1,21 @@
+{
+  "errorNotFound": "This record no longer exists.",
+  "errorInUse": "{count, plural, =1{It is used by 1 record.} other{It is used by {count} records.}}",
+  "@errorInUse": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorStorage": "Could not save to phone storage. Check free space and try again.",
+  "errorNetwork": "No internet connection. Your change is saved on this phone and will sync later.",
+  "errorCloudNotConfigured": "Cloud features are not set up in this build of the app.",
+  "errorPermission": "Permission was not granted.",
+  "authInvalidOtp": "That code is not correct. Please check and try again.",
+  "authOtpExpired": "The code has expired. Request a new one.",
+  "authRateLimited": "Too many attempts. Please wait a minute and try again.",
+  "authSessionExpired": "Your session has expired. Please sign in again.",
+  "authGenericError": "Could not sign in right now. Please try again.",
+  "errorPaymentCount": "The number of payments must be more than those already paid."
+}

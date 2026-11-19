@@ -1,0 +1,108 @@
+{
+  "appName": "HisabMitra",
+  "appNameGujarati": "હિસાબમિત્ર",
+  "appTagline": "Smart Hisab, Happy Family.",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "add": "Add",
+  "done": "Done",
+  "next": "Next",
+  "back": "Back",
+  "skip": "Skip",
+  "retry": "Retry",
+  "close": "Close",
+  "confirm": "Confirm",
+  "search": "Search",
+  "filter": "Filter",
+  "clear": "Clear",
+  "apply": "Apply",
+  "share": "Share",
+  "export": "Export",
+  "yes": "Yes",
+  "no": "No",
+  "ok": "OK",
+  "loading": "Loading…",
+  "optional": "Optional",
+  "notes": "Notes",
+  "description": "Description",
+  "date": "Date",
+  "amount": "Amount",
+  "category": "Category",
+  "paymentMethod": "Payment method",
+  "person": "Person",
+  "total": "Total",
+  "viewAll": "View all",
+  "none": "None",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "income": "Income",
+  "expense": "Expense",
+  "balance": "Balance",
+  "details": "Details",
+  "more": "More",
+  "selectDate": "Select date",
+  "createdOn": "Created {date}",
+  "@createdOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedOn": "Updated {date}",
+  "@updatedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "genericError": "Something went wrong. Please try again.",
+  "savedMessage": "Saved",
+  "deletedMessage": "Deleted",
+  "confirmDeleteTitle": "Delete this?",
+  "confirmDeleteMessage": "This cannot be undone.",
+  "discardChangesTitle": "Discard changes?",
+  "discardChangesMessage": "Your unsaved changes will be lost.",
+  "discard": "Discard",
+  "keepEditing": "Keep editing",
+  "offlineBanner": "You are offline. Your data is safe on this device.",
+  "pmCash": "Cash",
+  "pmUpi": "UPI",
+  "pmBankTransfer": "Bank transfer",
+  "pmCreditCard": "Credit card",
+  "pmDebitCard": "Debit card",
+  "pmOther": "Other",
+  "validationRequired": "This field is required",
+  "validationAmount": "Enter a valid amount (up to 2 decimals)",
+  "validationAmountPositive": "Amount must be more than zero",
+  "validationPhone": "Enter a valid mobile number",
+  "validationEmail": "Enter a valid email address",
+  "validationTooLong": "Too long (maximum {max} characters)",
+  "@validationTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "openCalculator": "Open calculator",
+  "itemCount": "{count, plural, =0{No items} =1{1 item} other{{count} items}}",
+  "@itemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "comingFromDate": "From",
+  "toDate": "To",
+  "periodThisMonth": "This month",
+  "periodLastMonth": "Last month",
+  "periodThisYear": "This year",
+  "periodCustom": "Custom range",
+  "notConfigured": "Not configured",
+  "privateOnDevice": "Private · stored on this device"
+}

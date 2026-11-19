@@ -1,0 +1,152 @@
+# Builds a release-signed APK for a version tag and publishes it as a public
+# GitHub Release, with a SHA-256 checksum that the in-app update checker
+# verifies before offering the install.
+#
+#   1. Bump `version:` in pubspec.yaml (e.g. 1.2.0+5) and commit.
+#   2. git tag v1.2.0 && git push origin v1.2.0
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   HISABMITRA_KEYSTORE_BASE64   base64 of the upload/release .jks
+#   HISABMITRA_KEYSTORE_PASSWORD
+#   HISABMITRA_KEY_ALIAS
+#   HISABMITRA_KEY_PASSWORD
+#   SUPABASE_URL                 https://<ref>.supabase.co
+#   SUPABASE_PUBLISHABLE_KEY     sb_publishable_… (public client key, never
+#                                the secret/service-role key)
+# Optional repository variables: PRIVACY_POLICY_URL, TERMS_URL.
+# See docs/GITHUB_RELEASE_GUIDE.md.
+name: Release APK
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag must match pubspec version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PUB=$(sed -nE 's/^version:[[:space:]]*([^+[:space:]]+).*/\1/p' pubspec.yaml)
+          if [ "$TAG" != "$PUB" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match pubspec version $PUB"
+            exit 1
+          fi
+
+      - name: Signing secrets must be present
+        env:
+          HISABMITRA_KEYSTORE_BASE64: ${{ secrets.HISABMITRA_KEYSTORE_BASE64 }}
+          HISABMITRA_KEYSTORE_PASSWORD: ${{ secrets.HISABMITRA_KEYSTORE_PASSWORD }}
+          HISABMITRA_KEY_ALIAS: ${{ secrets.HISABMITRA_KEY_ALIAS }}
+          HISABMITRA_KEY_PASSWORD: ${{ secrets.HISABMITRA_KEY_PASSWORD }}
+        run: |
+          for v in HISABMITRA_KEYSTORE_BASE64 HISABMITRA_KEYSTORE_PASSWORD \
+                   HISABMITRA_KEY_ALIAS HISABMITRA_KEY_PASSWORD; do
+            if [ -z "${!v}" ]; then
+              echo "::error::Missing repository secret $v. Debug-signed APKs are never published."
+              exit 1
+            fi
+          done
+          echo "$HISABMITRA_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "HISABMITRA_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+
+      - name: Build configuration (dart defines)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          TERMS_URL: ${{ vars.TERMS_URL }}
+        run: |
+          case "$SUPABASE_PUBLISHABLE_KEY" in
+            sb_secret_*|*service_role*)
+              echo "::error::SUPABASE_PUBLISHABLE_KEY looks like a secret key. Only the publishable key may ship in the APK."
+              exit 1 ;;
+          esac
+          jq -n \
+            --arg url "$SUPABASE_URL" \
+            --arg key "$SUPABASE_PUBLISHABLE_KEY" \
+            --arg owner "${{ github.repository_owner }}" \
+            --arg repo "${{ github.event.repository.name }}" \
+            --arg privacy "$PRIVACY_POLICY_URL" \
+            --arg terms "$TERMS_URL" \
+            '{SUPABASE_URL:$url, SUPABASE_PUBLISHABLE_KEY:$key, GITHUB_OWNER:$owner,
+              GITHUB_REPO:$repo, PRIVACY_POLICY_URL:$privacy, TERMS_URL:$terms}' \
+            > dart_defines.json
+
+      - run: flutter pub get
+
+      - run: flutter test
+
+      - name: Build release APK
+        env:
+          HISABMITRA_KEYSTORE_PASSWORD: ${{ secrets.HISABMITRA_KEYSTORE_PASSWORD }}
+          HISABMITRA_KEY_ALIAS: ${{ secrets.HISABMITRA_KEY_ALIAS }}
+          HISABMITRA_KEY_PASSWORD: ${{ secrets.HISABMITRA_KEY_PASSWORD }}
+        run: flutter build apk --release --dart-define-from-file=dart_defines.json
+
+      - name: Verify signature, name and checksum
+        run: |
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          APKSIGNER="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/apksigner"
+          "$APKSIGNER" verify --print-certs "$APK" | tee signing.txt
+          if grep -q "CN=Android Debug" signing.txt; then
+            echo "::error::APK is debug-signed; refusing to publish."
+            exit 1
+          fi
+          NAME="hisabmitra-${GITHUB_REF_NAME#v}.apk"
+          cp "$APK" "$NAME"
+          sha256sum "$NAME" > "$NAME.sha256"
+          CERT=$(sed -nE 's/.*certificate SHA-256 digest: //p' signing.txt | head -1)
+          {
+            echo "## HisabMitra ${GITHUB_REF_NAME}"
+            echo
+            echo "Download \`$NAME\` and open it on your Android phone."
+            echo "Installing it does not give access to anyone's data: shared groups"
+            echo "need phone sign-in and an invitation."
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| APK SHA-256 | \`$(cut -d' ' -f1 "$NAME.sha256")\` |"
+            echo "| Signing certificate SHA-256 | \`$CERT\` |"
+            if [ -f "docs/release-notes/${GITHUB_REF_NAME}.md" ]; then
+              echo
+              cat "docs/release-notes/${GITHUB_REF_NAME}.md"
+            fi
+          } > release_notes.md
+          echo "APK_NAME=$NAME" >> "$GITHUB_ENV"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "$APK_NAME" "$APK_NAME.sha256" \
+            --title "HisabMitra $GITHUB_REF_NAME" \
+            --notes-file release_notes.md \
+            --verify-tag
+
+      - name: Remove keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks" dart_defines.json

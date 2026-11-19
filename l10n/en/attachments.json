@@ -1,0 +1,16 @@
+{
+  "attachments": "Bills & attachments",
+  "attachCamera": "Camera",
+  "attachGallery": "Gallery",
+  "attachPdf": "PDF",
+  "attachmentTooLarge": "This file is larger than 10 MB.",
+  "attachmentType": "Only JPG, PNG, WEBP, HEIC images and PDF files can be attached.",
+  "attachmentMissing": "This file is no longer available on the phone.",
+  "attachmentOpenExternal": "Open in another app",
+  "attachmentDeleteConfirm": "Remove this attachment?",
+  "attachmentViewerTitle": "Attachment",
+  "attachmentPrivateNote": "Stored privately on this phone. Not uploaded anywhere.",
+  "attachmentShareToGroup": "Share with group",
+  "attachmentSharedToGroup": "Shared with group",
+  "attachmentRemove": "Remove"
+}

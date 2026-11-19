@@ -1,0 +1,53 @@
+# Checks every push and pull request: generated code, formatting, analyzer,
+# unit/widget tests, and the Supabase schema + RLS tests on a throw-away
+# PostgreSQL container. Uses no secrets.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flutter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Generated code is up to date
+        run: |
+          dart run tool/build_l10n.dart
+          flutter gen-l10n
+          dart run build_runner build --delete-conflicting-outputs
+          git diff --exit-code -- lib l10n
+
+      - name: Formatting
+        run: dart format --output=none --set-exit-if-changed lib test tool integration_test
+
+      - run: flutter analyze
+
+      - run: flutter test
+
+  supabase-sql:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Schema, RLS and RPC tests (PostgreSQL in Docker)
+        run: bash tool/run_supabase_tests.sh

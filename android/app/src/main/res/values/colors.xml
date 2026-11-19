@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Default palette: Rann Utsav. The app is light-only (TD-23), so there are
+     no values-night / drawable-night overrides. -->
+<resources>
+    <color name="ic_launcher_background">#1D3557</color>
+    <color name="splash_background">#F8F8F5</color>
+    <color name="splash_icon_background">#1D3557</color>
+</resources>

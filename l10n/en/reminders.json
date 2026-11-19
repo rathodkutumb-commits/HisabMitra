@@ -1,0 +1,125 @@
+{
+  "remindersTitle": "Reminders",
+  "addReminder": "Add reminder",
+  "editReminder": "Edit reminder",
+  "reminderTitle": "What to remember",
+  "reminderTime": "Time",
+  "reminderRepeat": "Repeat",
+  "repeatNone": "Once",
+  "repeatDaily": "Daily",
+  "repeatWeekly": "Weekly",
+  "repeatMonthly": "Monthly",
+  "reminderKind": "Type",
+  "kindRepayment": "Repay money",
+  "kindCollection": "Collect money",
+  "kindGroupSettlement": "Group settlement",
+  "kindCustom": "Other",
+  "reminderSaved": "Reminder set",
+  "reminderDone": "Mark done",
+  "reminderCancel": "Cancel reminder",
+  "reminderUpcoming": "Upcoming",
+  "reminderHistory": "Done & cancelled",
+  "noRemindersTitle": "No reminders",
+  "noRemindersBody": "Set reminders for repayments, collections or bills.",
+  "reminderPast": "This time has already passed.",
+  "notificationsDenied": "Notifications are off for HisabMitra. You can turn them on in Android settings.",
+  "notificationGenericTitle": "HisabMitra reminder",
+  "notificationGenericBody": "Open HisabMitra to see your reminder.",
+  "reminderCollectTitle": "Collect {amount} from {name}",
+  "@reminderCollectTitle": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderRepayTitle": "Repay {amount} to {name}",
+  "@reminderRepayTitle": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderSettleTitle": "Settle up in {group}",
+  "@reminderSettleTitle": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "statusDone": "Done",
+  "statusCancelled": "Cancelled",
+  "kindEmi": "EMI",
+  "kindSip": "SIP",
+  "kindInstallment": "Installment",
+  "kindMaintenance": "Maintenance",
+  "kindInsurance": "Insurance premium",
+  "kindRent": "Rent",
+  "kindSubscription": "Subscription",
+  "kindBill": "Bill",
+  "repeatQuarterly": "Every 3 months",
+  "repeatHalfYearly": "Every 6 months",
+  "repeatYearly": "Yearly",
+  "reminderTypePayment": "Recurring payment",
+  "reminderTypeReminder": "Reminder",
+  "paymentType": "Payment type",
+  "paymentAmount": "Fixed amount",
+  "paymentCategory": "Expense category",
+  "paymentCategoryHint": "Used when you record the payment",
+  "paymentEnds": "Ends",
+  "paymentEndsNever": "No end date",
+  "paymentEndsAfter": "After a number of payments",
+  "paymentCount": "Total number of payments",
+  "paymentProgress": "{done} of {total} paid",
+  "@paymentProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "paymentsPaidSoFar": "{count} paid so far",
+  "@paymentsPaidSoFar": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "markPaid": "Mark paid",
+  "recordPaymentTitle": "Record this payment?",
+  "recordPaymentBody": "{amount} for {title}. Add it to your Hisab as an expense?",
+  "@recordPaymentBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "recordAsExpense": "Add as expense",
+  "justMarkPaid": "Only mark paid",
+  "paymentsDueThisMonth": "Payments due this month",
+  "addRecurringPayment": "Add recurring payment",
+  "notificationPaymentBody": "{amount} due",
+  "@notificationPaymentBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
+}

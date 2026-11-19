@@ -1,0 +1,16 @@
+{
+  "attachments": "બિલ અને જોડાણો",
+  "attachCamera": "કૅમેરા",
+  "attachGallery": "ગેલેરી",
+  "attachPdf": "PDF",
+  "attachmentTooLarge": "આ ફાઇલ 10 MB કરતાં મોટી છે.",
+  "attachmentType": "ફક્ત JPG, PNG, WEBP, HEIC ફોટા અને PDF ફાઇલ જ જોડી શકાય છે.",
+  "attachmentMissing": "આ ફાઇલ હવે ફોનમાં ઉપલબ્ધ નથી.",
+  "attachmentOpenExternal": "બીજી એપમાં ખોલો",
+  "attachmentDeleteConfirm": "આ જોડાણ દૂર કરવું છે?",
+  "attachmentViewerTitle": "જોડાણ",
+  "attachmentPrivateNote": "આ ફોનમાં ખાનગી રીતે સંગ્રહિત. ક્યાંય અપલોડ થયું નથી.",
+  "attachmentShareToGroup": "ગ્રુપ સાથે શેર કરો",
+  "attachmentSharedToGroup": "ગ્રુપ સાથે શેર કરેલું",
+  "attachmentRemove": "દૂર કરો"
+}

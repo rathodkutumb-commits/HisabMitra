@@ -1,0 +1,148 @@
+{
+  "authSendOtp": "Send verification code",
+  "authVerify": "Verify",
+  "authResend": "Resend code",
+  "authResendIn": "Resend in {seconds}s",
+  "@authResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "authCodeSent": "Code sent",
+  "profileTitle": "Profile",
+  "profileName": "Display name",
+  "profileSaved": "Profile saved",
+  "deleteAccountConfirm": "Delete your cloud account? You will leave all shared groups. Everything on this phone is kept.",
+  "accountDeleted": "Cloud account deleted",
+  "signedOut": "Signed out",
+  "syncTitle": "Sync status",
+  "syncNow": "Sync now",
+  "syncLastSuccess": "Last synced {date}",
+  "@syncLastSuccess": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNever": "Not synced yet",
+  "syncPending": "{count, plural, =0{Everything is up to date} =1{1 change waiting to sync} other{{count} changes waiting to sync}}",
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncFailed": "{count, plural, =1{1 change could not be synced} other{{count} changes could not be synced}}",
+  "@syncFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRetry": "Retry",
+  "syncConflicts": "Needs your decision",
+  "syncConflictHelp": "This record was changed on another device while you were also changing it. Nothing has been overwritten — choose which version to keep.",
+  "syncKeepMine": "Keep mine",
+  "syncKeepTheirs": "Use the other version",
+  "syncYourVersion": "Your version",
+  "syncOtherVersion": "Other device's version",
+  "syncOffline": "Offline — changes will sync when you are back online.",
+  "syncSignInNeeded": "Sign in to sync shared groups.",
+  "syncDisabled": "Cloud sync is turned off in Settings.",
+  "syncDone": "Sync complete",
+  "syncRunning": "Syncing…",
+  "entityGroup": "Group details",
+  "entityMember": "Member",
+  "entityExpense": "Expense",
+  "entitySettlement": "Settlement",
+  "shareToCloud": "Share group online",
+  "shareToCloudBody": "Members who use HisabMitra can then join this group and see its members, expenses and settlements. Members' phone numbers are not uploaded and your personal records are never shared.",
+  "shareToCloudDone": "Group is now shared",
+  "shareNeedsSignIn": "Verify your email to share groups.",
+  "inviteTitle": "Invite members",
+  "inviteFor": "Invite for",
+  "inviteNewMember": "Someone new",
+  "inviteCreate": "Create invitation code",
+  "inviteShareText": "Join my group \"{group}\" on HisabMitra: open hisabmitra://join?code={code} or enter the code {code} in the app. The code expires on {date}.",
+  "@inviteShareText": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteExpires": "Expires {date}",
+  "@inviteExpires": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteStatusPending": "Waiting",
+  "inviteStatusAccepted": "Joined",
+  "inviteStatusCancelled": "Cancelled",
+  "inviteStatusExpired": "Expired",
+  "inviteCancel": "Cancel invitation",
+  "invitesEmpty": "No invitations yet",
+  "inviteGroupNotShared": "Share this group online first.",
+  "inviteCodeOnce": "Share this code now. For security it is shown only once.",
+  "joinTitle": "Join a group",
+  "joinCode": "Invitation code",
+  "joinButton": "Join group",
+  "joinDone": "You joined {group}",
+  "@joinDone": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "joinNeedsSignIn": "Verify your email to join a shared group.",
+  "errInvalidCode": "This invitation code is not valid.",
+  "errExpiredCode": "This invitation has expired. Ask for a new one.",
+  "errAlreadyMember": "You are already a member of this group.",
+  "errInvitationPending": "There is already an open invitation for this member.",
+  "errForbidden": "You do not have permission to do this.",
+  "errCloudStorage": "Could not upload or download the file.",
+  "emailAddress": "Email address",
+  "emailHint": "you@example.com",
+  "verifyEmailTitle": "Verify your email",
+  "verifyEmailSubtitle": "We sent a code to {email}. Type it below, or tap the link in that email on this phone.",
+  "@verifyEmailSubtitle": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verificationCode": "Verification code",
+  "verifyEmailSpamHint": "Didn't get it? Look in Spam or Promotions, or resend after a minute.",
+  "changeDetails": "Change details",
+  "emailVerified": "Email verified. Welcome to HisabMitra!",
+  "verifyingLink": "Checking the link…",
+  "authEmailNotAuthorized": "We can't send email to this address yet: the app's email sender is not set up. Please try again later.",
+  "authLinkInvalid": "This link has expired or was opened on another phone. Type the code instead, or send a new one.",
+  "authNoPending": "Please enter your details again.",
+  "accountOfflineNote": "This build has no cloud connection, so your email cannot be verified now. Your details are saved on this phone.",
+  "accountVerifiedAs": "Verified: {email}",
+  "@accountVerifiedAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailAction": "Verify email"
+}

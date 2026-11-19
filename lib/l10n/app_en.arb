@@ -1,0 +1,1460 @@
+{
+  "@@locale": "en",
+  "aboutTitle": "About HisabMitra",
+  "aboutVersion": "Version {version}",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutDescription": "HisabMitra keeps your daily hisab, personal khata and family group expenses on your phone — private by default, working without internet.",
+  "checkUpdates": "Check for updates",
+  "updateUpToDate": "You have the latest version.",
+  "updateAvailable": "Version {version} is available",
+  "@updateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "updateNotConfigured": "Update checks are not set up in this build.",
+  "updateDownloadInstall": "Download & install",
+  "updateDownloading": "Downloading… {percent}%",
+  "@updateDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "updateInstallSteps": "The file was verified (checksum, package and signature). Android will now ask you to confirm the installation. Your data stays on the phone.",
+  "updateAllowInstall": "Allow HisabMitra to install updates in the next screen, then tap Download & install again.",
+  "updateNoChecksum": "This release has no published checksum, so it cannot be installed from inside the app. Open the release page instead.",
+  "updateChecksumMismatch": "The downloaded file did not match its published checksum and was deleted.",
+  "updateWrongPackage": "The downloaded file is not a HisabMitra update.",
+  "updateNotNewer": "The downloaded version is not newer than the installed one.",
+  "updateSignatureMismatch": "The update is not signed with the same key as this app, so Android would refuse it. Install it manually from the release page only if you trust the source.",
+  "updateUnreadable": "The downloaded file could not be read.",
+  "releaseNotes": "Release notes",
+  "openReleasePage": "GitHub release page",
+  "shareApp": "Share HisabMitra",
+  "shareAppText": "I use HisabMitra to manage my family hisab. Download it here: {url}",
+  "@shareAppText": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "licenses": "Open-source licences",
+  "privacySummary": "Your personal records, people, khata, reminders and attachments are stored only on this phone. Only groups you choose to share are uploaded, and only for their members. Optional online AI receives summary figures only after your consent. No advertising or tracking SDKs are included.",
+  "termsSummary": "HisabMitra is a record-keeping tool. Please check important figures yourself; it does not provide financial, tax or legal advice.",
+  "aiTitle": "HisabMitra assistant",
+  "aiDisabledTitle": "The assistant is off",
+  "aiDisabledBody": "Turn it on to ask questions about your hisab. Answers are calculated on this phone.",
+  "aiEnable": "Turn on",
+  "aiInputHint": "Ask about your money…",
+  "aiCalculatedOnPhone": "Calculated on this phone",
+  "aiSuggestionBadge": "Suggestion — not your data",
+  "aiOnlineBadge": "Worded by online AI",
+  "aiPeriodLabel": "Period: {period}",
+  "@aiPeriodLabel": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "aiReviewDraft": "Review & save",
+  "aiDraftNote": "Nothing is saved until you check and save it.",
+  "aiOnlineFailed": "Online AI is unavailable, so this answer was written on your phone.",
+  "aiExample1": "How much did I spend this month?",
+  "aiExample2": "What is my biggest expense category?",
+  "aiExample3": "Compare this month with last month",
+  "aiExample4": "Show my top five expenses",
+  "aiExample5": "How much do people owe me?",
+  "aiExample6": "How can I reduce my expenses?",
+  "aiHelp": "I can answer questions about your own records, for example: spending or income in a period, your biggest category, top expenses, how much a person owes you, what a group trip cost, or who owes whom in a group. Try one of the suggestions below.",
+  "aiSpend": "You spent {amount} in {period} across {count} entries.",
+  "@aiSpend": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aiIncome": "Your income in {period} was {amount}.",
+  "@aiIncome": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "aiSavings": "In {period} you earned {income} and spent {expense}, so you saved {savings}.",
+  "@aiSavings": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "income": {
+        "type": "String"
+      },
+      "expense": {
+        "type": "String"
+      },
+      "savings": {
+        "type": "String"
+      }
+    }
+  },
+  "aiTopCategory": "Your biggest expense category in {period} was {category}: {amount} ({percent}% of spending).",
+  "@aiTopCategory": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "category": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "aiNoExpenses": "There are no expenses recorded in {period}.",
+  "@aiNoExpenses": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "aiPersonOwesYou": "{name} owes you {amount} in total (all open khata entries).",
+  "@aiPersonOwesYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "aiYouOwePerson": "You owe {name} {amount} in total (all open khata entries).",
+  "@aiYouOwePerson": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "aiPersonSettled": "You and {name} are all settled — nothing is pending.",
+  "@aiPersonSettled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "aiGroupTotal": "{group} has cost {amount} so far across {count} expenses. Your share is {share}.",
+  "@aiGroupTotal": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "share": {
+        "type": "String"
+      }
+    }
+  },
+  "aiWhoOwesNone": "Everyone in {group} is settled up.",
+  "@aiWhoOwesNone": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "aiWhoOwesIntro": "To settle {group}:",
+  "@aiWhoOwesIntro": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "aiCompare": "{current}: spent {currentAmount}. {previous}: spent {previousAmount}. That is {change}.",
+  "@aiCompare": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "currentAmount": {
+        "type": "String"
+      },
+      "previous": {
+        "type": "String"
+      },
+      "previousAmount": {
+        "type": "String"
+      },
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "aiMore": "{amount} more",
+  "@aiMore": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "aiLess": "{amount} less",
+  "@aiLess": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "aiSame": "the same",
+  "aiTopExpensesIntro": "Your top expenses in {period}:",
+  "@aiTopExpensesIntro": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "aiReceivables": "People owe you {receivable} and you owe others {payable} (all open khata entries).",
+  "@aiReceivables": {
+    "placeholders": {
+      "receivable": {
+        "type": "String"
+      },
+      "payable": {
+        "type": "String"
+      }
+    }
+  },
+  "aiTipsIntro": "Based on {period}, a few ideas (suggestions, not facts):",
+  "@aiTipsIntro": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "aiTipCategory": "{category} took {percent}% of your spending ({amount}). Setting a monthly limit for it would have the biggest effect.",
+  "@aiTipCategory": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "aiTipFrequent": "You made {count} small expenses under ₹200 — together {amount}. Small daily spends add up.",
+  "@aiTipFrequent": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "aiTipSavings": "You spent more than you earned this period. Reviewing the top categories first usually helps most.",
+  "aiTipGeneral": "Record every expense for a month, then compare months here to see what changed.",
+  "aiDraftExpense": "I prepared an expense of {amount}{category}. Please review it before saving.",
+  "@aiDraftExpense": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "aiDraftIncome": "I prepared an income entry of {amount}{category}. Please review it before saving.",
+  "@aiDraftIncome": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "aiDraftNeedsAmount": "Tell me the amount too, for example: “add expense 250 for groceries”. I will not guess amounts.",
+  "aiNoPerson": "I could not find that person in your khata.",
+  "aiNoGroup": "I could not find that group.",
+  "aiTodayLabel": "today",
+  "aiSettingsTitle": "AI assistant settings",
+  "aiApiKeySave": "Save key",
+  "aiApiKeyRemove": "Remove key",
+  "aiApiKeyHint": "Paste your Anthropic API key",
+  "aiApiKeyNote": "The key is stored encrypted on this phone and is used only for online answers. Online usage is billed to your Anthropic account.",
+  "attachments": "Bills & attachments",
+  "attachCamera": "Camera",
+  "attachGallery": "Gallery",
+  "attachPdf": "PDF",
+  "attachmentTooLarge": "This file is larger than 10 MB.",
+  "attachmentType": "Only JPG, PNG, WEBP, HEIC images and PDF files can be attached.",
+  "attachmentMissing": "This file is no longer available on the phone.",
+  "attachmentOpenExternal": "Open in another app",
+  "attachmentDeleteConfirm": "Remove this attachment?",
+  "attachmentViewerTitle": "Attachment",
+  "attachmentPrivateNote": "Stored privately on this phone. Not uploaded anywhere.",
+  "attachmentShareToGroup": "Share with group",
+  "attachmentSharedToGroup": "Shared with group",
+  "attachmentRemove": "Remove",
+  "backupTitle": "Backup & restore",
+  "backupNow": "Back up now",
+  "backupEncrypt": "Protect with a password",
+  "backupPassword": "Backup password",
+  "backupPasswordConfirm": "Confirm password",
+  "backupPasswordMismatch": "Passwords do not match",
+  "backupPasswordTooShort": "Use at least 8 characters",
+  "backupPasswordWarning": "HisabMitra does not store this password. Without it, this backup cannot be restored.",
+  "backupCreated": "Backup created",
+  "backupHistory": "Backup history",
+  "backupNone": "No backups yet",
+  "backupKindManual": "Manual",
+  "backupKindAutomatic": "Automatic",
+  "backupKindSafety": "Before restore",
+  "backupEncryptedLabel": "Encrypted",
+  "backupExport": "Save / share copy",
+  "backupRestore": "Restore",
+  "backupRestoreFromFile": "Restore from a file",
+  "backupRestoreConfirmTitle": "Replace current data?",
+  "backupRestoreConfirmBody": "This backup from {date} contains {transactions} entries, {people} people and {groups} groups. Your current data will be replaced. A safety backup of your current data is made first.",
+  "@backupRestoreConfirmBody": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "transactions": {
+        "type": "int"
+      },
+      "people": {
+        "type": "int"
+      },
+      "groups": {
+        "type": "int"
+      }
+    }
+  },
+  "backupRestoreDone": "Restore complete",
+  "backupRestoreMissingAttachments": "{count} attachment files were not in the backup.",
+  "@backupRestoreMissingAttachments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupWhere": "Backups are stored privately in HisabMitra's app storage on this phone. Uninstalling the app deletes them, so use “Save / share copy” to keep a copy elsewhere (for example Google Drive or a computer).",
+  "backupFileMissing": "File no longer on this phone",
+  "backupDeleteConfirm": "Delete this backup file?",
+  "backupPasswordRequired": "This backup is encrypted. Enter its password.",
+  "backupWrongPassword": "Wrong password, or the file is damaged.",
+  "backupCorrupt": "The backup file is damaged or was modified, so it cannot be restored.",
+  "backupNewerSchema": "This backup was made by a newer version of HisabMitra. Update the app first.",
+  "backupIntegrity": "The data inside the backup failed its integrity check.",
+  "backupNotBackup": "This file is not a HisabMitra backup.",
+  "backupAutoInfo": "Automatic backups run when you open the app and one is due. The newest 7 are kept.",
+  "backupLastAuto": "Last automatic backup: {date}",
+  "@backupLastAuto": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNever": "Never",
+  "authSendOtp": "Send verification code",
+  "authVerify": "Verify",
+  "authResend": "Resend code",
+  "authResendIn": "Resend in {seconds}s",
+  "@authResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "authCodeSent": "Code sent",
+  "profileTitle": "Profile",
+  "profileName": "Display name",
+  "profileSaved": "Profile saved",
+  "deleteAccountConfirm": "Delete your cloud account? You will leave all shared groups. Everything on this phone is kept.",
+  "accountDeleted": "Cloud account deleted",
+  "signedOut": "Signed out",
+  "syncTitle": "Sync status",
+  "syncNow": "Sync now",
+  "syncLastSuccess": "Last synced {date}",
+  "@syncLastSuccess": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNever": "Not synced yet",
+  "syncPending": "{count, plural, =0{Everything is up to date} =1{1 change waiting to sync} other{{count} changes waiting to sync}}",
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncFailed": "{count, plural, =1{1 change could not be synced} other{{count} changes could not be synced}}",
+  "@syncFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRetry": "Retry",
+  "syncConflicts": "Needs your decision",
+  "syncConflictHelp": "This record was changed on another device while you were also changing it. Nothing has been overwritten — choose which version to keep.",
+  "syncKeepMine": "Keep mine",
+  "syncKeepTheirs": "Use the other version",
+  "syncYourVersion": "Your version",
+  "syncOtherVersion": "Other device's version",
+  "syncOffline": "Offline — changes will sync when you are back online.",
+  "syncSignInNeeded": "Sign in to sync shared groups.",
+  "syncDisabled": "Cloud sync is turned off in Settings.",
+  "syncDone": "Sync complete",
+  "syncRunning": "Syncing…",
+  "entityGroup": "Group details",
+  "entityMember": "Member",
+  "entityExpense": "Expense",
+  "entitySettlement": "Settlement",
+  "shareToCloud": "Share group online",
+  "shareToCloudBody": "Members who use HisabMitra can then join this group and see its members, expenses and settlements. Members' phone numbers are not uploaded and your personal records are never shared.",
+  "shareToCloudDone": "Group is now shared",
+  "shareNeedsSignIn": "Verify your email to share groups.",
+  "inviteTitle": "Invite members",
+  "inviteFor": "Invite for",
+  "inviteNewMember": "Someone new",
+  "inviteCreate": "Create invitation code",
+  "inviteShareText": "Join my group \"{group}\" on HisabMitra: open hisabmitra://join?code={code} or enter the code {code} in the app. The code expires on {date}.",
+  "@inviteShareText": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteExpires": "Expires {date}",
+  "@inviteExpires": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteStatusPending": "Waiting",
+  "inviteStatusAccepted": "Joined",
+  "inviteStatusCancelled": "Cancelled",
+  "inviteStatusExpired": "Expired",
+  "inviteCancel": "Cancel invitation",
+  "invitesEmpty": "No invitations yet",
+  "inviteGroupNotShared": "Share this group online first.",
+  "inviteCodeOnce": "Share this code now. For security it is shown only once.",
+  "joinTitle": "Join a group",
+  "joinCode": "Invitation code",
+  "joinButton": "Join group",
+  "joinDone": "You joined {group}",
+  "@joinDone": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "joinNeedsSignIn": "Verify your email to join a shared group.",
+  "errInvalidCode": "This invitation code is not valid.",
+  "errExpiredCode": "This invitation has expired. Ask for a new one.",
+  "errAlreadyMember": "You are already a member of this group.",
+  "errInvitationPending": "There is already an open invitation for this member.",
+  "errForbidden": "You do not have permission to do this.",
+  "errCloudStorage": "Could not upload or download the file.",
+  "emailAddress": "Email address",
+  "emailHint": "you@example.com",
+  "verifyEmailTitle": "Verify your email",
+  "verifyEmailSubtitle": "We sent a code to {email}. Type it below, or tap the link in that email on this phone.",
+  "@verifyEmailSubtitle": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verificationCode": "Verification code",
+  "verifyEmailSpamHint": "Didn't get it? Look in Spam or Promotions, or resend after a minute.",
+  "changeDetails": "Change details",
+  "emailVerified": "Email verified. Welcome to HisabMitra!",
+  "verifyingLink": "Checking the link…",
+  "authEmailNotAuthorized": "We can't send email to this address yet: the app's email sender is not set up. Please try again later.",
+  "authLinkInvalid": "This link has expired or was opened on another phone. Type the code instead, or send a new one.",
+  "authNoPending": "Please enter your details again.",
+  "accountOfflineNote": "This build has no cloud connection, so your email cannot be verified now. Your details are saved on this phone.",
+  "accountVerifiedAs": "Verified: {email}",
+  "@accountVerifiedAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyEmailAction": "Verify email",
+  "appName": "HisabMitra",
+  "appNameGujarati": "હિસાબમિત્ર",
+  "appTagline": "Smart Hisab, Happy Family.",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "add": "Add",
+  "done": "Done",
+  "next": "Next",
+  "back": "Back",
+  "skip": "Skip",
+  "retry": "Retry",
+  "close": "Close",
+  "confirm": "Confirm",
+  "search": "Search",
+  "filter": "Filter",
+  "clear": "Clear",
+  "apply": "Apply",
+  "share": "Share",
+  "export": "Export",
+  "yes": "Yes",
+  "no": "No",
+  "ok": "OK",
+  "loading": "Loading…",
+  "optional": "Optional",
+  "notes": "Notes",
+  "description": "Description",
+  "date": "Date",
+  "amount": "Amount",
+  "category": "Category",
+  "paymentMethod": "Payment method",
+  "person": "Person",
+  "total": "Total",
+  "viewAll": "View all",
+  "none": "None",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "income": "Income",
+  "expense": "Expense",
+  "balance": "Balance",
+  "details": "Details",
+  "more": "More",
+  "selectDate": "Select date",
+  "createdOn": "Created {date}",
+  "@createdOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedOn": "Updated {date}",
+  "@updatedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "genericError": "Something went wrong. Please try again.",
+  "savedMessage": "Saved",
+  "deletedMessage": "Deleted",
+  "confirmDeleteTitle": "Delete this?",
+  "confirmDeleteMessage": "This cannot be undone.",
+  "discardChangesTitle": "Discard changes?",
+  "discardChangesMessage": "Your unsaved changes will be lost.",
+  "discard": "Discard",
+  "keepEditing": "Keep editing",
+  "offlineBanner": "You are offline. Your data is safe on this device.",
+  "pmCash": "Cash",
+  "pmUpi": "UPI",
+  "pmBankTransfer": "Bank transfer",
+  "pmCreditCard": "Credit card",
+  "pmDebitCard": "Debit card",
+  "pmOther": "Other",
+  "validationRequired": "This field is required",
+  "validationAmount": "Enter a valid amount (up to 2 decimals)",
+  "validationAmountPositive": "Amount must be more than zero",
+  "validationPhone": "Enter a valid mobile number",
+  "validationEmail": "Enter a valid email address",
+  "validationTooLong": "Too long (maximum {max} characters)",
+  "@validationTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "openCalculator": "Open calculator",
+  "itemCount": "{count, plural, =0{No items} =1{1 item} other{{count} items}}",
+  "@itemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "comingFromDate": "From",
+  "toDate": "To",
+  "periodThisMonth": "This month",
+  "periodLastMonth": "Last month",
+  "periodThisYear": "This year",
+  "periodCustom": "Custom range",
+  "notConfigured": "Not configured",
+  "privateOnDevice": "Private · stored on this device",
+  "errorNotFound": "This record no longer exists.",
+  "errorInUse": "{count, plural, =1{It is used by 1 record.} other{It is used by {count} records.}}",
+  "@errorInUse": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorStorage": "Could not save to phone storage. Check free space and try again.",
+  "errorNetwork": "No internet connection. Your change is saved on this phone and will sync later.",
+  "errorCloudNotConfigured": "Cloud features are not set up in this build of the app.",
+  "errorPermission": "Permission was not granted.",
+  "authInvalidOtp": "That code is not correct. Please check and try again.",
+  "authOtpExpired": "The code has expired. Request a new one.",
+  "authRateLimited": "Too many attempts. Please wait a minute and try again.",
+  "authSessionExpired": "Your session has expired. Please sign in again.",
+  "authGenericError": "Could not sign in right now. Please try again.",
+  "errorPaymentCount": "The number of payments must be more than those already paid.",
+  "greeting": "Namaste, {name}",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingNoName": "Namaste!",
+  "dashboardBalanceLabel": "Savings this period",
+  "dashboardToReceive": "To receive",
+  "dashboardToPay": "To pay",
+  "quickActions": "Quick actions",
+  "actionAddIncome": "Add income",
+  "actionAddExpense": "Add expense",
+  "actionGiveMoney": "Give money",
+  "actionReceiveMoney": "Receive money",
+  "actionCreateGroup": "Create group",
+  "actionGroupExpense": "Group expense",
+  "actionReports": "Reports",
+  "incomeVsExpense": "Income vs expense",
+  "lastSixMonths": "Last 6 months",
+  "recentTransactions": "Recent transactions",
+  "pendingRepayments": "Pending repayments",
+  "upcomingReminders": "Upcoming reminders",
+  "groupSummaryTitle": "Your groups",
+  "groupSummaryLine": "{count, plural, =0{No active groups} =1{1 active group} other{{count} active groups}}",
+  "@groupSummaryLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "youOwe": "You owe",
+  "youAreOwed": "You are owed",
+  "welcomeEmptyTitle": "Let's start your hisab",
+  "welcomeEmptyBody": "Add your first expense or income. It takes just a few seconds.",
+  "noTransactionsTitle": "No entries yet",
+  "noTransactionsBody": "Entries you add will appear here, grouped by date.",
+  "noResultsTitle": "Nothing matches",
+  "noResultsBody": "Try a different search or clear the filters.",
+  "selectPickPeriod": "Choose period",
+  "transactionsTitle": "Hisab",
+  "searchTransactionsHint": "Search description, notes, category, person",
+  "filterAll": "All",
+  "filterType": "Type",
+  "filterClearAll": "Clear filters",
+  "addIncomeTitle": "Add income",
+  "addExpenseTitle": "Add expense",
+  "editTransactionTitle": "Edit entry",
+  "transactionDetailsTitle": "Entry details",
+  "amountHint": "0.00",
+  "descriptionHint": "e.g. Vegetables from market",
+  "personOptional": "Person (optional)",
+  "addNewPerson": "Add new person",
+  "manageCategories": "Manage",
+  "chooseCategory": "Choose a category",
+  "transactionSaved": "Entry saved",
+  "transactionDeleted": "Entry deleted",
+  "deleteTransactionMessage": "This entry and its attachments will be deleted from this phone.",
+  "dayNet": "Net {amount}",
+  "@dayNet": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "monthIncomeShort": "In",
+  "monthExpenseShort": "Out",
+  "categoriesTitle": "Categories",
+  "addCategory": "Add category",
+  "editCategory": "Edit category",
+  "categoryName": "Category name",
+  "categoryIcon": "Icon",
+  "categoryColor": "Colour",
+  "categoryType": "Type",
+  "categoryUsage": "{count, plural, =0{Not used yet} =1{Used in 1 entry} other{Used in {count} entries}}",
+  "@categoryUsage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "categoryDeleteInUseTitle": "Move entries before deleting",
+  "categoryDeleteInUseBody": "{count, plural, =1{1 entry uses this category.} other{{count} entries use this category.}} Choose where to move them.",
+  "@categoryDeleteInUseBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "categoryMoveAndDelete": "Move & delete",
+  "calculatorTitle": "Calculator",
+  "calculatorBasic": "Calculator",
+  "calculatorUnit": "Price × Qty",
+  "unitPrice": "Unit price",
+  "quantity": "Quantity",
+  "calculatorUseAmount": "Use {amount}",
+  "@calculatorUseAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "calculatorInvalid": "Incomplete expression",
+  "calculatorCopy": "Copy result",
+  "copied": "Copied",
+  "catFood": "Food & Dining",
+  "catGroceries": "Groceries",
+  "catTransport": "Transport",
+  "catFuel": "Fuel",
+  "catShopping": "Shopping",
+  "catBills": "Bills & Utilities",
+  "catRent": "Rent",
+  "catHealth": "Health",
+  "catEducation": "Education",
+  "catEntertainment": "Entertainment",
+  "catTravel": "Travel",
+  "catFestivals": "Festivals & Gifts",
+  "catHousehold": "Household",
+  "catMobile": "Mobile & Internet",
+  "catPersonalCare": "Personal Care",
+  "catDonation": "Donation",
+  "catOtherExpense": "Other Expense",
+  "catSalary": "Salary",
+  "catBusiness": "Business",
+  "catFreelance": "Freelance",
+  "catInterest": "Interest",
+  "catRentalIncome": "Rental Income",
+  "catGiftsReceived": "Gifts Received",
+  "catRefund": "Refunds",
+  "catOtherIncome": "Other Income",
+  "errorRepaymentExceeds": "The amount is more than what is still due.",
+  "errorSplitInvalid": "The split does not add up to the total.",
+  "errorCategoryType": "Choose a category of the same type.",
+  "errorPersonOutstanding": "Settle all pending amounts with this person before deleting.",
+  "errorPrincipalBelowRepaid": "The amount cannot be less than what has already been repaid.",
+  "errorMemberInUse": "This member has expenses or settlements, so they cannot be removed.",
+  "errorSettlementExceeds": "This is more than the payer owes or the receiver is owed.",
+  "errorSameMember": "Payer and receiver must be different.",
+  "errorGroupShared": "Shared groups cannot be deleted. Archive it instead.",
+  "transactionsShowList": "Show as list",
+  "transactionsShowSheet": "Show as sheet",
+  "runningBalance": "Running balance",
+  "sheetTip": "Oldest first, like a khata. Tap a row to open it.",
+  "groupsTitle": "Groups",
+  "createGroup": "Create group",
+  "editGroup": "Edit group",
+  "groupName": "Group name",
+  "groupNameHint": "e.g. Goa trip 2026",
+  "groupType": "Group type",
+  "groupTypeTrip": "Trip",
+  "groupTypeFamily": "Family",
+  "groupTypeFriends": "Friends",
+  "groupTypeEvent": "Event",
+  "groupTypeHousehold": "Household",
+  "groupTypeOther": "Other",
+  "groupMembers": "Members",
+  "addMember": "Add member",
+  "memberName": "Member name",
+  "memberYou": "{name} (you)",
+  "@memberYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fromPeople": "From people",
+  "memberCount": "{count, plural, =1{1 member} other{{count} members}}",
+  "@memberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "totalSpent": "Total spent",
+  "yourBalance": "Your balance",
+  "showArchived": "Show archived",
+  "archived": "Archived",
+  "archiveGroup": "Archive group",
+  "unarchiveGroup": "Restore group",
+  "deleteGroup": "Delete group",
+  "deleteGroupMessage": "This group and all its expenses will be deleted from this phone.",
+  "noGroupsTitle": "No groups yet",
+  "noGroupsBody": "Create a group for a trip, family or event and split expenses fairly.",
+  "groupSaved": "Group saved",
+  "groupExpenses": "Expenses",
+  "groupBalances": "Balances",
+  "addGroupExpense": "Add expense",
+  "editGroupExpense": "Edit expense",
+  "groupExpenseDetail": "Expense details",
+  "paidBy": "Paid by",
+  "paidByName": "Paid by {name}",
+  "@paidByName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "splitMethod": "Split method",
+  "splitEqual": "Equally",
+  "splitExact": "Exact amounts",
+  "splitPercentage": "Percentages",
+  "splitRatio": "Ratio / shares",
+  "splitAdjustment": "Unequal (+/−)",
+  "splitEqualHelp": "Split equally among the selected people.",
+  "splitExactHelp": "Enter how much each person owes. It must add up to the total.",
+  "splitPercentageHelp": "Enter a percentage for each person. It must add up to 100%.",
+  "splitRatioHelp": "Enter shares, e.g. 2 for a couple and 1 for a single person.",
+  "splitAdjustmentHelp": "Equal split, plus or minus an extra amount for some people.",
+  "participants": "Split between",
+  "selectAll": "Select all",
+  "splitPreview": "Split preview",
+  "splitRemaining": "Remaining {amount}",
+  "@splitRemaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "splitOver": "Over by {amount}",
+  "@splitOver": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "percentTotal": "Total {percent}%",
+  "@percentTotal": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "splitNeedsParticipants": "Select at least one person.",
+  "splitAdjustmentsTooBig": "Adjustments are larger than the total.",
+  "splitNegativeShare": "An adjustment makes someone's share negative.",
+  "splitZeroShares": "Enter at least one share.",
+  "groupExpenseSaved": "Expense saved",
+  "deleteGroupExpenseMessage": "This expense will be removed from the group balances.",
+  "owes": "owes",
+  "getsBack": "gets back",
+  "settledUp": "settled up",
+  "suggestedSettlements": "Suggested settlements",
+  "settleUp": "Settle up",
+  "recordSettlement": "Record settlement",
+  "settlementFrom": "Who paid",
+  "settlementTo": "Who received",
+  "settlementSaved": "Settlement recorded",
+  "settlementHistory": "Settlement history",
+  "noSettlements": "No settlements yet",
+  "deleteSettlementConfirm": "Delete this settlement? Balances will change back.",
+  "groupAllSettled": "Everyone is settled up",
+  "paysTo": "{from} pays {to}",
+  "@paysTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "maxSettlement": "Up to {amount}",
+  "@maxSettlement": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "paid": "Paid",
+  "memberShare": "Share",
+  "net": "Net",
+  "settlementStatus": "Status",
+  "statusPending": "Pending",
+  "statusPartlySettled": "Partly settled",
+  "statusSettledShort": "Settled",
+  "viewSpreadsheet": "Sheet",
+  "viewCards": "Cards",
+  "viewTimeline": "Timeline",
+  "filterMember": "Member",
+  "filterDate": "Date",
+  "noGroupExpensesTitle": "No expenses yet",
+  "noGroupExpensesBody": "Add the first expense — the split will be calculated for you.",
+  "gcatFood": "Food",
+  "gcatTravel": "Travel",
+  "gcatStay": "Stay",
+  "gcatTickets": "Tickets",
+  "gcatShopping": "Shopping",
+  "gcatGroceries": "Groceries",
+  "gcatFuel": "Fuel",
+  "gcatEntertainment": "Fun",
+  "gcatGifts": "Gifts",
+  "gcatUtilities": "Utilities",
+  "gcatRent": "Rent",
+  "gcatOther": "Other",
+  "removeMember": "Remove member",
+  "renameMember": "Rename",
+  "memberRemoved": "Member removed",
+  "roleOwner": "Owner",
+  "roleAdmin": "Admin",
+  "roleMember": "Member",
+  "localParticipant": "On this phone only",
+  "cloudMember": "Joined via app",
+  "sharedGroup": "Shared",
+  "localGroup": "On this phone",
+  "pickGroup": "Choose a group",
+  "timelineSettlement": "{from} paid {to}",
+  "@timelineSettlement": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expensesCount": "{count, plural, =0{No expenses} =1{1 expense} other{{count} expenses}}",
+  "@expensesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inviteMembers": "Invite members",
+  "joinGroup": "Join a group",
+  "khataTitle": "Khata",
+  "ledgerGivenLabel": "I gave",
+  "ledgerTakenLabel": "I took",
+  "ledgerGivenLong": "Money given — they owe you",
+  "ledgerTakenLong": "Money taken — you owe them",
+  "netBalance": "Net balance",
+  "owesYou": "{name} owes you",
+  "@owesYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "youOweName": "You owe {name}",
+  "@youOweName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "allSettled": "All settled",
+  "statusOpen": "Pending",
+  "statusPartial": "Partly paid",
+  "statusSettled": "Settled",
+  "dueOn": "Due {date}",
+  "@dueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "overdue": "Overdue",
+  "principal": "Amount",
+  "repaid": "Repaid",
+  "outstanding": "Outstanding",
+  "recordRepayment": "Record repayment",
+  "repaymentReceivedTitle": "Money received back",
+  "repaymentPaidTitle": "Money returned",
+  "repaymentSaved": "Repayment recorded",
+  "repaymentExceedsTitle": "More than the due amount",
+  "repaymentExceedsBody": "Only {due} is due. Record the extra {extra} as an advance / credit in the other direction?",
+  "@repaymentExceedsBody": {
+    "placeholders": {
+      "due": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
+  "recordAsAdvance": "Record as advance",
+  "advanceCredit": "Advance / credit",
+  "repaymentHistory": "Repayment history",
+  "noRepayments": "No repayments yet",
+  "ledgerEntries": "Entries",
+  "noLedgerTitle": "Your khata is empty",
+  "noLedgerBody": "Record money you give or take and keep track of repayments.",
+  "dueDateOptional": "Due date (optional)",
+  "ledgerEntryTitleNew": "New khata entry",
+  "ledgerEntryTitleEdit": "Edit khata entry",
+  "ledgerEntryDetailTitle": "Khata entry",
+  "ledgerSaved": "Khata entry saved",
+  "deleteLedgerMessage": "This entry and its repayment history will be deleted.",
+  "deleteRepaymentConfirm": "Delete this repayment? The outstanding amount will go up again.",
+  "filterToReceive": "To receive",
+  "filterToPay": "To pay",
+  "filterSettled": "Settled",
+  "peopleTitle": "People",
+  "addPerson": "Add person",
+  "editPerson": "Edit person",
+  "personName": "Name",
+  "mobileNumber": "Mobile number",
+  "emailOptional": "Email (optional)",
+  "pickFromContacts": "Choose from contacts",
+  "contactsHint": "Only the contact you choose is read. HisabMitra cannot see your other contacts.",
+  "personSaved": "Person saved",
+  "deletePersonMessage": "This person and their settled khata history will be deleted.",
+  "noPeopleTitle": "No people yet",
+  "noPeopleBody": "Add people you lend money to or borrow from.",
+  "searchPeople": "Search people",
+  "totalGiven": "Total given",
+  "totalTaken": "Total taken",
+  "personTransactions": "Income & expenses",
+  "callPerson": "Call",
+  "selectPerson": "Select person",
+  "addEntry": "Add entry",
+  "remindLater": "Set reminder",
+  "repaymentFor": "For: {description}",
+  "@repaymentFor": {
+    "placeholders": {
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "repaidProgress": "{repaid} of {total} repaid",
+  "@repaidProgress": {
+    "placeholders": {
+      "repaid": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "settlementHistoryTitle": "Settlement history",
+  "ledgerNotIncomeNote": "Khata entries are loans, not income or expense, so they do not change your savings.",
+  "navHome": "Home",
+  "navTransactions": "Hisab",
+  "navPeople": "Khata",
+  "navGroups": "Groups",
+  "navMore": "More",
+  "languageTitle": "Choose your language",
+  "languageSubtitle": "You can change this any time in Settings.",
+  "languageEnglish": "English",
+  "languageGujarati": "ગુજરાતી (Gujarati)",
+  "onboardTitle1": "Your daily hisab, made simple",
+  "onboardBody1": "Record income and expenses in seconds. Everything stays on your phone and works without internet.",
+  "onboardTitle2": "Lend, borrow, settle",
+  "onboardBody2": "Keep a clear khata of money given and taken, with partial repayments and gentle reminders.",
+  "onboardTitle3": "Share expenses with family & friends",
+  "onboardBody3": "Split trip, festival and household costs fairly — right down to the last paisa.",
+  "getStarted": "Get started",
+  "profileSetupTitle": "Create your account",
+  "profileSetupSubtitle": "Name, email and mobile number are required. We verify your email; your personal records still stay on this phone.",
+  "yourName": "Your name",
+  "startUsing": "Start using HisabMitra",
+  "privacyPromise": "Your personal records never leave your phone unless you choose to share them.",
+  "remindersTitle": "Reminders",
+  "addReminder": "Add reminder",
+  "editReminder": "Edit reminder",
+  "reminderTitle": "What to remember",
+  "reminderTime": "Time",
+  "reminderRepeat": "Repeat",
+  "repeatNone": "Once",
+  "repeatDaily": "Daily",
+  "repeatWeekly": "Weekly",
+  "repeatMonthly": "Monthly",
+  "reminderKind": "Type",
+  "kindRepayment": "Repay money",
+  "kindCollection": "Collect money",
+  "kindGroupSettlement": "Group settlement",
+  "kindCustom": "Other",
+  "reminderSaved": "Reminder set",
+  "reminderDone": "Mark done",
+  "reminderCancel": "Cancel reminder",
+  "reminderUpcoming": "Upcoming",
+  "reminderHistory": "Done & cancelled",
+  "noRemindersTitle": "No reminders",
+  "noRemindersBody": "Set reminders for repayments, collections or bills.",
+  "reminderPast": "This time has already passed.",
+  "notificationsDenied": "Notifications are off for HisabMitra. You can turn them on in Android settings.",
+  "notificationGenericTitle": "HisabMitra reminder",
+  "notificationGenericBody": "Open HisabMitra to see your reminder.",
+  "reminderCollectTitle": "Collect {amount} from {name}",
+  "@reminderCollectTitle": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderRepayTitle": "Repay {amount} to {name}",
+  "@reminderRepayTitle": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderSettleTitle": "Settle up in {group}",
+  "@reminderSettleTitle": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "statusDone": "Done",
+  "statusCancelled": "Cancelled",
+  "kindEmi": "EMI",
+  "kindSip": "SIP",
+  "kindInstallment": "Installment",
+  "kindMaintenance": "Maintenance",
+  "kindInsurance": "Insurance premium",
+  "kindRent": "Rent",
+  "kindSubscription": "Subscription",
+  "kindBill": "Bill",
+  "repeatQuarterly": "Every 3 months",
+  "repeatHalfYearly": "Every 6 months",
+  "repeatYearly": "Yearly",
+  "reminderTypePayment": "Recurring payment",
+  "reminderTypeReminder": "Reminder",
+  "paymentType": "Payment type",
+  "paymentAmount": "Fixed amount",
+  "paymentCategory": "Expense category",
+  "paymentCategoryHint": "Used when you record the payment",
+  "paymentEnds": "Ends",
+  "paymentEndsNever": "No end date",
+  "paymentEndsAfter": "After a number of payments",
+  "paymentCount": "Total number of payments",
+  "paymentProgress": "{done} of {total} paid",
+  "@paymentProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "paymentsPaidSoFar": "{count} paid so far",
+  "@paymentsPaidSoFar": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "markPaid": "Mark paid",
+  "recordPaymentTitle": "Record this payment?",
+  "recordPaymentBody": "{amount} for {title}. Add it to your Hisab as an expense?",
+  "@recordPaymentBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "recordAsExpense": "Add as expense",
+  "justMarkPaid": "Only mark paid",
+  "paymentsDueThisMonth": "Payments due this month",
+  "addRecurringPayment": "Add recurring payment",
+  "notificationPaymentBody": "{amount} due",
+  "@notificationPaymentBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "reportsTitle": "Reports",
+  "reportOverview": "Income & expense",
+  "reportOverviewDesc": "Monthly income, expense and savings",
+  "reportCategories": "Category-wise spending",
+  "reportCategoriesDesc": "Where your money went",
+  "reportPaymentMethods": "Payment methods",
+  "reportPaymentMethodsDesc": "Cash, UPI, cards and bank",
+  "reportPeople": "Lending & borrowing",
+  "reportPeopleDesc": "Person-wise khata for the period",
+  "reportGroups": "Group expenses",
+  "reportGroupsDesc": "Spending and settlements in groups",
+  "savings": "Savings",
+  "exportCsv": "Export CSV (Excel)",
+  "exportPdf": "Export PDF",
+  "exportFailed": "Could not create the export file.",
+  "monthlyBreakdown": "Monthly breakdown",
+  "topExpenses": "Top expenses",
+  "loansGiven": "Money given (loans)",
+  "loansTaken": "Money taken (loans)",
+  "repaymentsReceived": "Repayments received",
+  "repaymentsPaid": "Repayments made",
+  "groupSettlementsLabel": "Group settlements",
+  "reportSeparationNote": "Loans, repayments and group settlements are shown separately. They are not counted as income or expense.",
+  "generatedOn": "Generated on {date} by HisabMitra",
+  "@generatedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pageOf": "Page {page} of {total}",
+  "@pageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reportPeriod": "{from} – {to}",
+  "@reportPeriod": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "colType": "Type",
+  "colMonth": "Month",
+  "colCount": "Entries",
+  "colShare": "% of total",
+  "myShare": "My share",
+  "iPaid": "I paid",
+  "noDataForPeriod": "No records in this period",
+  "transactionsExportTitle": "Transactions",
+  "fullReportTitle": "Financial report",
+  "settlementSummary": "Settlement summary",
+  "settingsTitle": "Settings",
+  "settingsAppearance": "Appearance",
+  "settingsTheme": "Colour theme",
+  "paletteRannUtsav": "Rann Utsav",
+  "paletteRannUtsavDesc": "Navy, silver and red of the white Rann under a full moon",
+  "paletteBandhaniLal": "Bandhani Lal",
+  "paletteBandhaniLalDesc": "Maroon and kesar of the red chopda",
+  "paletteKesariyo": "Kesariyo",
+  "paletteKesariyoDesc": "Saffron and plum of Navratri",
+  "palettePatolaRani": "Patola Rani",
+  "palettePatolaRaniDesc": "Rani pink, turmeric and aubergine of Patan Patola",
+  "paletteNeelGagan": "Neel Gagan",
+  "paletteNeelGaganDesc": "Sky blue and indigo of the Uttarayan sky",
+  "settingsLanguage": "Language",
+  "settingsFinance": "Finance",
+  "settingsCurrency": "Default currency",
+  "currencyInr": "Indian Rupee (₹)",
+  "settingsDateFormat": "Date format",
+  "settingsNumberFormat": "Number format",
+  "numberFormatIndian": "Indian (1,23,456.00)",
+  "numberFormatInternational": "International (123,456.00)",
+  "settingsCalculatorAuto": "Auto-calculate total",
+  "settingsCalculatorAutoDesc": "Update the amount when unit price or quantity changes",
+  "settingsGroupSection": "Groups",
+  "settingsDefaultGroupView": "Default group view",
+  "groupViewSpreadsheet": "Spreadsheet",
+  "groupViewCards": "Cards",
+  "groupViewTimeline": "Timeline",
+  "settingsGroupNotifications": "Group settlement reminders",
+  "settingsNotifications": "Notifications",
+  "settingsReminderNotifications": "Reminder notifications",
+  "settingsHideAmounts": "Hide amounts in notifications",
+  "settingsHideAmountsDesc": "Notifications show only a generic message",
+  "settingsSync": "Cloud sync",
+  "settingsCloudSync": "Sync shared groups",
+  "settingsCloudSyncDesc": "Only groups you share are synced. Personal records always stay on this device.",
+  "settingsSyncStatus": "Sync status",
+  "settingsBackup": "Backup & restore",
+  "settingsBackupDesc": "Manual, automatic and encrypted backups",
+  "settingsAutoBackup": "Automatic backup",
+  "autoBackupOff": "Off",
+  "autoBackupDaily": "Daily",
+  "autoBackupWeekly": "Weekly",
+  "settingsAi": "AI assistant",
+  "settingsAiEnabled": "Enable AI assistant",
+  "settingsAiEnabledDesc": "Answers questions using calculations done on this device",
+  "settingsAiProvider": "Answer engine",
+  "aiProviderLocal": "On-device (private)",
+  "aiProviderOnline": "Online AI (Claude)",
+  "settingsAiConsent": "Allow sharing summaries with online AI",
+  "settingsAiConsentDesc": "Only totals needed to answer your question are sent. Raw transactions, notes and attachments are never sent.",
+  "settingsAiShareNames": "Include people & group names",
+  "settingsAiApiKey": "Online AI API key",
+  "settingsAiApiKeySet": "Key saved securely",
+  "settingsAiApiKeyMissing": "No key saved",
+  "settingsAiPrivacy": "How AI uses your data",
+  "aiPrivacyExplanation": "All amounts are calculated by HisabMitra on your phone. With the on-device engine nothing leaves your phone. If you enable online AI and give consent, only the summary figures for your question (for example 'expenses this month by category') are sent to the provider to phrase the answer. The AI can never add, change or delete your records.",
+  "settingsGujaratiInput": "Gujarati typing",
+  "inputModeSystem": "Phone keyboard",
+  "inputModeTransliteration": "English → ગુજરાતી (type 'kem chho')",
+  "inputModeKeypad": "Gujarati keypad",
+  "settingsAccount": "Account",
+  "settingsProfile": "Profile",
+  "settingsLogout": "Log out",
+  "settingsLogoutConfirm": "Log out? Your records stay on this device; shared groups stop syncing until you sign in again.",
+  "settingsDeleteAccount": "Delete cloud account",
+  "settingsDeleteAccountDesc": "Removes your cloud profile and group memberships. Local data is kept.",
+  "settingsAbout": "About",
+  "settingsCategories": "Categories",
+  "settingsReminders": "Reminders",
+  "settingsCalculator": "Calculator",
+  "settingsReports": "Reports",
+  "settingsPrivacyPolicy": "Privacy policy",
+  "settingsTerms": "Terms & conditions",
+  "tourPromptTitle": "Take a quick tour?",
+  "tourPromptBody": "See HisabMitra with sample data: two months of income and expenses, money lent and borrowed, and a Goa trip split with friends. You can remove the sample data at the end.",
+  "tourStart": "Start tour",
+  "tourNotNow": "Not now",
+  "tourLoading": "Adding sample data…",
+  "tourStepOf": "{current} of {total}",
+  "@tourStepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "tourNext": "Next",
+  "tourBack": "Back",
+  "tourSkip": "Skip tour",
+  "tour1Title": "Your month at a glance",
+  "tour1Body": "Savings = income − expenses for the period. Switch between this month, last month and this year with the chips above.",
+  "tour2Title": "Money to receive and to pay",
+  "tour2Body": "Totals from your khata: money you lent and money you borrowed. Loans are kept separate from income and expenses.",
+  "tour3Title": "Quick actions",
+  "tour3Body": "Add income or an expense, give or receive money, create a group, split a group expense or open reports — one tap each.",
+  "tour4Title": "Your hisab, also as a sheet",
+  "tour4Body": "Every entry, day by day. Tap this table icon for an Excel-like sheet with income, expense and a running balance.",
+  "tour5Title": "Khata: people and loans",
+  "tour5Body": "See who owes you and whom you owe. Open a person for the full ledger, partial repayments and due dates.",
+  "tour6Title": "Groups: split and settle",
+  "tour6Body": "Split trips and family costs equally, by amounts, percentages or shares. Open the sample Goa Trip to see balances and settle-ups.",
+  "tour7Title": "More tools",
+  "tour7Body": "Reports with PDF and CSV export, calculator, reminders, backup, the AI assistant, and settings for colour theme, language and the Gujarati keyboard.",
+  "tourFinishTitle": "You are all set!",
+  "tourFinishBody": "Keep the sample data to explore a little more, or remove it and start your own hisab. You can replay the tour any time from More.",
+  "tourRemoveSample": "Remove sample data",
+  "tourKeepSample": "Keep for now",
+  "sampleBanner": "You are looking at sample data.",
+  "sampleRemove": "Remove",
+  "sampleRemoveTitle": "Remove sample data?",
+  "sampleRemoveBody": "Sample entries, people and the sample group are removed. Everything you added yourself stays — a sample person or group you used is kept.",
+  "sampleRemoved": "Sample data removed",
+  "moreAppTour": "App tour",
+  "moreAppTourDesc": "A one-minute guided tour with sample data"
+}

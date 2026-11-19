@@ -1,0 +1,193 @@
+{
+  "groupsTitle": "Groups",
+  "createGroup": "Create group",
+  "editGroup": "Edit group",
+  "groupName": "Group name",
+  "groupNameHint": "e.g. Goa trip 2026",
+  "groupType": "Group type",
+  "groupTypeTrip": "Trip",
+  "groupTypeFamily": "Family",
+  "groupTypeFriends": "Friends",
+  "groupTypeEvent": "Event",
+  "groupTypeHousehold": "Household",
+  "groupTypeOther": "Other",
+  "groupMembers": "Members",
+  "addMember": "Add member",
+  "memberName": "Member name",
+  "memberYou": "{name} (you)",
+  "@memberYou": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fromPeople": "From people",
+  "memberCount": "{count, plural, =1{1 member} other{{count} members}}",
+  "@memberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "totalSpent": "Total spent",
+  "yourBalance": "Your balance",
+  "showArchived": "Show archived",
+  "archived": "Archived",
+  "archiveGroup": "Archive group",
+  "unarchiveGroup": "Restore group",
+  "deleteGroup": "Delete group",
+  "deleteGroupMessage": "This group and all its expenses will be deleted from this phone.",
+  "noGroupsTitle": "No groups yet",
+  "noGroupsBody": "Create a group for a trip, family or event and split expenses fairly.",
+  "groupSaved": "Group saved",
+  "groupExpenses": "Expenses",
+  "groupBalances": "Balances",
+  "addGroupExpense": "Add expense",
+  "editGroupExpense": "Edit expense",
+  "groupExpenseDetail": "Expense details",
+  "paidBy": "Paid by",
+  "paidByName": "Paid by {name}",
+  "@paidByName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "splitMethod": "Split method",
+  "splitEqual": "Equally",
+  "splitExact": "Exact amounts",
+  "splitPercentage": "Percentages",
+  "splitRatio": "Ratio / shares",
+  "splitAdjustment": "Unequal (+/−)",
+  "splitEqualHelp": "Split equally among the selected people.",
+  "splitExactHelp": "Enter how much each person owes. It must add up to the total.",
+  "splitPercentageHelp": "Enter a percentage for each person. It must add up to 100%.",
+  "splitRatioHelp": "Enter shares, e.g. 2 for a couple and 1 for a single person.",
+  "splitAdjustmentHelp": "Equal split, plus or minus an extra amount for some people.",
+  "participants": "Split between",
+  "selectAll": "Select all",
+  "splitPreview": "Split preview",
+  "splitRemaining": "Remaining {amount}",
+  "@splitRemaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "splitOver": "Over by {amount}",
+  "@splitOver": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "percentTotal": "Total {percent}%",
+  "@percentTotal": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "splitNeedsParticipants": "Select at least one person.",
+  "splitAdjustmentsTooBig": "Adjustments are larger than the total.",
+  "splitNegativeShare": "An adjustment makes someone's share negative.",
+  "splitZeroShares": "Enter at least one share.",
+  "groupExpenseSaved": "Expense saved",
+  "deleteGroupExpenseMessage": "This expense will be removed from the group balances.",
+  "owes": "owes",
+  "getsBack": "gets back",
+  "settledUp": "settled up",
+  "suggestedSettlements": "Suggested settlements",
+  "settleUp": "Settle up",
+  "recordSettlement": "Record settlement",
+  "settlementFrom": "Who paid",
+  "settlementTo": "Who received",
+  "settlementSaved": "Settlement recorded",
+  "settlementHistory": "Settlement history",
+  "noSettlements": "No settlements yet",
+  "deleteSettlementConfirm": "Delete this settlement? Balances will change back.",
+  "groupAllSettled": "Everyone is settled up",
+  "paysTo": "{from} pays {to}",
+  "@paysTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "maxSettlement": "Up to {amount}",
+  "@maxSettlement": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "paid": "Paid",
+  "memberShare": "Share",
+  "net": "Net",
+  "settlementStatus": "Status",
+  "statusPending": "Pending",
+  "statusPartlySettled": "Partly settled",
+  "statusSettledShort": "Settled",
+  "viewSpreadsheet": "Sheet",
+  "viewCards": "Cards",
+  "viewTimeline": "Timeline",
+  "filterMember": "Member",
+  "filterDate": "Date",
+  "noGroupExpensesTitle": "No expenses yet",
+  "noGroupExpensesBody": "Add the first expense — the split will be calculated for you.",
+  "gcatFood": "Food",
+  "gcatTravel": "Travel",
+  "gcatStay": "Stay",
+  "gcatTickets": "Tickets",
+  "gcatShopping": "Shopping",
+  "gcatGroceries": "Groceries",
+  "gcatFuel": "Fuel",
+  "gcatEntertainment": "Fun",
+  "gcatGifts": "Gifts",
+  "gcatUtilities": "Utilities",
+  "gcatRent": "Rent",
+  "gcatOther": "Other",
+  "removeMember": "Remove member",
+  "renameMember": "Rename",
+  "memberRemoved": "Member removed",
+  "roleOwner": "Owner",
+  "roleAdmin": "Admin",
+  "roleMember": "Member",
+  "localParticipant": "On this phone only",
+  "cloudMember": "Joined via app",
+  "sharedGroup": "Shared",
+  "localGroup": "On this phone",
+  "pickGroup": "Choose a group",
+  "timelineSettlement": "{from} paid {to}",
+  "@timelineSettlement": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "expensesCount": "{count, plural, =0{No expenses} =1{1 expense} other{{count} expenses}}",
+  "@expensesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inviteMembers": "Invite members",
+  "joinGroup": "Join a group"
+}
