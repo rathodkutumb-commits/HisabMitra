@@ -1,7 +1,7 @@
 # Supabase Setup
 
 HisabMitra works fully offline without Supabase. Supabase is only used for
-**shared groups** (multi-device, multi-member) and for **phone sign-in**.
+**shared groups** (multi-device, multi-member) and for the **email-verified account**.
 Personal transactions, people, the personal ledger, reminders and bills are
 never uploaded.
 

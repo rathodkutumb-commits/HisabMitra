@@ -42,6 +42,18 @@ records stay on your phone.
 
 <sub>Screenshots show the built-in sample data from the guided tour.</sub>
 
+### Colour themes
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/themes/rannUtsav.png" width="150" alt="Rann Utsav theme"><br><sub><b>Rann Utsav</b> (default)</sub></td>
+    <td align="center"><img src="docs/screenshots/themes/neelGagan.png" width="150" alt="Neel Gagan theme"><br><sub>Neel Gagan</sub></td>
+    <td align="center"><img src="docs/screenshots/themes/bandhaniLal.png" width="150" alt="Bandhani Lal theme"><br><sub>Bandhani Lal</sub></td>
+    <td align="center"><img src="docs/screenshots/themes/kesariyo.png" width="150" alt="Kesariyo theme"><br><sub>Kesariyo</sub></td>
+    <td align="center"><img src="docs/screenshots/themes/patolaRani.png" width="150" alt="Patola Rani theme"><br><sub>Patola Rani</sub></td>
+  </tr>
+</table>
+
 ## Features
 
 **Daily hisab**
