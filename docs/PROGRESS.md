@@ -20,6 +20,13 @@ Last updated: 2026-11-19.
 
 ## Session log
 
+### 2026-11-19 (v1.0.1)
+
+- Released **v1.0.1** (`1.0.1+2`) with the keypad and page-transition fixes.
+  Published by the release workflow, signed with the same key as v1.0.0
+  (certificate SHA-256 `37c8f9fd…f9`), so it installs over 1.0.0 through
+  the in-app updater.
+
 ### 2026-11-19 (README and emulator fixes)
 
 - README rewritten for the public repo with nine screenshots of the main
