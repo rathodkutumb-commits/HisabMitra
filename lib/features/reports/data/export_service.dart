@@ -48,11 +48,14 @@ class ExportService {
     }
   }
 
-  Future<void> share(File file, String mime, {String? subject}) =>
+  /// Opens the share sheet for [file]; [text] is the message sent with it
+  /// (e.g. a WhatsApp caption).
+  Future<void> share(File file, String mime, {String? subject, String? text}) =>
       SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path, mimeType: mime)],
           subject: subject,
+          text: text,
         ),
       );
 

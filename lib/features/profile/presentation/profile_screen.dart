@@ -136,16 +136,39 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 onPressed: _busy
                     ? null
                     : () async {
-                        final ok = await confirmAction(
-                          context,
-                          title: l.settingsLogout,
-                          message: l.settingsLogoutConfirm,
-                        );
-                        if (ok) {
-                          await _run(
-                            () => ref.read(authControllerProvider).signOut(),
-                            l.signedOut,
+                        final auth = ref.read(authControllerProvider);
+                        final unsent = await auth.unsentChanges();
+                        if (!context.mounted) return;
+                        final bool ok;
+                        if (unsent > 0) {
+                          // Signing out removes the phone's copy: changes
+                          // not yet in the account would be lost.
+                          ok = await confirmAction(
+                            context,
+                            title: l.signOutUnsentTitle,
+                            message: l.signOutUnsentBody('$unsent'),
+                            confirmLabel: l.signOutAnyway,
+                            cancelLabel: l.signOutWaitSync,
+                            destructive: true,
                           );
+                          if (!ok) {
+                            await _run(
+                              () => ref
+                                  .read(syncControllerProvider.notifier)
+                                  .syncNow(),
+                              l.syncDone,
+                            );
+                            return;
+                          }
+                        } else {
+                          ok = await confirmAction(
+                            context,
+                            title: l.settingsLogout,
+                            message: l.settingsLogoutConfirm,
+                          );
+                        }
+                        if (ok) {
+                          await _run(auth.signOut, l.signedOut);
                         }
                       },
                 icon: const Icon(Icons.logout_rounded),

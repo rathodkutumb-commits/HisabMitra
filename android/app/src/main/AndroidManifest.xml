@@ -10,6 +10,14 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Re-schedule pending reminders after the device restarts. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Reminders arrive at the set time (exact alarms). Android 13+ grants
+         USE_EXACT_ALARM automatically; Android 12 uses SCHEDULE_EXACT_ALARM.
+         Note: Google Play only allows USE_EXACT_ALARM for alarm/calendar-type
+         apps; a Play listing would need to ask for "Alarms & reminders". -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32" />
     <!-- Hand a verified update APK to the system installer (user confirms). -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 

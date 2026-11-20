@@ -10,6 +10,7 @@ import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
+import 'generated/schema_v4.dart' as v4;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -122,6 +123,80 @@ void main() {
             remoteUserId: null,
           ),
         ]);
+      },
+    );
+  });
+
+  test('v3 → v4 keeps every row and adds sync columns', () async {
+    final at = DateTime.utc(2026, 11, 1).millisecondsSinceEpoch ~/ 1000;
+    const category = v3.CategoriesData(
+      createdAt: 0,
+      updatedAt: 0,
+      id: 'cat_groceries',
+      systemKey: 'groceries',
+      name: 'Groceries',
+      type: 'expense',
+      iconKey: 'grocery',
+      colorValue: 1,
+      sortOrder: 0,
+      isArchived: 0,
+    );
+    const person = v3.PersonsData(
+      createdAt: 0,
+      updatedAt: 0,
+      id: 'p1',
+      name: 'Rahul Patel',
+    );
+    const txn = v3.TransactionsData(
+      createdAt: 0,
+      updatedAt: 0,
+      id: 't1',
+      ownerId: 'self',
+      type: 'expense',
+      amountPaise: 25000,
+      categoryId: 'cat_groceries',
+      txnDate: 0,
+      paymentMethod: 'upi',
+      personId: 'p1',
+      description: 'Vegetables',
+    );
+    const op = v3.SyncOutboxData(
+      opId: 'o1',
+      groupId: 'g1',
+      entityType: 'expense',
+      entityId: 'e1',
+      opType: 'upsert',
+      payload: '{}',
+      baseRevision: 0,
+      status: 'pending',
+      attempts: 0,
+      createdAt: 0,
+    );
+    await verifier.testWithDataIntegrity(
+      oldVersion: 3,
+      newVersion: 4,
+      createOld: v3.DatabaseAtV3.new,
+      createNew: v4.DatabaseAtV4.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) {
+        batch.insert(oldDb.categories, category.copyWith(createdAt: at));
+        batch.insert(oldDb.persons, person.copyWith(createdAt: at));
+        batch.insert(oldDb.transactions, txn.copyWith(createdAt: at));
+        batch.insert(oldDb.syncOutbox, op.copyWith(createdAt: at));
+      },
+      validateItems: (newDb) async {
+        final p = await newDb.select(newDb.persons).getSingle();
+        expect(p.name, 'Rahul Patel');
+        expect(p.revision, 0);
+        expect(p.syncState, 'localOnly');
+        final t = await newDb.select(newDb.transactions).getSingle();
+        expect(t.amountPaise, 25000);
+        expect(t.personId, 'p1');
+        expect(t.revision, 0);
+        expect(t.syncState, 'localOnly');
+        final o = await newDb.select(newDb.syncOutbox).getSingle();
+        expect(o.groupId, 'g1');
+        expect(o.scope, 'group');
       },
     );
   });

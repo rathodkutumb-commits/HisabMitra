@@ -121,5 +121,8 @@
         "type": "String"
       }
     }
-  }
+  },
+  "reminderBatteryTip": "On some phones (Xiaomi, Oppo, Vivo and others) battery saving can stop reminders. Allow HisabMitra to run in the background so they arrive on time.",
+  "reminderBatteryTipOpen": "Open settings",
+  "reminderBatteryTipDismiss": "Got it"
 }

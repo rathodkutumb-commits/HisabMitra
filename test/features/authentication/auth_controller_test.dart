@@ -13,6 +13,9 @@ import 'package:hisabmitra/features/synchronization/data/sync_service.dart';
 import '../../helpers/fake_auth_gateway.dart';
 import '../../helpers/test_db.dart';
 
+import 'package:drift/drift.dart' show Value;
+import 'package:hisabmitra/features/people/data/people_repository.dart';
+
 void main() {
   late AppDatabase db;
   late FakeAuthGateway cloud;
@@ -108,7 +111,6 @@ void main() {
       final prefs = c.read(settingsControllerProvider);
       expect(prefs.onboardingComplete, isTrue);
       expect(prefs.accountVerified, isTrue);
-      expect(prefs.cloudSyncEnabled, isTrue);
       expect(await c.read(authControllerProvider).pendingSignUp(), isNull);
       // Shared groups are pulled in the background after verification.
       final sync = c.read(syncControllerProvider.notifier) as _RecordingSync;
@@ -176,17 +178,42 @@ void main() {
     },
   );
 
-  test('sign-out keeps local data and asks to verify again', () async {
+  test('sign-out clears the phone copy and asks to verify again', () async {
     final c = container();
     await request(c);
     await c.read(authControllerProvider).verifyCode('12345678');
+    final person = await c
+        .read(peopleRepositoryProvider)
+        .save(const PersonDraft(name: 'Rahul Patel'));
+    expect(person, isNotEmpty);
+    final categories = (await db.select(db.categories).get()).length;
     await c.read(authControllerProvider).signOut();
+    expect(await db.select(db.persons).get(), isEmpty);
+    expect(await db.select(db.syncOutbox).get(), isEmpty);
+    expect((await db.select(db.categories).get()).length, categories);
+    expect(c.read(settingsControllerProvider).initialSyncDone, isFalse);
     final profile = await c.read(profileRepositoryProvider).get();
     expect(profile?.displayName, 'Hemang');
     expect(profile?.email, 'hemang@example.com');
     expect(profile?.remoteUserId, isNull);
     expect(c.read(settingsControllerProvider).accountVerified, isFalse);
     expect(c.read(settingsControllerProvider).onboardingComplete, isTrue);
+  });
+
+  test('unsentChanges counts pending and failed changes', () async {
+    final c = container();
+    final auth = c.read(authControllerProvider);
+    expect(await auth.unsentChanges(), 0);
+    await c
+        .read(peopleRepositoryProvider)
+        .save(const PersonDraft(name: 'Rahul Patel'));
+    await c
+        .read(peopleRepositoryProvider)
+        .save(const PersonDraft(name: 'Priya Shah'));
+    final first = (await db.select(db.syncOutbox).get()).first;
+    await (db.update(db.syncOutbox)..where((o) => o.opId.equals(first.opId)))
+        .write(const SyncOutboxCompanion(status: Value(OutboxStatus.failed)));
+    expect(await auth.unsentChanges(), 2);
   });
 
   test('a lost cloud session asks to verify again', () async {

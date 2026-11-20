@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
@@ -8,13 +9,15 @@ import 'package:share_plus/share_plus.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/errors/app_failure.dart';
 import '../../../core/l10n/l10n_x.dart';
+import '../../../core/providers.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../main.dart';
 import '../../settings/application/settings_controller.dart';
-import '../../settings/domain/app_preferences.dart';
 import '../application/backup_providers.dart';
 import '../data/backup_service.dart';
+import '../../synchronization/application/sync_controller.dart';
+import '../data/restore_sync.dart';
 
 class BackupScreen extends ConsumerStatefulWidget {
   const BackupScreen({super.key});
@@ -144,6 +147,15 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     final l = context.l10n;
     final fmt = ref.read(formattersProvider);
     final service = ref.read(backupServiceProvider);
+    // A restore replaces the hisab saved in the account, so it needs the
+    // internet to finish.
+    final inAccount =
+        ref.read(cloudGatewayProvider).isConfigured &&
+        ref.read(cloudGatewayProvider).currentSession != null;
+    if (inAccount && ref.read(connectivityProvider).value == false) {
+      showAppSnack(context, l.restoreNeedsInternet, error: true);
+      return;
+    }
     String? password;
     BackupInspection? inspection;
     while (inspection == null) {
@@ -175,12 +187,15 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     final ok = await confirmAction(
       context,
       title: l.backupRestoreConfirmTitle,
-      message: l.backupRestoreConfirmBody(
-        fmt.dateTime(inspection.createdAt),
-        inspection.counts['transactions'] ?? 0,
-        inspection.counts['persons'] ?? 0,
-        inspection.counts['groups'] ?? 0,
-      ),
+      message: [
+        l.backupRestoreConfirmBody(
+          fmt.dateTime(inspection.createdAt),
+          inspection.counts['transactions'] ?? 0,
+          inspection.counts['persons'] ?? 0,
+          inspection.counts['groups'] ?? 0,
+        ),
+        if (inAccount) l.restoreReplacesAccount,
+      ].join('\n\n'),
       confirmLabel: l.backupRestore,
       destructive: true,
     );
@@ -199,6 +214,21 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     try {
       await service.restore(
         inspection,
+        // Queue the restored records for the account before they go live.
+        prepareRestoredDatabase: inAccount
+            ? (path) async {
+                final restored = AppDatabase(NativeDatabase(File(path)));
+                try {
+                  await RestoreSync(
+                    restored,
+                    ref.read(clockProvider),
+                    ref.read(idGeneratorProvider),
+                  ).afterRestore();
+                } finally {
+                  await restored.close();
+                }
+              }
+            : null,
         replaceDatabase: (whileClosed) =>
             AppBootstrap.replaceDatabase(bootstrapContext, () async {
               AppBootstrap.noticeAfterRestart = l.genericError;
@@ -225,14 +255,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final fmt = ref.watch(formattersProvider);
-    final prefs = ref.watch(settingsControllerProvider);
     final theme = Theme.of(context);
-    String freq(AutoBackupFrequency f) => switch (f) {
-      AutoBackupFrequency.off => l.autoBackupOff,
-      AutoBackupFrequency.daily => l.autoBackupDaily,
-      AutoBackupFrequency.weekly => l.autoBackupWeekly,
-    };
 
     return Scaffold(
       appBar: AppBar(title: Text(l.backupTitle)),
@@ -268,33 +291,6 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                 onPressed: _busy ? null : _pickAndRestore,
                 icon: const Icon(Icons.restore_rounded),
                 label: Text(l.backupRestoreFromFile),
-              ),
-              SectionHeader(
-                title: l.settingsAutoBackup,
-                padding: const EdgeInsets.fromLTRB(0, 24, 0, 8),
-              ),
-              Wrap(
-                spacing: 8,
-                children: [
-                  for (final f in AutoBackupFrequency.values)
-                    ChoiceChip(
-                      label: Text(freq(f)),
-                      selected: prefs.autoBackup == f,
-                      onSelected: (_) => ref
-                          .read(settingsControllerProvider.notifier)
-                          .update((p) => p.copyWith(autoBackup: f)),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(l.backupAutoInfo, style: theme.textTheme.bodySmall),
-              Text(
-                l.backupLastAuto(
-                  prefs.lastAutoBackupAt == null
-                      ? l.backupNever
-                      : fmt.dateTime(prefs.lastAutoBackupAt!),
-                ),
-                style: theme.textTheme.bodySmall,
               ),
               SectionHeader(
                 title: l.backupHistory,
@@ -362,8 +358,14 @@ class _HistoryTile extends ConsumerWidget {
           onSelected: (a) async {
             switch (a) {
               case 'share':
+                final date = fmt.date(row.createdAt);
                 await SharePlus.instance.share(
-                  ShareParams(files: [XFile(file.path)]),
+                  ShareParams(
+                    files: [XFile(file.path)],
+                    text: row.encrypted
+                        ? l.shareBackupCaption(date)
+                        : l.shareBackupCaptionPlain(date),
+                  ),
                 );
               case 'restore':
                 await onRestore(file);

@@ -64,6 +64,16 @@ class FakeAuthGateway implements CloudGateway {
   }) async => const [];
 
   @override
+  Future<List<RemoteEvent>> pullPersonalEvents({
+    required int afterSeq,
+    int limit = 500,
+  }) async => const [];
+
+  @override
+  Future<PersonalSnapshot> fetchPersonalSnapshot() async =>
+      const PersonalSnapshot(rows: {}, maxSeq: 0);
+
+  @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnimplementedError('${invocation.memberName}');
 }

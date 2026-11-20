@@ -7,14 +7,22 @@ import '../../../core/money/money.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/date_range.dart';
 import '../domain/transaction_models.dart';
+import '../../synchronization/data/personal_outbox.dart';
+import '../../synchronization/domain/personal_entity.dart';
 
 /// Income/expense records. Personal data only — never synchronised.
 class TransactionRepository {
-  TransactionRepository(this._db, this._clock, this._ids);
+  TransactionRepository(
+    this._db,
+    this._clock,
+    this._ids, {
+    PersonalOutbox? outbox,
+  }) : _outbox = outbox ?? PersonalOutbox(_db, _clock, _ids);
 
   final AppDatabase _db;
   final Clock _clock;
   final IdGenerator _ids;
+  final PersonalOutbox _outbox;
 
   static String _escapeLike(String s) =>
       s.replaceAll(r'\', r'\\').replaceAll('%', r'\%').replaceAll('_', r'\_');
@@ -112,6 +120,7 @@ class TransactionRepository {
                 updatedAt: now,
               ),
             );
+        await _outbox.upsert(PersonalEntity.transaction, id);
         return id;
       }
       final updated =
@@ -131,6 +140,7 @@ class TransactionRepository {
             ),
           );
       if (updated == 0) throw const NotFoundFailure();
+      await _outbox.upsert(PersonalEntity.transaction, d.id!);
       return d.id!;
     });
   }
@@ -141,6 +151,7 @@ class TransactionRepository {
     final files = await (_db.select(
       _db.attachments,
     )..where((a) => a.transactionId.equals(id))).map((a) => a.storedName).get();
+    await _outbox.delete(PersonalEntity.transaction, id);
     final count = await (_db.delete(
       _db.transactions,
     )..where((t) => t.id.equals(id))).go();
@@ -267,6 +278,7 @@ final transactionRepositoryProvider = Provider<TransactionRepository>(
     ref.watch(appDatabaseProvider),
     ref.watch(clockProvider),
     ref.watch(idGeneratorProvider),
+    outbox: ref.watch(personalOutboxProvider),
   ),
 );
 

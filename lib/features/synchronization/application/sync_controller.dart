@@ -9,11 +9,12 @@ import '../../../core/database/app_database.dart';
 import '../../../core/errors/app_failure.dart';
 import '../../../core/providers.dart';
 import '../../../core/security/safe_logger.dart';
-import '../../settings/application/settings_controller.dart';
 import '../data/cloud_gateway.dart';
 import '../data/supabase_cloud_gateway.dart';
 import '../data/sync_service.dart';
 import '../domain/cloud_models.dart';
+import '../../reminders/application/notification_service.dart';
+import '../../attachments/data/attachment_service.dart';
 
 final cloudGatewayProvider = Provider<CloudGateway>(
   (ref) => SupabaseCloudGateway.isInitialized
@@ -40,14 +41,20 @@ final connectivityProvider = StreamProvider<bool>((ref) async* {
   }
 });
 
-final syncServiceProvider = Provider<SyncService>(
-  (ref) => SyncService(
+final syncServiceProvider = Provider<SyncService>((ref) {
+  final service = SyncService(
     db: ref.watch(appDatabaseProvider),
     cloud: ref.watch(cloudGatewayProvider),
     clock: ref.watch(clockProvider),
     ids: ref.watch(idGeneratorProvider),
-  ),
-);
+    // Reminders downloaded from the account notify on this phone too.
+    scheduler: ref.watch(notificationServiceProvider),
+    beforePush: () => ref.read(attachmentServiceProvider).uploadPendingFiles(),
+  );
+  service.personal.onFilesRemoved = (names) =>
+      ref.read(attachmentServiceProvider).deleteFiles(names);
+  return service;
+});
 
 final syncOverviewProvider = StreamProvider<SyncOverview>(
   (ref) => ref.watch(syncServiceProvider).watchOverview(),
@@ -94,9 +101,8 @@ class SyncController extends Notifier<SyncStatus> {
 
   bool get canSync {
     final cloud = ref.read(cloudGatewayProvider);
-    return cloud.isConfigured &&
-        cloud.currentSession != null &&
-        ref.read(settingsControllerProvider).cloudSyncEnabled;
+    // Being signed in means syncing: records live in the account.
+    return cloud.isConfigured && cloud.currentSession != null;
   }
 
   /// Runs one push + pull. With [silent] errors are recorded, never thrown.

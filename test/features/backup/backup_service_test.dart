@@ -185,12 +185,44 @@ void main() {
     expect(history.any((h) => h.kind == BackupKind.safety), isTrue);
   });
 
-  test('automatic backups are pruned to the newest N', () async {
-    for (var i = 0; i < 4; i++) {
-      await service().createBackup(kind: BackupKind.automatic);
-    }
-    await service().pruneAutomatic(keep: 2);
-    final history = await service().watchHistory().first;
-    expect(history.where((h) => h.kind == BackupKind.automatic).length, 2);
-  });
+  test(
+    'restore prepares the restored database before swapping it in',
+    () async {
+      final row = await service().createBackup();
+      await addTxn('t2', 999);
+      final inspection = await service().inspect(File(row.filePath));
+      String? prepared;
+      await service().restore(
+        inspection,
+        prepareRestoredDatabase: (path) async {
+          prepared = path;
+          final staged = AppDatabase(NativeDatabase(File(path)));
+          await staged
+              .into(staged.appSettings)
+              .insert(
+                AppSettingsCompanion.insert(
+                  key: 'restore.prepared',
+                  value: 'yes',
+                  updatedAt: DateTime(2026),
+                ),
+              );
+          await staged.close();
+        },
+        replaceDatabase: (whileClosed) async {
+          await db.close();
+          await whileClosed();
+          db = open();
+        },
+      );
+      expect(prepared, isNotNull);
+      final marker = await (db.select(
+        db.appSettings,
+      )..where((s) => s.key.equals('restore.prepared'))).getSingleOrNull();
+      expect(
+        marker?.value,
+        'yes',
+        reason: 'the prepared file is the one swapped in',
+      );
+    },
+  );
 }

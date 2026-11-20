@@ -19,7 +19,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get aboutDescription =>
-      'હિસાબમિત્ર તમારો રોજનો હિસાબ, અંગત ખાતું અને પરિવારના ગ્રુપ ખર્ચ તમારા ફોનમાં જ રાખે છે — મૂળથી ખાનગી, ઇન્ટરનેટ વિના પણ ચાલે.';
+      'હિસાબમિત્ર તમારો રોજનો હિસાબ, અંગત ખાતું અને પરિવારના ગ્રુપ ખર્ચ તમારા એકાઉન્ટમાં સાચવે છે, અને ફોનમાં તેની નકલ રાખે છે જેથી ઇન્ટરનેટ વિના પણ ચાલે.';
 
   @override
   String get checkUpdates => 'અપડેટ તપાસો';
@@ -45,7 +45,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get updateInstallSteps =>
-      'ફાઇલ ચકાસાઈ ગઈ છે (ચેકસમ, પેકેજ અને સહી). હવે Android તમને ઇન્સ્ટોલેશનની પુષ્ટિ કરવા પૂછશે. તમારો ડેટા ફોનમાં જ રહેશે.';
+      'ફાઇલ ચકાસાઈ ગઈ છે (ચેકસમ, પેકેજ અને સહી). હવે Android તમને ઇન્સ્ટોલેશનની પુષ્ટિ કરવા પૂછશે. તમારો હિસાબ તમારા એકાઉન્ટમાં અને આ ફોનમાં સુરક્ષિત રહેશે.';
 
   @override
   String get updateAllowInstall =>
@@ -84,20 +84,24 @@ class AppLocalizationsGu extends AppLocalizations {
   String get shareApp => 'હિસાબમિત્ર શેર કરો';
 
   @override
-  String shareAppText(String url) {
-    return 'હું મારા પરિવારનો હિસાબ રાખવા હિસાબમિત્ર વાપરું છું. અહીંથી ડાઉનલોડ કરો: $url';
-  }
+  String get shareAppText =>
+      '📒 *હિસાબમિત્ર — સ્માર્ટ હિસાબ, ખુશ પરિવાર*\n\nહું મારા પરિવારનો હિસાબ હિસાબમિત્રમાં રાખું છું:\n✅ રોજની આવક અને ખર્ચ\n🤝 આપેલા અને લીધેલા પૈસા (ખાતું)\n👨‍👩‍👧 પરિવાર અને પ્રવાસના ખર્ચની વહેંચણી\n📊 ગુજરાતી અને English માં રિપોર્ટ';
 
   @override
   String get licenses => 'ઓપન-સોર્સ લાઇસન્સ';
 
   @override
   String get privacySummary =>
-      'તમારી અંગત નોંધો, લોકો, ખાતું, રિમાઇન્ડર અને જોડાણો ફક્ત આ ફોનમાં જ સચવાય છે. ફક્ત તમે શેર કરવાનું પસંદ કરો તે ગ્રુપ જ અપલોડ થાય છે, અને ફક્ત તેમના સભ્યો માટે. વૈકલ્પિક ઓનલાઇન AI ને તમારી મંજૂરી પછી જ સારાંશ આંકડા મળે છે. કોઈ જાહેરાત કે ટ્રેકિંગ SDK સામેલ નથી.';
+      'તમારી અંગત નોંધો, લોકો, ખાતું, રિમાઇન્ડર અને બિલ તમારા હિસાબમિત્ર એકાઉન્ટમાં સચવાય છે, અને ફક્ત તમે જ જોઈ શકો છો. ગ્રુપના ખર્ચ એ ગ્રુપના સભ્યો સાથે શેર થાય છે. એપ ઑફલાઇન ચાલે તે માટે ફોનમાં નકલ રહે છે; લૉગ આઉટ કરવાથી તે દૂર થાય છે. વૈકલ્પિક ઓનલાઇન AI ને તમારી મંજૂરી પછી જ સારાંશ આંકડા મળે છે. કોઈ જાહેરાત કે ટ્રેકિંગ SDK સામેલ નથી.';
 
   @override
   String get termsSummary =>
       'હિસાબમિત્ર નોંધ રાખવાનું સાધન છે. મહત્ત્વના આંકડા જાતે તપાસી લો; તે નાણાકીય, કર કે કાનૂની સલાહ આપતું નથી.';
+
+  @override
+  String shareAppDownload(String url) {
+    return '📲 મફત ડાઉનલોડ કરો: $url';
+  }
 
   @override
   String get aiTitle => 'હિસાબમિત્ર સહાયક';
@@ -324,6 +328,66 @@ class AppLocalizationsGu extends AppLocalizations {
       'કી આ ફોનમાં એન્ક્રિપ્ટેડ રૂપે સચવાય છે અને ફક્ત ઓનલાઇન જવાબો માટે વપરાય છે. ઓનલાઇન વપરાશનું બિલ તમારા Anthropic એકાઉન્ટમાં આવશે.';
 
   @override
+  String get aiOpenAssistant => 'હિસાબમિત્ર AI ને પૂછો';
+
+  @override
+  String get aiExamplesSpending => 'ખર્ચ';
+
+  @override
+  String get aiExamplesIncome => 'આવક અને બચત';
+
+  @override
+  String get aiExamplesKhata => 'ખાતું';
+
+  @override
+  String get aiExamplesGroups => 'ગ્રુપ';
+
+  @override
+  String get aiExamplesAdd => 'નોંધ ઉમેરો';
+
+  @override
+  String get aiExample7 => 'આજે મેં કેટલો ખર્ચ કર્યો?';
+
+  @override
+  String get aiExample8 => 'ગયા મહિને મેં કેટલો ખર્ચ કર્યો?';
+
+  @override
+  String get aiExample9 => 'આ મહિને મારી આવક કેટલી છે?';
+
+  @override
+  String get aiExample10 => 'ગયા મહિને મારી આવક કેટલી હતી?';
+
+  @override
+  String get aiExample11 => 'આ મહિને મારી બચત કેટલી છે?';
+
+  @override
+  String get aiExample12 => 'આ વર્ષે મારી બચત કેટલી છે?';
+
+  @override
+  String get aiExample13 => 'કરિયાણું 250 ઉમેરો';
+
+  @override
+  String get aiExample14 => 'પગાર 25000 ઉમેરો';
+
+  @override
+  String get aiExample15 => 'પેટ્રોલ-ડીઝલ 500 ઉમેરો';
+
+  @override
+  String aiExamplePerson(String name) {
+    return '$name સાથે મારો હિસાબ કેટલો છે?';
+  }
+
+  @override
+  String aiExampleGroupTotal(String group) {
+    return '$group માં કુલ કેટલો ખર્ચ થયો?';
+  }
+
+  @override
+  String aiExampleGroupOwes(String group) {
+    return '$group માં કોણે કોને કેટલા આપવાના છે?';
+  }
+
+  @override
   String get attachments => 'બિલ અને જોડાણો';
 
   @override
@@ -355,8 +419,7 @@ class AppLocalizationsGu extends AppLocalizations {
   String get attachmentViewerTitle => 'જોડાણ';
 
   @override
-  String get attachmentPrivateNote =>
-      'આ ફોનમાં ખાનગી રીતે સંગ્રહિત. ક્યાંય અપલોડ થયું નથી.';
+  String get attachmentPrivateNote => 'તમારા હિસાબમિત્ર એકાઉન્ટમાં સચવાય છે.';
 
   @override
   String get attachmentShareToGroup => 'ગ્રુપ સાથે શેર કરો';
@@ -366,6 +429,17 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get attachmentRemove => 'દૂર કરો';
+
+  @override
+  String get photoRecovered =>
+      'તમે લીધેલો ફોટો સાચવી રાખ્યો છે. તેને નવા ખર્ચમાં ઉમેરવો છે?';
+
+  @override
+  String get photoRecoveredAction => 'ખર્ચ ઉમેરો';
+
+  @override
+  String get attachmentDownloadRetry =>
+      'આ બિલ ખૂલ્યું નહીં. ઇન્ટરનેટ તપાસીને ફરી પ્રયત્ન કરો.';
 
   @override
   String get backupTitle => 'બેકઅપ અને રિસ્ટોર';
@@ -445,7 +519,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get backupWhere =>
-      'બેકઅપ આ ફોનમાં હિસાબમિત્રના ખાનગી સ્ટોરેજમાં સચવાય છે. એપ અનઇન્સ્ટોલ કરવાથી તે કાઢી નખાય છે, તેથી બીજે નકલ રાખવા “નકલ સાચવો / શેર કરો” વાપરો (દા.ત. Google Drive કે કમ્પ્યુટર).';
+      'તમારો હિસાબ તમારા એકાઉન્ટમાં સચવાયેલો છે. બેકઅપ એ વધારાની નકલ છે, જે આ ફોનમાં હિસાબમિત્રના ખાનગી સ્ટોરેજમાં રહે છે; એપ અનઇન્સ્ટોલ કરવાથી તે કાઢી નખાય છે, તેથી બીજે રાખવા “નકલ સાચવો / શેર કરો” વાપરો (દા.ત. Google Drive કે કમ્પ્યુટર).';
 
   @override
   String get backupFileMissing => 'ફાઇલ હવે આ ફોનમાં નથી';
@@ -475,16 +549,21 @@ class AppLocalizationsGu extends AppLocalizations {
   String get backupNotBackup => 'આ ફાઇલ હિસાબમિત્રનું બેકઅપ નથી.';
 
   @override
-  String get backupAutoInfo =>
-      'એપ ખોલો અને બેકઅપ બાકી હોય ત્યારે આપમેળે બેકઅપ લેવાય છે. સૌથી નવાં 7 રાખવામાં આવે છે.';
-
-  @override
-  String backupLastAuto(String date) {
-    return 'છેલ્લું આપમેળે બેકઅપ: $date';
+  String shareBackupCaption(String date) {
+    return '🔒 *હિસાબમિત્ર બેકઅપ* · $date — આ ફાઇલ સાચવીને રાખો; રિસ્ટોર કરવા માટે બેકઅપ પાસવર્ડ જોઈશે.';
   }
 
   @override
-  String get backupNever => 'ક્યારેય નહીં';
+  String shareBackupCaptionPlain(String date) {
+    return '🔒 *હિસાબમિત્ર બેકઅપ* · $date — આ ફાઇલ સાચવીને રાખો.';
+  }
+
+  @override
+  String get restoreNeedsInternet => 'રિસ્ટોર કરવા ઇન્ટરનેટ ચાલુ કરો.';
+
+  @override
+  String get restoreReplacesAccount =>
+      'આ બેકઅપ તમારા એકાઉન્ટમાં સચવાયેલા હિસાબની જગ્યા લેશે. ગ્રુપ બદલાશે નહીં.';
 
   @override
   String get authSendOtp => 'ચકાસણી કોડ મોકલો';
@@ -514,7 +593,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get deleteAccountConfirm =>
-      'તમારું ક્લાઉડ એકાઉન્ટ કાઢી નાખવું છે? તમે બધાં શેર કરેલાં ગ્રુપમાંથી નીકળી જશો. આ ફોનમાંનું બધું રહેશે.';
+      'તમારું એકાઉન્ટ કાઢી નાખવું છે? તમારો સચવાયેલો હિસાબ, બિલ અને ગ્રુપ સભ્યપદ એકાઉન્ટમાંથી અને આ ફોનમાંથી કાઢી નખાશે. આ પાછું લાવી શકાશે નહીં.';
 
   @override
   String get accountDeleted => 'ક્લાઉડ એકાઉન્ટ કાઢી નાખ્યું';
@@ -588,9 +667,6 @@ class AppLocalizationsGu extends AppLocalizations {
   String get syncSignInNeeded => 'શેર કરેલાં ગ્રુપ સિંક કરવા સાઇન ઇન કરો.';
 
   @override
-  String get syncDisabled => 'સેટિંગ્સમાં ક્લાઉડ સિંક બંધ છે.';
-
-  @override
   String get syncDone => 'સિંક પૂર્ણ';
 
   @override
@@ -609,19 +685,6 @@ class AppLocalizationsGu extends AppLocalizations {
   String get entitySettlement => 'ચુકવણી';
 
   @override
-  String get shareToCloud => 'ગ્રુપ ઓનલાઇન શેર કરો';
-
-  @override
-  String get shareToCloudBody =>
-      'પછી હિસાબમિત્ર વાપરતા સભ્યો આ ગ્રુપમાં જોડાઈને તેના સભ્યો, ખર્ચ અને ચુકવણી જોઈ શકશે. સભ્યોના ફોન નંબર અપલોડ થતા નથી અને તમારા અંગત હિસાબ ક્યારેય શેર થતા નથી.';
-
-  @override
-  String get shareToCloudDone => 'ગ્રુપ હવે શેર થયું છે';
-
-  @override
-  String get shareNeedsSignIn => 'ગ્રુપ શેર કરવા તમારો ઇમેઇલ ચકાસો.';
-
-  @override
   String get inviteTitle => 'સભ્યોને આમંત્રણ';
 
   @override
@@ -635,7 +698,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String inviteShareText(String group, String code, String date) {
-    return 'હિસાબમિત્રમાં મારા ગ્રુપ \"$group\" માં જોડાઓ: hisabmitra://join?code=$code ખોલો અથવા એપમાં કોડ $code લખો. કોડ $date ના રોજ પૂરો થશે.';
+    return '👋 *હિસાબમિત્રમાં મારા ગ્રુપમાં જોડાઓ!*\n\n👥 ગ્રુપ: *$group*\n🔑 આમંત્રણ કોડ: *$code*\n\nહિસાબમિત્ર ખોલો → ગ્રુપ → ગ્રુપમાં જોડાઓ, અને કોડ લખો.\n\n⏳ કોડ *$date* સુધી માન્ય છે.';
   }
 
   @override
@@ -660,9 +723,6 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get invitesEmpty => 'હજી કોઈ આમંત્રણ નથી';
-
-  @override
-  String get inviteGroupNotShared => 'પહેલાં આ ગ્રુપ ઓનલાઇન શેર કરો.';
 
   @override
   String get inviteCodeOnce =>
@@ -756,6 +816,51 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get verifyEmailAction => 'ઇમેઇલ ચકાસો';
+
+  @override
+  String inviteShareDownload(String url) {
+    return '📲 એપ નથી? મફત ડાઉનલોડ કરો: $url';
+  }
+
+  @override
+  String get entityPerson => 'વ્યક્તિ';
+
+  @override
+  String get entityTransaction => 'આવક કે ખર્ચ';
+
+  @override
+  String get entityLedgerEntry => 'ખાતાની નોંધ';
+
+  @override
+  String get entityRepayment => 'પરત ચુકવણી';
+
+  @override
+  String get entityReminder => 'રિમાઇન્ડર';
+
+  @override
+  String get entityBill => 'બિલ';
+
+  @override
+  String get inviteSampleGroup => 'નમૂનાના ગ્રુપ શેર કરી શકાતા નથી.';
+
+  @override
+  String get accountSyncUploadTitle =>
+      'તમારો હિસાબ તમારા એકાઉન્ટમાં સાચવી રહ્યા છીએ';
+
+  @override
+  String get accountSyncDownloadTitle => 'તમારો હિસાબ લાવી રહ્યા છીએ';
+
+  @override
+  String accountSyncProgress(String done, String total) {
+    return '$total માંથી $done';
+  }
+
+  @override
+  String get accountSyncOffline =>
+      'ઇન્ટરનેટ નથી. ઇન્ટરનેટ આવતાં જ તમારો હિસાબ તમારા એકાઉન્ટમાં સચવાઈ જશે.';
+
+  @override
+  String get accountSyncContinue => 'બેકગ્રાઉન્ડમાં ચાલુ રાખો';
 
   @override
   String get appName => 'હિસાબમિત્ર';
@@ -927,7 +1032,8 @@ class AppLocalizationsGu extends AppLocalizations {
   String get keepEditing => 'ફેરફાર ચાલુ રાખો';
 
   @override
-  String get offlineBanner => 'તમે ઑફલાઇન છો. તમારો ડેટા આ ફોનમાં સુરક્ષિત છે.';
+  String get offlineBanner =>
+      'તમે ઑફલાઇન છો. તમારા ફેરફાર આ ફોનમાં સચવાયેલા છે અને ઇન્ટરનેટ આવતાં તમારા એકાઉન્ટમાં પહોંચી જશે.';
 
   @override
   String get pmCash => 'રોકડ';
@@ -1004,7 +1110,16 @@ class AppLocalizationsGu extends AppLocalizations {
   String get notConfigured => 'ગોઠવાયેલ નથી';
 
   @override
-  String get privateOnDevice => 'ખાનગી · આ ફોનમાં સંગ્રહિત';
+  String get privateOnDevice => 'ખાનગી · તમારા એકાઉન્ટમાં સચવાયેલું';
+
+  @override
+  String get exitAppTitle => 'હિસાબમિત્ર બંધ કરવી છે?';
+
+  @override
+  String get exitAppConfirm => 'બંધ કરો';
+
+  @override
+  String get exitAppStay => 'રહો';
 
   @override
   String get errorNotFound => 'આ નોંધ હવે અસ્તિત્વમાં નથી.';
@@ -1211,7 +1326,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get deleteTransactionMessage =>
-      'આ નોંધ અને તેનાં જોડાણો આ ફોનમાંથી કાઢી નખાશે.';
+      'આ નોંધ અને તેનાં જોડાણો તમારા એકાઉન્ટમાંથી અને આ ફોનમાંથી કાઢી નખાશે.';
 
   @override
   String dayNet(String amount) {
@@ -2052,7 +2167,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get onboardBody1 =>
-      'આવક અને ખર્ચ સેકન્ડોમાં નોંધો. બધું તમારા ફોનમાં જ રહે છે અને ઇન્ટરનેટ વિના પણ ચાલે છે.';
+      'આવક અને ખર્ચ સેકન્ડોમાં નોંધો. બધું તમારા એકાઉન્ટમાં સચવાય છે, અને ઇન્ટરનેટ વિના પણ ચાલે છે.';
 
   @override
   String get onboardTitle2 => 'ઉધાર આપો, ઉધાર લો, ચૂકતે કરો';
@@ -2076,7 +2191,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get profileSetupSubtitle =>
-      'નામ, ઇમેઇલ અને મોબાઇલ નંબર જરૂરી છે. અમે તમારો ઇમેઇલ ચકાસીએ છીએ; તમારી અંગત નોંધો આ ફોનમાં જ રહે છે.';
+      'નામ, ઇમેઇલ અને મોબાઇલ નંબર જરૂરી છે. અમે તમારો ઇમેઇલ ચકાસીએ છીએ; તમારો હિસાબ આ એકાઉન્ટમાં સચવાશે.';
 
   @override
   String get yourName => 'તમારું નામ';
@@ -2086,7 +2201,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get privacyPromise =>
-      'તમે જાતે શેર ન કરો ત્યાં સુધી તમારા અંગત હિસાબ તમારા ફોનની બહાર જતા નથી.';
+      'તમારો હિસાબ તમારા એકાઉન્ટમાં સચવાય છે, અને તે ફક્ત તમે જ જોઈ શકો છો.';
 
   @override
   String get remindersTitle => 'રિમાઇન્ડર';
@@ -2291,6 +2406,16 @@ class AppLocalizationsGu extends AppLocalizations {
   }
 
   @override
+  String get reminderBatteryTip =>
+      'કેટલાક ફોનમાં (Xiaomi, Oppo, Vivo વગેરે) બૅટરી બચત રિમાઇન્ડર રોકી શકે છે. રિમાઇન્ડર સમયસર મળે તે માટે હિસાબમિત્રને બેકગ્રાઉન્ડમાં ચાલવાની મંજૂરી આપો.';
+
+  @override
+  String get reminderBatteryTipOpen => 'સેટિંગ્સ ખોલો';
+
+  @override
+  String get reminderBatteryTipDismiss => 'સમજાયું';
+
+  @override
   String get reportsTitle => 'રિપોર્ટ';
 
   @override
@@ -2406,6 +2531,11 @@ class AppLocalizationsGu extends AppLocalizations {
   String get settlementSummary => 'ચુકવણીનો સારાંશ';
 
   @override
+  String shareReportCaption(String title, String period) {
+    return '📊 *હિસાબમિત્ર રિપોર્ટ* · $title · $period';
+  }
+
+  @override
   String get settingsTitle => 'સેટિંગ્સ';
 
   @override
@@ -2511,13 +2641,6 @@ class AppLocalizationsGu extends AppLocalizations {
   String get settingsSync => 'ક્લાઉડ સિંક';
 
   @override
-  String get settingsCloudSync => 'શેર કરેલાં ગ્રુપ સિંક કરો';
-
-  @override
-  String get settingsCloudSyncDesc =>
-      'ફક્ત તમે શેર કરેલાં ગ્રુપ જ સિંક થાય છે. અંગત હિસાબ હંમેશા આ ફોનમાં જ રહે છે.';
-
-  @override
   String get settingsSyncStatus => 'સિંકની સ્થિતિ';
 
   @override
@@ -2527,16 +2650,7 @@ class AppLocalizationsGu extends AppLocalizations {
   String get settingsBackupDesc => 'જાતે, આપમેળે અને એન્ક્રિપ્ટેડ બેકઅપ';
 
   @override
-  String get settingsAutoBackup => 'આપમેળે બેકઅપ';
-
-  @override
   String get autoBackupOff => 'બંધ';
-
-  @override
-  String get autoBackupDaily => 'દરરોજ';
-
-  @override
-  String get autoBackupWeekly => 'દર અઠવાડિયે';
 
   @override
   String get settingsAi => 'AI સહાયક';
@@ -2606,14 +2720,14 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get settingsLogoutConfirm =>
-      'લૉગ આઉટ કરવું છે? તમારી નોંધો આ ફોનમાં જ રહેશે; ફરી સાઇન ઇન ન કરો ત્યાં સુધી શેર કરેલાં ગ્રુપ સિંક નહીં થાય.';
+      'લૉગ આઉટ કરવું છે? તમારો હિસાબ તમારા એકાઉન્ટમાં સચવાયેલો રહેશે અને આ ફોનમાંથી દૂર થશે. શ્રેણીઓ અને સેટિંગ્સ ફોનમાં જ રહેશે.';
 
   @override
   String get settingsDeleteAccount => 'ક્લાઉડ એકાઉન્ટ કાઢી નાખો';
 
   @override
   String get settingsDeleteAccountDesc =>
-      'તમારી ક્લાઉડ પ્રોફાઇલ અને ગ્રુપ સભ્યપદ દૂર થશે. ફોનમાંનો ડેટા રહેશે.';
+      'તમારું એકાઉન્ટ, તેમાં સચવાયેલો હિસાબ અને બિલ, તથા ગ્રુપ સભ્યપદ કાઢી નાખે છે.';
 
   @override
   String get settingsAbout => 'વિશે';
@@ -2635,6 +2749,20 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get settingsTerms => 'નિયમો અને શરતો';
+
+  @override
+  String get signOutUnsentTitle => 'હજી સચવાયું નથી';
+
+  @override
+  String signOutUnsentBody(String count) {
+    return '$count ફેરફાર હજી તમારા એકાઉન્ટમાં સચવાયા નથી. અત્યારે લૉગ આઉટ કરશો તો તે જતા રહેશે.';
+  }
+
+  @override
+  String get signOutWaitSync => 'રાહ જુઓ અને સિંક કરો';
+
+  @override
+  String get signOutAnyway => 'છતાં લૉગ આઉટ કરો';
 
   @override
   String get tourPromptTitle => 'એપની ઝડપી સફર કરવી છે?';

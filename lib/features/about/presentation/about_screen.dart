@@ -12,6 +12,7 @@ import '../../../core/widgets/hm_logo.dart';
 import '../../backup/application/backup_providers.dart';
 import '../data/update_service.dart';
 import '../domain/release_info.dart';
+import '../../../core/share/share_messages.dart';
 
 class AboutScreen extends ConsumerStatefulWidget {
   const AboutScreen({super.key});
@@ -196,7 +197,9 @@ class _AboutScreenState extends ConsumerState<AboutScreen> {
               leading: const Icon(Icons.share_rounded),
               title: Text(l.shareApp),
               onTap: () => SharePlus.instance.share(
-                ShareParams(text: l.shareAppText(AppConfig.githubReleasesPage)),
+                ShareParams(
+                  text: appShareMessage(l, downloadUrl: appDownloadUrl()),
+                ),
               ),
             ),
           ],

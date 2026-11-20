@@ -8,8 +8,9 @@
 
 Personal and family money manager for Android, in **English and Gujarati**.
 Daily income and expenses, money lent and borrowed, family and trip
-expense splitting, reports, bills, reminders and backups. Your personal
-records stay on your phone.
+expense splitting, reports, bills, reminders and backups. Your hisab is
+saved to your HisabMitra account (only you can see it), with a copy on the
+phone so the app also works without internet.
 
 [**⬇ Download the latest APK**](https://github.com/rathodkutumb-commits/HisabMitra/releases/latest)
 
@@ -87,8 +88,11 @@ records stay on your phone.
   Excel) export and share.
 - Reminders for repayments, collections and recurring payments (EMI, SIP,
   rent).
+- Everything is **saved to your account** and comes back on a new phone
+  after sign-in; two phones on one account stay in sync.
 - **Encrypted backup and restore** (AES-256) with checksum validation and
-  an automatic safety backup before every restore.
+  an automatic safety backup before every restore. Restoring replaces the
+  hisab saved in your account (groups are not changed).
 - Optional AI assistant: answers from your own data on the phone; online
   wording only with your own API key and consent.
 
@@ -105,6 +109,13 @@ records stay on your phone.
 - New versions are offered inside the app (More → About → Check for
   updates). Each download is checked against its published SHA-256 and the
   app's signing certificate before Android asks you to install it.
+
+## Privacy note for whoever runs the backend
+
+Records are stored in the Supabase project this build is configured with.
+Each account can only read its own records (row-level security), but the
+project owner can see every user's records in the Supabase dashboard.
+Anyone who installs the public APK stores their hisab in that project.
 
 ## Install
 

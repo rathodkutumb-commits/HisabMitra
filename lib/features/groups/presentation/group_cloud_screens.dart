@@ -14,41 +14,7 @@ import '../../synchronization/application/sync_controller.dart';
 import '../../synchronization/domain/cloud_models.dart';
 import '../../authentication/application/auth_controller.dart';
 import '../data/group_repository.dart';
-
-/// Shares a local group to the cloud after explicit confirmation.
-Future<void> shareGroupToCloud(
-  BuildContext context,
-  WidgetRef ref,
-  String groupId,
-) async {
-  final l = context.l10n;
-  final session = ref.read(cloudGatewayProvider).currentSession;
-  if (session == null) {
-    showAppSnack(context, l.shareNeedsSignIn);
-    // The router then asks for email verification (compulsory account).
-    await ref.read(authControllerProvider).markSessionLost();
-    return;
-  }
-  final ok = await confirmAction(
-    context,
-    title: l.shareToCloud,
-    message: l.shareToCloudBody,
-    confirmLabel: l.share,
-  );
-  if (!ok) return;
-  try {
-    await ref
-        .read(groupRepositoryProvider)
-        .markShared(groupId, ownerUserId: session.userId);
-    await ref
-        .read(settingsControllerProvider.notifier)
-        .update((p) => p.copyWith(cloudSyncEnabled: true));
-    await ref.read(syncControllerProvider.notifier).syncNow(silent: true);
-    if (context.mounted) showAppSnack(context, l.shareToCloudDone);
-  } catch (e) {
-    if (context.mounted) showFailure(context, e);
-  }
-}
+import '../../../core/share/share_messages.dart';
 
 final _invitationsProvider = FutureProvider.autoDispose
     .family<List<InvitationInfo>, String>(
@@ -109,10 +75,8 @@ class _GroupInviteScreenState extends ConsumerState<GroupInviteScreen> {
       appBar: AppBar(title: Text(l.inviteTitle)),
       body: !shared
           ? EmptyState(
-              icon: Icons.cloud_upload_rounded,
-              title: l.inviteGroupNotShared,
-              actionLabel: l.shareToCloud,
-              onAction: () => shareGroupToCloud(context, ref, widget.groupId),
+              icon: Icons.cloud_off_rounded,
+              title: l.inviteSampleGroup,
             )
           : ListView(
               padding: const EdgeInsets.all(16),
@@ -175,10 +139,12 @@ class _GroupInviteScreenState extends ConsumerState<GroupInviteScreen> {
                               FilledButton.icon(
                                 onPressed: () => SharePlus.instance.share(
                                   ShareParams(
-                                    text: l.inviteShareText(
-                                      detail.group.name,
-                                      _created!.code,
-                                      fmt.date(_created!.expiresAt),
+                                    text: inviteMessage(
+                                      l,
+                                      group: detail.group.name,
+                                      code: _created!.code,
+                                      date: fmt.date(_created!.expiresAt),
+                                      downloadUrl: appDownloadUrl(),
                                     ),
                                   ),
                                 ),
@@ -283,9 +249,6 @@ class _JoinGroupScreenState extends ConsumerState<JoinGroupScreen> {
         displayName: profile?.displayName ?? 'Member',
       );
       await ref.read(syncServiceProvider).joinGroup(accepted.groupId);
-      await ref
-          .read(settingsControllerProvider.notifier)
-          .update((p) => p.copyWith(cloudSyncEnabled: true));
       final group = await ref
           .read(groupRepositoryProvider)
           .watchGroup(accepted.groupId)

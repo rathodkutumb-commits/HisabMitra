@@ -9,7 +9,10 @@ import '../../../core/errors/app_failure.dart';
 import '../../../core/providers.dart';
 import '../../../core/security/safe_logger.dart';
 import '../../../core/utils/stream_combine.dart';
+import '../../reminders/data/reminder_repository.dart';
 import '../domain/cloud_models.dart';
+import '../domain/personal_entity.dart';
+import 'personal_rows.dart';
 import 'cloud_gateway.dart';
 
 @immutable
@@ -74,14 +77,24 @@ class SyncService {
     required this._cloud,
     required this._clock,
     required this._ids,
+    this._scheduler,
+    this._beforePush,
   });
 
   final AppDatabase _db;
   final CloudGateway _cloud;
   final Clock _clock;
   final IdGenerator _ids;
+  final ReminderScheduler? _scheduler;
+
+  /// Runs before every push (uploads bill files ahead of their records).
+  final Future<void> Function()? _beforePush;
+
+  /// Writes personal records from the server into the phone's copy.
+  late final personal = PersonalRowApplier(_db, _clock, scheduler: _scheduler);
 
   static const cursorKey = 'sync.cursor';
+  static const personalCursorKey = 'sync.personalCursor';
   static const lastSuccessKey = 'sync.lastSuccess';
   static const _pageSize = 500;
 
@@ -122,6 +135,13 @@ class SyncService {
             ..orderBy([(c) => OrderingTerm.asc(c.detectedAt)]))
           .watch();
 
+  /// One-off read of the open conflicts. Not `openConflicts().first`: a
+  /// one-off `.first` on a query that is already being watched (Sync screen)
+  /// may never complete.
+  Future<List<ConflictRow>> _openConflictRows() => (_db.select(
+    _db.syncConflicts,
+  )..where((c) => c.resolvedAt.isNull())).get();
+
   Stream<List<OutboxRow>> watchFailedOps() => (_db.select(
     _db.syncOutbox,
   )..where((o) => o.status.equalsValue(OutboxStatus.failed))).watch();
@@ -145,6 +165,11 @@ class SyncService {
   // ------------------------------------------------------------------ sync
 
   Future<SyncReport> syncOnce() async {
+    try {
+      await _beforePush?.call();
+    } catch (e, s) {
+      SafeLogger.error('sync_before_push', e, s);
+    }
     final push = await this.push();
     if (push.offline) {
       return SyncReport(
@@ -184,7 +209,7 @@ class SyncService {
                 (_) => OrderingTerm.asc(const CustomExpression<int>('rowid')),
               ]))
             .get();
-    final blocked = {for (final c in await openConflicts().first) c.entityId};
+    final blocked = {for (final c in await _openConflictRows()) c.entityId};
     var applied = 0, conflicts = 0, rejected = 0;
 
     for (final row in ops) {
@@ -196,6 +221,15 @@ class SyncService {
         _db.syncOutbox,
       )..where((o) => o.opId.equals(row.opId))).getSingleOrNull();
       if (op == null) continue;
+      // A bill's record waits until its file is in the account.
+      if (op.scope == 'personal' &&
+          op.entityType == PersonalEntity.attachment.wire &&
+          op.opType == 'upsert') {
+        final a = await (_db.select(
+          _db.attachments,
+        )..where((x) => x.id.equals(op.entityId))).getSingleOrNull();
+        if (a != null && a.remotePath == null) continue;
+      }
 
       OpResult result;
       try {
@@ -203,6 +237,7 @@ class SyncService {
           OutboundOp(
             opId: op.opId,
             groupId: op.groupId,
+            scope: op.scope,
             entityType: op.entityType,
             entityId: op.entityId,
             opType: op.opType,
@@ -240,6 +275,7 @@ class SyncService {
       switch (result) {
         case OpApplied(:final revision):
           await _onApplied(op, revision);
+          await _afterPersonalDelete(op);
           applied++;
         case OpConflict(:final revision, :final current):
           await _onConflict(op, revision, current);
@@ -273,6 +309,7 @@ class SyncService {
         await (_db.delete(
           _db.syncOutbox,
         )..where((o) => o.opId.equals(op.opId))).go();
+        if (op.opType == 'reset') return;
         // Later queued edits of the same row were based on our pre-sync copy.
         await (_db.update(_db.syncOutbox)
               ..where((o) => o.entityId.equals(op.entityId)))
@@ -280,6 +317,17 @@ class SyncService {
         final remaining = await (_db.select(
           _db.syncOutbox,
         )..where((o) => o.entityId.equals(op.entityId))).get();
+        if (op.scope == 'personal') {
+          final type = PersonalEntity.fromWire(op.entityType);
+          if (type == null || op.opType == 'delete') return;
+          await personal.setState(
+            type,
+            op.entityId,
+            revision: revision,
+            state: remaining.isEmpty ? SyncState.synced : SyncState.pending,
+          );
+          return;
+        }
         await _setEntityState(
           op.entityType,
           op.entityId,
@@ -291,6 +339,22 @@ class SyncService {
           await _markOwnerMemberSynced(op.groupId);
         }
       });
+
+  /// Removes a deleted bill's file from the account (best effort).
+  Future<void> _afterPersonalDelete(OutboxRow op) async {
+    if (op.scope != 'personal' ||
+        op.opType != 'delete' ||
+        op.entityType != PersonalEntity.attachment.wire) {
+      return;
+    }
+    final name = (jsonDecode(op.payload) as Map)['storage_name'] as String?;
+    if (name == null || name.isEmpty) return;
+    try {
+      await _cloud.deletePersonalFile(name);
+    } on AppFailure catch (e, s) {
+      SafeLogger.error('sync_delete_file', e, s);
+    }
+  }
 
   Future<void> _markOwnerMemberSynced(String groupId) => _db.customUpdate(
     "UPDATE group_members_cache SET revision = 1, sync_state = 'synced' "
@@ -317,6 +381,7 @@ class SyncService {
           SyncConflictsCompanion.insert(
             id: _ids.newId(),
             groupId: op.groupId,
+            scope: Value(op.scope),
             entityType: op.entityType,
             entityId: op.entityId,
             opId: Value(op.opId),
@@ -332,6 +397,13 @@ class SyncService {
     await (_db.delete(
       _db.syncOutbox,
     )..where((o) => o.entityId.equals(op.entityId))).go();
+    final type = op.scope == 'personal'
+        ? PersonalEntity.fromWire(op.entityType)
+        : null;
+    if (type != null) {
+      await personal.setState(type, op.entityId, state: SyncState.conflict);
+      return;
+    }
     await _setEntityState(
       op.entityType,
       op.entityId,
@@ -388,7 +460,7 @@ class SyncService {
           b.insert(
             _db.syncInbox,
             SyncInboxCompanion.insert(
-              seq: Value(e.seq),
+              seq: e.seq,
               groupId: e.groupId,
               entityType: e.entityType,
               entityId: e.entityId,
@@ -405,18 +477,175 @@ class SyncService {
       await _writeSetting(cursorKey, '$cursor');
       if (events.length < _pageSize) break;
     }
-    return _applyInbox();
+    final groups = await _applyInbox();
+    return groups + await pullPersonal();
+  }
+
+  // ------------------------------------------------------- personal pull
+
+  /// Downloads the user's personal records: everything (snapshot) on a
+  /// phone that never pulled, otherwise the feed after the stored cursor.
+  Future<int> pullPersonal() async {
+    final cursor = int.tryParse(await _readSetting(personalCursorKey) ?? '');
+    if (cursor == null || cursor == 0) return _loadPersonalSnapshot();
+    var after = cursor;
+    while (true) {
+      final events = await _cloud.pullPersonalEvents(
+        afterSeq: after,
+        limit: _pageSize,
+      );
+      if (events.isEmpty) break;
+      await _db.batch((b) {
+        for (final e in events) {
+          b.insert(
+            _db.syncInbox,
+            SyncInboxCompanion.insert(
+              seq: e.seq,
+              scope: const Value('personal'),
+              groupId: '',
+              entityType: e.entityType,
+              entityId: e.entityId,
+              opType: e.opType,
+              payload: jsonEncode(e.payload),
+              remoteRevision: e.revision,
+              opId: Value(e.opId),
+              receivedAt: _clock.now(),
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
+        }
+      });
+      after = events.last.seq;
+      await _writeSetting(personalCursorKey, '$after');
+      if (events.length < _pageSize) break;
+    }
+    return _applyPersonalInbox();
+  }
+
+  Future<int> _loadPersonalSnapshot() async {
+    final snapshot = await _cloud.fetchPersonalSnapshot();
+    final queued = {
+      for (final o in await (_db.select(
+        _db.syncOutbox,
+      )..where((o) => o.scope.equals('personal'))).get())
+        o.entityId,
+    };
+    const kinds = {
+      'people': PersonalEntity.person,
+      'ledger_entries': PersonalEntity.ledgerEntry,
+      'ledger_repayments': PersonalEntity.repayment,
+      'transactions': PersonalEntity.transaction,
+      'reminders': PersonalEntity.reminder,
+      'attachments': PersonalEntity.attachment,
+    };
+    var applied = 0;
+    final waiting = <(PersonalEntity, Map<String, Object?>)>[];
+    for (final key in PersonalSnapshot.kinds) {
+      for (final row in snapshot.rows[key] ?? const <Map<String, Object?>>[]) {
+        // Unsent local changes win until they are uploaded.
+        if (queued.contains(row['id'])) continue;
+        final type = kinds[key]!;
+        final r = await personal.apply(
+          type,
+          row,
+          (row['revision'] as num).toInt(),
+          force: true,
+        );
+        if (r == PersonalApplyResult.applied) applied++;
+        if (r == PersonalApplyResult.waiting) waiting.add((type, row));
+      }
+    }
+    for (final (type, row) in waiting) {
+      final r = await personal.apply(
+        type,
+        row,
+        (row['revision'] as num).toInt(),
+        force: true,
+      );
+      if (r == PersonalApplyResult.applied) applied++;
+    }
+    await _writeSetting(personalCursorKey, '${snapshot.maxSeq}');
+    return applied;
+  }
+
+  Future<int> _applyPersonalInbox() async {
+    final ownReset = await _readSetting('sync.ownResetOpId');
+    var applied = 0;
+    // A record may arrive before one it refers to: a second round applies
+    // what had to wait; anything still waiting stays for the next pull.
+    for (var round = 0; round < 2; round++) {
+      final pending =
+          await (_db.select(_db.syncInbox)
+                ..where(
+                  (i) => i.appliedAt.isNull() & i.scope.equals('personal'),
+                )
+                ..orderBy([(i) => OrderingTerm.asc(i.seq)]))
+              .get();
+      if (pending.isEmpty) break;
+      final conflicted = {
+        for (final c in await _openConflictRows()) c.entityId,
+      };
+      final queued = {
+        for (final o in await (_db.select(
+          _db.syncOutbox,
+        )..where((o) => o.scope.equals('personal'))).get())
+          o.entityId,
+      };
+      for (final e in pending) {
+        Future<void> done() =>
+            (_db.update(_db.syncInbox)..where(
+                  (i) => i.scope.equals('personal') & i.seq.equals(e.seq),
+                ))
+                .write(SyncInboxCompanion(appliedAt: Value(_clock.now())));
+        if (e.opType == 'reset') {
+          if (e.opId == null || e.opId != ownReset) {
+            await personal.applyReset();
+            applied++;
+          }
+          await done();
+          continue;
+        }
+        final type = PersonalEntity.fromWire(e.entityType);
+        if (type == null) {
+          await done();
+          continue;
+        }
+        if (conflicted.contains(e.entityId) || queued.contains(e.entityId)) {
+          continue;
+        }
+        try {
+          final payload = (jsonDecode(e.payload) as Map)
+              .cast<String, Object?>();
+          final r = await personal.apply(
+            type,
+            payload,
+            e.remoteRevision,
+            deleted: e.opType == 'delete',
+          );
+          if (r == PersonalApplyResult.waiting) continue;
+          if (r == PersonalApplyResult.applied) applied++;
+          await done();
+        } catch (err, s) {
+          SafeLogger.error('sync_apply_personal', err, s);
+          await (_db.update(
+                _db.syncInbox,
+              )..where((i) => i.scope.equals('personal') & i.seq.equals(e.seq)))
+              .write(
+                SyncInboxCompanion(error: Value(err.runtimeType.toString())),
+              );
+        }
+      }
+    }
+    return applied;
   }
 
   Future<int> _applyInbox() async {
     final pending =
         await (_db.select(_db.syncInbox)
-              ..where((i) => i.appliedAt.isNull())
+              ..where((i) => i.appliedAt.isNull() & i.scope.equals('group'))
               ..orderBy([(i) => OrderingTerm.asc(i.seq)]))
             .get();
-    final conflicted = {
-      for (final c in await openConflicts().first) c.entityId,
-    };
+    final conflicted = {for (final c in await _openConflictRows()) c.entityId};
     final snapshotted = <String>{};
     var applied = 0;
     for (final e in pending) {
@@ -448,7 +677,7 @@ class SyncService {
         if (changed) applied++;
         await (_db.update(
           _db.syncInbox,
-        )..where((i) => i.seq.equals(e.seq))).write(
+        )..where((i) => i.scope.equals('group') & i.seq.equals(e.seq))).write(
           SyncInboxCompanion(
             appliedAt: Value(_clock.now()),
             error: const Value(null),
@@ -458,7 +687,7 @@ class SyncService {
         SafeLogger.error('sync_apply', err, s);
         await (_db.update(
           _db.syncInbox,
-        )..where((i) => i.seq.equals(e.seq))).write(
+        )..where((i) => i.scope.equals('group') & i.seq.equals(e.seq))).write(
           SyncInboxCompanion(error: Value(err.runtimeType.toString())),
         );
       }
@@ -509,6 +738,7 @@ class SyncService {
       }
       await (_db.update(_db.syncInbox)..where(
             (i) =>
+                i.scope.equals('group') &
                 i.groupId.equals(groupId) &
                 i.seq.isSmallerOrEqualValue(snapshot.maxSeq),
           ))
@@ -753,7 +983,12 @@ class SyncService {
     if (c == null || c.resolvedAt != null) return;
     await _db.transaction(() async {
       final local = (jsonDecode(c.localPayload) as Map).cast<String, Object?>();
-      if (keepLocal) {
+      final personalType = c.scope == 'personal'
+          ? PersonalEntity.fromWire(c.entityType)
+          : null;
+      if (personalType != null) {
+        await _resolvePersonal(c, personalType, local, keepLocal: keepLocal);
+      } else if (keepLocal) {
         await _db
             .into(_db.syncOutbox)
             .insert(
@@ -795,6 +1030,44 @@ class SyncService {
       );
     });
     await _applyInbox();
+    await _applyPersonalInbox();
+  }
+
+  Future<void> _resolvePersonal(
+    ConflictRow c,
+    PersonalEntity type,
+    Map<String, Object?> local, {
+    required bool keepLocal,
+  }) async {
+    if (keepLocal) {
+      await _db
+          .into(_db.syncOutbox)
+          .insert(
+            SyncOutboxCompanion.insert(
+              opId: _ids.newId(),
+              groupId: '',
+              scope: const Value('personal'),
+              entityType: c.entityType,
+              entityId: c.entityId,
+              opType: local['op_type']! as String,
+              payload: jsonEncode(local['payload']),
+              baseRevision: c.remoteRevision,
+              createdAt: _clock.now(),
+            ),
+          );
+      await personal.setState(
+        type,
+        c.entityId,
+        revision: c.remoteRevision,
+        state: SyncState.pending,
+      );
+    } else if (c.remotePayload != null) {
+      final remote = (jsonDecode(c.remotePayload!) as Map)
+          .cast<String, Object?>();
+      await personal.apply(type, remote, c.remoteRevision, force: true);
+    } else {
+      await personal.setState(type, c.entityId, state: SyncState.synced);
+    }
   }
 
   /// Puts failed operations back into the queue (e.g. after the user fixed

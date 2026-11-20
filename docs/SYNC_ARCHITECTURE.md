@@ -1,18 +1,39 @@
-# Offline-first Synchronisation
+# Synchronisation (account + offline working copy)
 
 Code: `lib/features/synchronization/data/sync_service.dart`,
-`supabase_cloud_gateway.dart`; server: `apply_group_op`, `sync_events`.
-Tests: `test/features/synchronization/sync_service_test.dart` (in-memory
-fake cloud).
+`personal_outbox.dart`, `personal_rows.dart`, `supabase_cloud_gateway.dart`;
+server: `apply_group_op` + `sync_events` (groups), `apply_personal_op` +
+`personal_sync_events` + `get_personal_snapshot` (personal records).
+Tests: `test/features/synchronization/` (in-memory fake cloud) and
+`supabase/tests/` (PostgreSQL).
 
 ## What syncs
 
 | Data | Syncs? |
 |---|---|
-| Personal transactions, categories, people, personal ledger, reminders, personal bills | **Never** |
-| Groups the owner did not share | Never (local groups) |
-| Shared groups: group, members, expenses + splits, settlements | Yes, between authorised members |
-| Group-expense attachments | Only when a member explicitly shares the file |
+| Personal transactions, people, khata entries, repayments, reminders | **Yes** — to the user's own account (scope `personal`) |
+| Personal bills | Yes — file to `personal-attachments/<uid>/`, then the record |
+| Categories | **No** — each entry carries a copy of its category; a missing category is re-created on another phone |
+| Groups: group, members, expenses + splits, settlements, bills | Yes, between members (every group is saved to the account; the tour's sample group stays on the phone) |
+| Guided-tour sample data | Never |
+
+The outbox, inbox and conflicts carry a **scope** (`group` / `personal`);
+the inbox key is `(scope, seq)` because the two feeds number events
+separately.
+
+## First sync, new phone, sign-out, restore
+
+- **First sync** (`AccountSyncController`, screen "Saving your hisab to
+  your account" / "Getting your hisab"): queues records written before
+  v4 (`localOnly`), shares phone-only groups, then syncs until nothing is
+  queued. A phone that never pulled loads `get_personal_snapshot`.
+- **Sign-out / account deletion** wipe the phone's copy (categories and
+  settings stay) after warning about unsent changes.
+- **Restore**: the restored database gets a `reset` op first, then every
+  personal record, before it is swapped in (`RestoreSync`). The server's
+  `reset` tombstones the account's records and emits one `reset` event;
+  other phones drop their copy and receive the re-uploaded records. Groups
+  are never taken from a backup.
 
 ## Write path (push)
 

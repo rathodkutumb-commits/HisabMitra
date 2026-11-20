@@ -56,7 +56,7 @@ class AttachmentDraft extends ChangeNotifier {
   }
 }
 
-class AttachmentsEditor extends ConsumerWidget {
+class AttachmentsEditor extends ConsumerStatefulWidget {
   const AttachmentsEditor({
     super.key,
     required this.draft,
@@ -67,6 +67,32 @@ class AttachmentsEditor extends ConsumerWidget {
   final AttachmentDraft draft;
   final AttachmentParent parent;
   final String? parentId;
+
+  @override
+  ConsumerState<AttachmentsEditor> createState() => _AttachmentsEditorState();
+}
+
+class _AttachmentsEditorState extends ConsumerState<AttachmentsEditor> {
+  AttachmentDraft get draft => widget.draft;
+  AttachmentParent get parent => widget.parent;
+  String? get parentId => widget.parentId;
+
+  @override
+  void initState() {
+    super.initState();
+    // A photo recovered after Android closed the app goes to the first new
+    // form only (never into an existing record).
+    // Providers can't change while widgets build, so it is cleared right
+    // after this frame.
+    if (parentId == null) {
+      final photo = ref.read(recoveredPhotoProvider);
+      if (photo != null) {
+        draft.add(photo);
+        final recovered = ref.read(recoveredPhotoProvider.notifier);
+        WidgetsBinding.instance.addPostFrameCallback((_) => recovered.take());
+      }
+    }
+  }
 
   Future<void> _pick(
     BuildContext context,
@@ -82,7 +108,7 @@ class AttachmentsEditor extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l = context.l10n;
     final existing = parentId == null
         ? const <AttachmentRow>[]
@@ -107,7 +133,7 @@ class AttachmentsEditor extends ConsumerWidget {
                   children: [
                     for (final a in visible)
                       _Thumb(
-                        storedName: a.storedName,
+                        row: a,
                         isImage: a.mimeType.startsWith('image/'),
                         label: a.originalName,
                         onOpen: () => context.push(Routes.attachment(a.id)),
@@ -165,7 +191,7 @@ class AttachmentsEditor extends ConsumerWidget {
 
 class _Thumb extends ConsumerWidget {
   const _Thumb({
-    this.storedName,
+    this.row,
     this.stagedPath,
     required this.isImage,
     required this.label,
@@ -173,7 +199,8 @@ class _Thumb extends ConsumerWidget {
     required this.onRemove,
   });
 
-  final String? storedName;
+  /// A saved bill (may need downloading from the account).
+  final AttachmentRow? row;
   final String? stagedPath;
   final bool isImage;
   final String label;
@@ -183,18 +210,22 @@ class _Thumb extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
-    Widget content = Icon(
+    final placeholder = Icon(
       isImage ? Icons.image_rounded : Icons.picture_as_pdf_rounded,
       size: 36,
       color: scheme.secondary,
     );
+    // The builder must return [placeholder], never a variable that is later
+    // reassigned to this FutureBuilder: that made the thumbnail build itself
+    // forever (stack overflow → app closed) in release builds.
+    final Widget content;
     if (isImage) {
       final future = stagedPath != null
-          ? Future.value(File(stagedPath!))
-          : ref.read(attachmentServiceProvider).fileFor(storedName!);
-      content = FutureBuilder<File>(
+          ? Future<File?>.value(File(stagedPath!))
+          : ref.read(attachmentServiceProvider).ensureLocal(row!);
+      content = FutureBuilder<File?>(
         future: future,
-        builder: (context, snap) => snap.hasData && snap.data!.existsSync()
+        builder: (context, snap) => snap.data != null && snap.data!.existsSync()
             ? Image.file(
                 snap.data!,
                 fit: BoxFit.cover,
@@ -202,8 +233,10 @@ class _Thumb extends ConsumerWidget {
                 height: 84,
                 cacheWidth: 200,
               )
-            : content,
+            : placeholder,
       );
+    } else {
+      content = placeholder;
     }
     return Padding(
       padding: const EdgeInsets.only(right: 8),

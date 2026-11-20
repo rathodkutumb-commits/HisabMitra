@@ -8,15 +8,19 @@ import '../../../core/providers.dart';
 import '../../../core/utils/stream_combine.dart' as combine;
 import '../domain/ledger_calculator.dart';
 import '../domain/ledger_models.dart';
+import '../../synchronization/data/personal_outbox.dart';
+import '../../synchronization/domain/personal_entity.dart';
 
 /// Personal money given/taken ledger. Principal and repayments are kept
 /// apart from income/expense so they are never double counted.
 class LedgerRepository {
-  LedgerRepository(this._db, this._clock, this._ids);
+  LedgerRepository(this._db, this._clock, this._ids, {PersonalOutbox? outbox})
+    : _outbox = outbox ?? PersonalOutbox(_db, _clock, _ids);
 
   final AppDatabase _db;
   final Clock _clock;
   final IdGenerator _ids;
+  final PersonalOutbox _outbox;
 
   late final Expression<int> _attachmentCount = const CustomExpression<int>(
     '(SELECT COUNT(*) FROM attachments a WHERE a.ledger_entry_id = "money_ledger"."id")',
@@ -159,6 +163,7 @@ class LedgerRepository {
                 updatedAt: now,
               ),
             );
+        await _outbox.upsert(PersonalEntity.ledgerEntry, id);
         return id;
       }
       final repaid = await _repaidTotal(d.id!);
@@ -182,6 +187,7 @@ class LedgerRepository {
             ),
           );
       if (n == 0) throw const NotFoundFailure();
+      await _outbox.upsert(PersonalEntity.ledgerEntry, d.id!);
       return d.id!;
     });
   }
@@ -244,13 +250,15 @@ class LedgerRepository {
               updatedAt: now,
             ),
           );
+      await _outbox.upsert(PersonalEntity.repayment, id);
     }
     if (excess != null && excess > 0) {
+      final advanceId = _ids.newId();
       await _db
           .into(_db.moneyLedger)
           .insert(
             MoneyLedgerCompanion.insert(
-              id: _ids.newId(),
+              id: advanceId,
               personId: entry.personId,
               direction: entry.direction == LedgerDirection.given
                   ? LedgerDirection.taken
@@ -263,22 +271,26 @@ class LedgerRepository {
               updatedAt: now,
             ),
           );
+      await _outbox.upsert(PersonalEntity.ledgerEntry, advanceId);
     }
     return id;
   });
 
-  Future<void> deleteRepayment(String id) async {
+  Future<void> deleteRepayment(String id) => _db.transaction(() async {
+    await _outbox.delete(PersonalEntity.repayment, id);
     final n = await (_db.delete(
       _db.moneySettlements,
     )..where((s) => s.id.equals(id))).go();
     if (n == 0) throw const NotFoundFailure();
-  }
+  });
 
   /// Deletes an entry with its repayment history. Returns attachment files.
   Future<List<String>> deleteEntry(String id) => _db.transaction(() async {
     final files = await (_db.select(
       _db.attachments,
     )..where((a) => a.ledgerEntryId.equals(id))).map((a) => a.storedName).get();
+    // One delete for the server: it removes the repayments the same way.
+    await _outbox.delete(PersonalEntity.ledgerEntry, id);
     final n = await (_db.delete(
       _db.moneyLedger,
     )..where((l) => l.id.equals(id))).go();
@@ -292,6 +304,7 @@ final ledgerRepositoryProvider = Provider<LedgerRepository>(
     ref.watch(appDatabaseProvider),
     ref.watch(clockProvider),
     ref.watch(idGeneratorProvider),
+    outbox: ref.watch(personalOutboxProvider),
   ),
 );
 

@@ -2,8 +2,8 @@
 
 ## 1. Principles
 
-1. **Local-first, offline-first.** SQLite (Drift) is the system of record for all personal data. Every core feature works with no network.
-2. **Private by default.** Personal transactions, people, ledger, attachments and reminders never leave the device unless the user exports or backs them up. Only groups the user explicitly *shares to cloud* are synchronised.
+1. **Account is the record, phone works offline.** Personal records and groups are saved to the user's account (Supabase); Drift (SQLite) keeps a working copy so every core feature works with no network and changes upload when online (since Part B, 2026-11-20). Categories stay on the phone.
+2. **Private by default.** Each account reads only its own records (RLS); group data is visible to that group's members only. Sign-out removes the phone's copy.
 3. **Deterministic money.** All amounts are `int` paise. Business rules live in pure-Dart domain services with unit tests. Widgets never compute money.
 4. **Layered, feature-first.** Each feature owns its presentation, application (providers/controllers), domain and data code. UI never talks to Drift or Supabase directly.
 5. **Honest integrations.** External services (Supabase, AI provider, GitHub) sit behind interfaces. When not configured they report "not configured" — no fake responses in production paths.

@@ -435,10 +435,17 @@ void main() {
       await tester.tap(find.text(tab).last);
       await tester.pumpAndSettle();
     }
-    await tester.tap(find.byType(FloatingActionButton));
+    await tester.tap(find.widgetWithText(FloatingActionButton, 'Create group'));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.text('Create group'), findsWidgets);
+
+    // The AI buttons on those tabs must not clash either.
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Ask HisabMitra AI'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
   });
 }
 

@@ -46,6 +46,8 @@ Source of truth: `supabase/migrations/`. Tested by
 | `group_invitations` | select | `is_group_admin(group_id)` — members cannot list codes |
 | `sync_events` | select | `is_group_member(group_id)` |
 | `processed_ops` | none | no policy → no access |
+| `personal_people`, `personal_transactions`, `personal_ledger_entries`, `personal_ledger_repayments`, `personal_reminders`, `personal_attachments` | select | `owner_id = auth.uid()` — each user sees only their own records |
+| `personal_sync_events` | select | `owner_id = auth.uid()` |
 
 ## Storage (`group-attachments`, private)
 
@@ -54,6 +56,17 @@ Source of truth: `supabase/migrations/`. Tested by
 | read | member of the group named by the first path segment |
 | upload | same; metadata is then registered via `register_group_attachment` |
 | update / delete | no policy → denied |
+
+## Storage (`personal-attachments`, private)
+
+| Operation | Rule |
+|---|---|
+| read / upload / delete | only objects in the caller's own folder (`<auth.uid()>/…`) |
+| update | no policy → denied |
+
+These storage policies need the Supabase Storage schema, so the Docker test
+harness skips them; they are checked on the live project after the migration
+is applied (two test accounts: one cannot read or delete the other's files).
 
 ## RPC authorisation summary
 
@@ -65,6 +78,8 @@ Source of truth: `supabase/migrations/`. Tested by
 | `accept_group_invitation(code, display_name)` | authenticated | code hash match, not expired/cancelled/used, not already a member |
 | `cancel_group_invitation(invitation_id)` | admin of that group | — |
 | `register_group_attachment(p)` | member | path inside the group folder, allowed MIME, ≤ 10 MB |
+| `apply_personal_op(op)` | authenticated | own rows only (others answered as `not_found`), every referenced record is the caller's and live, reminder groups must be the caller's groups, revision match, op id idempotency; deletes mirror the phone's links |
+| `get_personal_snapshot()` | authenticated | caller's live records only |
 | `prepare_account_deletion()` | authenticated (self) | used by the Edge Function before removing the auth user |
 
 Invitation codes are 10 characters from an unambiguous alphabet generated

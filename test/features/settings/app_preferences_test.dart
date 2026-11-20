@@ -4,21 +4,21 @@ import 'package:hisabmitra/core/money/money.dart';
 import 'package:hisabmitra/features/settings/domain/app_preferences.dart';
 
 void main() {
-  test('defaults: Rann Utsav palette, English, Indian grouping, AI off', () {
+  test('defaults: Rann Utsav palette, English, Indian grouping, AI on', () {
     final p = AppPreferences.fromMap(const {});
     expect(p.palette, AppPalette.rannUtsav);
     expect(p.languageCode, 'en');
     expect(p.onboardingComplete, isFalse);
     expect(p.grouping, MoneyGrouping.indian);
-    expect(p.aiEnabled, isFalse);
+    expect(p.aiEnabled, isTrue);
+    expect(p.canUseOnlineAi, isFalse);
     expect(p.aiConsent, isFalse);
-    expect(p.cloudSyncEnabled, isFalse);
-    expect(p.autoBackup, AutoBackupFrequency.off);
     expect(p.defaultGroupView, GroupView.spreadsheet);
     expect(p.transactionsView, TransactionsView.list);
     expect(p.accountVerified, isFalse);
     expect(p.tourPending, isFalse);
     expect(p.sampleDataLoaded, isFalse);
+    expect(p.reminderBatteryTipDismissed, isFalse);
   });
 
   test('round-trips through the key/value map', () {
@@ -34,12 +34,11 @@ void main() {
       accountVerified: true,
       tourPending: true,
       sampleDataLoaded: true,
-      autoBackup: AutoBackupFrequency.weekly,
+      reminderBatteryTipDismissed: true,
       aiEnabled: true,
       aiProvider: AiProvider.online,
       aiConsent: true,
       gujaratiInputMode: GujaratiInputMode.transliteration,
-      lastAutoBackupAt: DateTime.utc(2026, 5, 1, 10),
     );
     final restored = AppPreferences.fromMap(original.toMap());
     expect(restored, original);
@@ -49,13 +48,11 @@ void main() {
     final p = AppPreferences.fromMap(const {
       'appearance.palette': 'purple',
       'locale.language': 'fr',
-      'ai.enabled': 'maybe',
-      'backup.lastAuto': 'not-a-date',
+      'ai.assistant.enabled': 'maybe',
     });
     expect(p.palette, AppPalette.rannUtsav);
     expect(p.languageCode, 'en');
-    expect(p.aiEnabled, isFalse);
-    expect(p.lastAutoBackupAt, isNull);
+    expect(p.aiEnabled, isTrue);
   });
 
   test('a saved palette that was removed moves to Rann Utsav', () {
@@ -68,5 +65,21 @@ void main() {
         .copyWith(aiEnabled: true, aiProvider: AiProvider.online);
     expect(p.canUseOnlineAi, isFalse);
     expect(p.copyWith(aiConsent: true).canUseOnlineAi, isTrue);
+  });
+
+  group('on-phone AI assistant default', () {
+    test('an old stored "off" is ignored, so existing installs get it on', () {
+      final p = AppPreferences.fromMap(const {'ai.enabled': 'false'});
+      expect(p.aiEnabled, isTrue);
+    });
+
+    test('turning it off is saved under the new key', () {
+      final off = AppPreferences.fromMap(const {
+        'ai.assistant.enabled': 'false',
+      });
+      expect(off.aiEnabled, isFalse);
+      expect(off.toMap()['ai.assistant.enabled'], 'false');
+      expect(AppPreferences.fromMap(off.toMap()).aiEnabled, isFalse);
+    });
   });
 }

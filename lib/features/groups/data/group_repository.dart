@@ -12,6 +12,7 @@ import '../../../core/utils/stream_combine.dart';
 import '../../settlements/domain/group_balance_calculator.dart';
 import '../domain/group_models.dart';
 import '../domain/split_calculator.dart';
+import '../../synchronization/application/sync_controller.dart';
 
 /// Groups, members, expenses, splits and settlements.
 ///
@@ -20,11 +21,19 @@ import '../domain/split_calculator.dart';
 /// * For shared groups every change also writes an outbox operation in the
 ///   same DB transaction (see docs/SYNC_ARCHITECTURE.md).
 class GroupRepository {
-  GroupRepository(this._db, this._clock, this._ids);
+  GroupRepository(
+    this._db,
+    this._clock,
+    this._ids, {
+    String? Function()? currentUserId,
+  }) : _currentUserId = currentUserId ?? (() => null);
 
   final AppDatabase _db;
   final Clock _clock;
   final IdGenerator _ids;
+
+  /// The signed-in account, if any: new groups are saved to it.
+  final String? Function() _currentUserId;
 
   // ------------------------------------------------------------------ reads
 
@@ -263,10 +272,13 @@ class GroupRepository {
   SyncState _stateFor(GroupRow g) =>
       g.isShared ? SyncState.pending : SyncState.localOnly;
 
+  /// Creates a group. With a signed-in account it is saved to the account
+  /// straight away (shared) unless [cloud] is false (guided-tour sample).
   Future<String> createGroup(
     GroupDraft d, {
     required String selfName,
     List<MemberDraft> members = const [],
+    bool cloud = true,
   }) {
     final name = d.name.trim();
     if (name.isEmpty) throw const ValidationFailure('required');
@@ -305,6 +317,10 @@ class GroupRepository {
       var order = 1;
       for (final m in members) {
         await _insertMember(groupId, m, order++, now, SyncState.localOnly);
+      }
+      final userId = _currentUserId();
+      if (cloud && userId != null) {
+        await markShared(groupId, ownerUserId: userId);
       }
       return groupId;
     });
@@ -868,6 +884,7 @@ final groupRepositoryProvider = Provider<GroupRepository>(
     ref.watch(appDatabaseProvider),
     ref.watch(clockProvider),
     ref.watch(idGeneratorProvider),
+    currentUserId: () => ref.read(cloudGatewayProvider).currentSession?.userId,
   ),
 );
 

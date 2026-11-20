@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -12,6 +13,7 @@ import '../../../core/providers.dart';
 import '../../../core/security/safe_logger.dart';
 import '../../settings/application/settings_controller.dart';
 import '../data/reminder_repository.dart';
+import '../../synchronization/data/personal_outbox.dart';
 
 /// Localised notification texts, resolved by the UI layer.
 class NotificationTexts {
@@ -30,12 +32,32 @@ class NotificationTexts {
   static String _amountOnly(String amount) => amount;
 }
 
+/// Schedules [schedule] as an exact alarm when [canExact], otherwise
+/// inexact. If Android refuses the exact alarm, it retries once as inexact so
+/// the reminder is never dropped. Errors from the inexact attempt propagate.
+@visibleForTesting
+Future<void> scheduleWithFallback({
+  required bool canExact,
+  required Future<void> Function(AndroidScheduleMode mode) schedule,
+}) async {
+  if (canExact) {
+    try {
+      await schedule(AndroidScheduleMode.exactAllowWhileIdle);
+      return;
+    } on PlatformException catch (e, s) {
+      SafeLogger.error('notification_exact_refused', e, s);
+    }
+  }
+  await schedule(AndroidScheduleMode.inexactAllowWhileIdle);
+}
+
 /// Schedules local notifications for reminders.
 ///
 /// Privacy: when "hide amounts" is on (default), notifications show only a
-/// generic text — never names or amounts. Exact alarms are not used, so no
-/// special alarm permission is needed; Android may deliver a few minutes
-/// late in battery-saving modes.
+/// generic text — never names or amounts. Reminders use exact alarms
+/// (USE_EXACT_ALARM, granted automatically on Android 13+) so they arrive at
+/// the set time; if Android refuses an exact alarm the reminder is scheduled
+/// as inexact instead.
 class NotificationService implements ReminderScheduler {
   NotificationService(this._ref);
 
@@ -102,20 +124,28 @@ class NotificationService implements ReminderScheduler {
     if (!await initialize()) return;
     final hide = prefs.hideAmountsInNotifications;
     try {
-      await _plugin.zonedSchedule(
-        id: r.notificationId,
-        scheduledDate: tz.TZDateTime.from(r.dueAt, tz.local),
-        title: hide ? texts.genericTitle : r.title,
-        body: hide ? texts.genericBody : _body(r),
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        notificationDetails: const NotificationDetails(
-          android: AndroidNotificationDetails(
-            _channelId,
-            'Reminders',
-            channelDescription: 'Repayment, collection and custom reminders',
-            importance: Importance.high,
-            priority: Priority.high,
-            visibility: NotificationVisibility.private,
+      final android = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      final canExact = await android?.canScheduleExactNotifications() ?? false;
+      await scheduleWithFallback(
+        canExact: canExact,
+        schedule: (mode) => _plugin.zonedSchedule(
+          id: r.notificationId,
+          scheduledDate: tz.TZDateTime.from(r.dueAt, tz.local),
+          title: hide ? texts.genericTitle : r.title,
+          body: hide ? texts.genericBody : _body(r),
+          androidScheduleMode: mode,
+          notificationDetails: const NotificationDetails(
+            android: AndroidNotificationDetails(
+              _channelId,
+              'Reminders',
+              channelDescription: 'Repayment, collection and custom reminders',
+              importance: Importance.high,
+              priority: Priority.high,
+              visibility: NotificationVisibility.private,
+            ),
           ),
         ),
       );
@@ -145,6 +175,7 @@ final reminderRepositoryProvider = Provider<ReminderRepository>(
     ref.watch(clockProvider),
     ref.watch(idGeneratorProvider),
     ref.watch(notificationServiceProvider),
+    outbox: ref.watch(personalOutboxProvider),
   ),
 );
 

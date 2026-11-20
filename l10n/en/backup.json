@@ -23,7 +23,7 @@
   "backupRestoreDone": "Restore complete",
   "backupRestoreMissingAttachments": "{count} attachment files were not in the backup.",
   "@backupRestoreMissingAttachments": {"placeholders": {"count": {"type": "int"}}},
-  "backupWhere": "Backups are stored privately in HisabMitra's app storage on this phone. Uninstalling the app deletes them, so use “Save / share copy” to keep a copy elsewhere (for example Google Drive or a computer).",
+  "backupWhere": "Your hisab is saved in your account. A backup is an extra copy, stored privately in HisabMitra's app storage on this phone; uninstalling the app deletes it, so use “Save / share copy” to keep it elsewhere (for example Google Drive or a computer).",
   "backupFileMissing": "File no longer on this phone",
   "backupDeleteConfirm": "Delete this backup file?",
   "backupPasswordRequired": "This backup is encrypted. Enter its password.",
@@ -32,8 +32,10 @@
   "backupNewerSchema": "This backup was made by a newer version of HisabMitra. Update the app first.",
   "backupIntegrity": "The data inside the backup failed its integrity check.",
   "backupNotBackup": "This file is not a HisabMitra backup.",
-  "backupAutoInfo": "Automatic backups run when you open the app and one is due. The newest 7 are kept.",
-  "backupLastAuto": "Last automatic backup: {date}",
-  "@backupLastAuto": {"placeholders": {"date": {"type": "String"}}},
-  "backupNever": "Never"
+  "shareBackupCaption": "🔒 *HisabMitra backup* · {date} — keep this file safe; you'll need your backup password to restore it.",
+  "@shareBackupCaption": {"placeholders": {"date": {"type": "String"}}},
+  "shareBackupCaptionPlain": "🔒 *HisabMitra backup* · {date} — keep this file safe.",
+  "@shareBackupCaptionPlain": {"placeholders": {"date": {"type": "String"}}},
+  "restoreNeedsInternet": "Connect to the internet to restore.",
+  "restoreReplacesAccount": "This replaces the hisab saved in your account with this backup. Groups are not changed."
 }

@@ -9,8 +9,11 @@
   "attachmentOpenExternal": "બીજી એપમાં ખોલો",
   "attachmentDeleteConfirm": "આ જોડાણ દૂર કરવું છે?",
   "attachmentViewerTitle": "જોડાણ",
-  "attachmentPrivateNote": "આ ફોનમાં ખાનગી રીતે સંગ્રહિત. ક્યાંય અપલોડ થયું નથી.",
+  "attachmentPrivateNote": "તમારા હિસાબમિત્ર એકાઉન્ટમાં સચવાય છે.",
   "attachmentShareToGroup": "ગ્રુપ સાથે શેર કરો",
   "attachmentSharedToGroup": "ગ્રુપ સાથે શેર કરેલું",
-  "attachmentRemove": "દૂર કરો"
+  "attachmentRemove": "દૂર કરો",
+  "photoRecovered": "તમે લીધેલો ફોટો સાચવી રાખ્યો છે. તેને નવા ખર્ચમાં ઉમેરવો છે?",
+  "photoRecoveredAction": "ખર્ચ ઉમેરો",
+  "attachmentDownloadRetry": "આ બિલ ખૂલ્યું નહીં. ઇન્ટરનેટ તપાસીને ફરી પ્રયત્ન કરો."
 }

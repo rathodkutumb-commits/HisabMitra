@@ -16,6 +16,7 @@ import '../../profile/data/profile_repository.dart';
 import '../../settings/application/settings_controller.dart';
 import '../../transactions/data/transaction_repository.dart';
 import '../../transactions/domain/transaction_models.dart';
+import '../../synchronization/data/personal_outbox.dart';
 
 /// Ids of everything the sample data created, so it can be removed exactly.
 class _SampleIds {
@@ -118,7 +119,10 @@ class SampleDataService {
 
   AppDatabase get _db => _ref.read(appDatabaseProvider);
 
-  Future<void> load() async {
+  /// Sample data stays on the phone: nothing here is queued for upload.
+  Future<void> load() => _ref.read(personalOutboxProvider).withoutUpload(_load);
+
+  Future<void> _load() async {
     final prefs = _ref.read(settingsControllerProvider);
     if (prefs.sampleDataLoaded) return;
     final t = _texts(prefs.languageCode);
@@ -248,6 +252,7 @@ class SampleDataService {
         MemberDraft(name: t['rahul']!),
         MemberDraft(name: t['amit']!),
       ],
+      cloud: false,
     );
     ids.groups.add(groupId);
     final members =
@@ -302,7 +307,10 @@ class SampleDataService {
   /// Removes the sample data. Anything the user created stays: a sample
   /// person or group that the user has used for their own entries is kept
   /// (only the sample entries inside it are removed).
-  Future<void> remove() async {
+  Future<void> remove() =>
+      _ref.read(personalOutboxProvider).withoutUpload(_remove);
+
+  Future<void> _remove() async {
     final ids = await _readIds();
     if (ids != null) {
       final groups = _ref.read(groupRepositoryProvider);

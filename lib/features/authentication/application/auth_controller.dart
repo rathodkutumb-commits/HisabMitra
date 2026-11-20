@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,6 +14,7 @@ import '../../profile/data/profile_repository.dart';
 import '../../settings/application/settings_controller.dart';
 import '../../synchronization/application/sync_controller.dart';
 import '../../synchronization/domain/cloud_models.dart';
+import '../../synchronization/data/local_data_wiper.dart';
 
 /// Account details entered at sign-up, kept until the email is verified so
 /// the email link still works after the app was closed.
@@ -170,7 +170,6 @@ class AuthController {
           (prefs) => prefs.copyWith(
             onboardingComplete: true,
             accountVerified: true,
-            cloudSyncEnabled: true,
             // First sign-up on this device: offer the guided tour.
             tourPending: !prefs.onboardingComplete || prefs.tourPending,
           ),
@@ -198,12 +197,31 @@ class AuthController {
         );
   }
 
-  /// Signs out. Local records (including copies of shared groups) stay on
-  /// the device; the app asks to verify the email again.
+  /// Changes made on this phone that have not reached the account yet
+  /// (waiting or failed). Signing out with any of them loses them.
+  Future<int> unsentChanges() async =>
+      (await _db.select(_db.syncOutbox).get()).length;
+
+  /// Signs out and removes the phone's copy of the account's data (it stays
+  /// in the account). Categories and settings stay on the phone; the app
+  /// asks to verify the email again.
   Future<void> signOut() async {
     await _ref.read(cloudGatewayProvider).signOut();
+    await _forgetAccountOnPhone();
+  }
+
+  Future<void> _forgetAccountOnPhone() async {
+    await _ref.read(localDataWiperProvider).wipeAccountData();
     await _ref.read(profileRepositoryProvider).unlinkRemote();
-    await markSessionLost();
+    await _ref
+        .read(settingsControllerProvider.notifier)
+        .update(
+          (p) => p.copyWith(
+            accountVerified: false,
+            initialSyncDone: false,
+            sampleDataLoaded: false,
+          ),
+        );
   }
 
   /// The cloud session is gone (signed out elsewhere, revoked): ask for
@@ -212,33 +230,12 @@ class AuthController {
       .read(settingsControllerProvider.notifier)
       .update((p) => p.copyWith(accountVerified: false));
 
-  /// Deletes the cloud account. Shared groups become local copies on this
-  /// device; nothing local is deleted. A new verified account is needed to
-  /// keep using the app.
+  /// Deletes the account with all of its records and bills, and the
+  /// phone's copy of them. A new verified account is needed to keep using
+  /// the app.
   Future<void> deleteAccount() async {
     await _ref.read(cloudGatewayProvider).deleteAccount();
-    final db = _ref.read(appDatabaseProvider);
-    await db.transaction(() async {
-      await db.delete(db.syncOutbox).go();
-      await db.delete(db.syncInbox).go();
-      await (db.update(
-        db.groupsCache,
-      )..where((g) => g.isShared.equals(true))).write(
-        const GroupsCacheCompanion(
-          isShared: Value(false),
-          syncState: Value(SyncState.localOnly),
-        ),
-      );
-      await (db.delete(
-        db.appSettings,
-      )..where((s) => s.key.like('sync.%'))).go();
-    });
-    await _ref.read(profileRepositoryProvider).unlinkRemote();
-    await _ref
-        .read(settingsControllerProvider.notifier)
-        .update(
-          (p) => p.copyWith(cloudSyncEnabled: false, accountVerified: false),
-        );
+    await _forgetAccountOnPhone();
   }
 
   // ------------------------------------------------------------ settings

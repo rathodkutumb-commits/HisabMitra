@@ -67,11 +67,6 @@ class SettingsScreen extends ConsumerWidget {
       GujaratiInputMode.transliteration => l.inputModeTransliteration,
       GujaratiInputMode.keypad => l.inputModeKeypad,
     };
-    String backupLabel(AutoBackupFrequency f) => switch (f) {
-      AutoBackupFrequency.off => l.autoBackupOff,
-      AutoBackupFrequency.daily => l.autoBackupDaily,
-      AutoBackupFrequency.weekly => l.autoBackupWeekly,
-    };
     final sample = DateTime(2026, 8, 15);
 
     return Scaffold(
@@ -215,13 +210,6 @@ class SettingsScreen extends ConsumerWidget {
           ),
           if (AppConfig.isCloudConfigured) ...[
             SectionHeader(title: l.settingsSync),
-            SwitchListTile(
-              secondary: const Icon(Icons.cloud_sync_rounded),
-              title: Text(l.settingsCloudSync),
-              subtitle: Text(l.settingsCloudSyncDesc),
-              value: p.cloudSyncEnabled,
-              onChanged: (v) => set((x) => x.copyWith(cloudSyncEnabled: v)),
-            ),
             ListTile(
               leading: const Icon(Icons.sync_rounded),
               title: Text(l.settingsSyncStatus),
@@ -236,18 +224,6 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: Text(l.settingsBackupDesc),
             trailing: const Icon(Icons.chevron_right_rounded),
             onTap: () => context.push(Routes.backup),
-          ),
-          ListTile(
-            leading: const Icon(Icons.schedule_rounded),
-            title: Text(l.settingsAutoBackup),
-            subtitle: Text(backupLabel(p.autoBackup)),
-            onTap: () async {
-              final v = await choose(l.settingsAutoBackup, [
-                for (final f in AutoBackupFrequency.values)
-                  (f, backupLabel(f), null),
-              ], p.autoBackup);
-              if (v != null) set((x) => x.copyWith(autoBackup: v));
-            },
           ),
           SectionHeader(title: l.settingsAi),
           ListTile(

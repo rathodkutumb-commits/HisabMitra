@@ -56,7 +56,9 @@ test in `test/widget/app_flow_test.dart`, also run on device through
 | + | Group invitation | `/groups/:id/invite` | `GroupInviteScreen` | Blocked — needs sign-in | U |
 | + | Join group with code | `/join` | `JoinGroupScreen` | Blocked — needs sign-in | U |
 | + | More (menu tab) | `/more` | `MoreScreen` | Done | W |
-| + | Guided tour + sample data (overlay, prompt, banner) | overlay on any route | `TourOverlay`, `TourPromptHost`, `SampleDataBanner` | Done | W (tour, banner), U (sample data) |
+| + | Guided tour + sample data (overlay, prompt, banner) | overlay on any route | `TourOverlay`, `TourPromptHost`, `SampleDataBanner` | Done | W (tour, banner)
+| + | Floating AI button (above the page's own button; hidden on forms, chat, onboarding, with keyboard/keypad, or when AI is off) | tabs + list/detail pages | `AiFabStack` | Done | W (`ai_fab_test`) |
+| + | Exit confirmation on back (tabs go Home first) | Home tab, onboarding, sign-in | `ExitConfirmScope` | Done | W (`back_navigation_test`) |, U (sample data) |
 
 ## Shared components
 

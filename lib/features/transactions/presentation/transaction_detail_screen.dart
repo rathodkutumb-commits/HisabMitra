@@ -13,6 +13,7 @@ import '../../attachments/presentation/attachments_editor.dart';
 import '../../categories/presentation/category_labels.dart';
 import '../../settings/application/settings_controller.dart';
 import '../data/transaction_repository.dart';
+import '../../ai_assistant/presentation/ai_fab.dart';
 
 class TransactionDetailScreen extends ConsumerWidget {
   const TransactionDetailScreen({super.key, required this.transactionId});
@@ -48,6 +49,7 @@ class TransactionDetailScreen extends ConsumerWidget {
     final value = ref.watch(transactionProvider(transactionId));
 
     return Scaffold(
+      floatingActionButton: const AiFabStack(),
       appBar: AppBar(
         title: Text(l.transactionDetailsTitle),
         actions: [

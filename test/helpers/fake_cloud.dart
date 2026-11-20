@@ -4,6 +4,8 @@ import 'package:hisabmitra/core/errors/app_failure.dart';
 import 'package:hisabmitra/features/synchronization/data/cloud_gateway.dart';
 import 'package:hisabmitra/features/synchronization/domain/cloud_models.dart';
 
+import 'fake_personal_cloud.dart';
+
 /// In-memory server mirroring `apply_group_op` / `sync_events` semantics
 /// (verified against PostgreSQL in supabase/tests). Test-only.
 class FakeCloudServer {
@@ -17,6 +19,15 @@ class FakeCloudServer {
   invitations = {};
   var _seq = 0;
   var _codes = 0;
+
+  /// Personal records of every user (`apply_personal_op` and its feed).
+  late final personal = FakePersonalStore(
+    processed: processed,
+    isMember: isMember,
+  );
+
+  /// Files in `group-attachments`, keyed by storage path.
+  final Map<String, List<int>> groupFiles = {};
 
   /// When true the server applies the next op but the response is "lost".
   var dropNextResponse = false;
@@ -251,7 +262,9 @@ class FakeCloudClient implements CloudGateway {
   @override
   Future<OpResult> applyOp(OutboundOp op) async {
     _net();
-    final r = server.apply(op, userId);
+    final r = op.isPersonal
+        ? server.personal.apply(op, userId)
+        : server.apply(op, userId);
     applied.add(op.opId);
     if (server.dropNextResponse) {
       server.dropNextResponse = false;
@@ -276,6 +289,53 @@ class FakeCloudClient implements CloudGateway {
   Future<GroupSnapshot> fetchGroupSnapshot(String groupId) async {
     _net();
     return server.snapshot(groupId, userId);
+  }
+
+  @override
+  Future<List<RemoteEvent>> pullPersonalEvents({
+    required int afterSeq,
+    int limit = 500,
+  }) async {
+    _net();
+    return server.personal.pull(userId, afterSeq, limit);
+  }
+
+  @override
+  Future<PersonalSnapshot> fetchPersonalSnapshot() async {
+    _net();
+    return server.personal.snapshot(userId);
+  }
+
+  /// Names of personal files this device uploaded, in order.
+  final uploadedFiles = <String>[];
+
+  /// When true, file uploads fail like a dropped connection.
+  var failFileUploads = false;
+
+  @override
+  Future<void> uploadPersonalFile({
+    required String storageName,
+    required List<int> bytes,
+    required String mimeType,
+  }) async {
+    _net();
+    if (failFileUploads) throw const NetworkFailure();
+    server.personal.files['$userId/$storageName'] = List.of(bytes);
+    uploadedFiles.add(storageName);
+  }
+
+  @override
+  Future<List<int>> downloadPersonalFile(String storageName) async {
+    _net();
+    final f = server.personal.files['$userId/$storageName'];
+    if (f == null) throw const NotFoundFailure();
+    return f;
+  }
+
+  @override
+  Future<void> deletePersonalFile(String storageName) async {
+    _net();
+    server.personal.files.remove('$userId/$storageName');
   }
 
   @override
@@ -333,10 +393,20 @@ class FakeCloudClient implements CloudGateway {
     required List<int> bytes,
     required String mimeType,
     required Map<String, Object?> metadata,
-  }) async => _net();
+  }) async {
+    _net();
+    if (failFileUploads) throw const NetworkFailure();
+    server.groupFiles[storagePath] = List.of(bytes);
+  }
+
   @override
-  Future<List<int>> downloadGroupAttachment(String storagePath) async =>
-      const [];
+  Future<List<int>> downloadGroupAttachment(String storagePath) async {
+    _net();
+    final f = server.groupFiles[storagePath];
+    if (f == null) throw const NotFoundFailure();
+    return f;
+  }
+
   @override
   Future<void> deleteAccount() async {}
 }

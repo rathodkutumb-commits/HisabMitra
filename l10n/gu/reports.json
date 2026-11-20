@@ -34,5 +34,6 @@
   "noDataForPeriod": "આ સમયગાળામાં કોઈ નોંધ નથી",
   "transactionsExportTitle": "વ્યવહારો",
   "fullReportTitle": "નાણાકીય રિપોર્ટ",
-  "settlementSummary": "ચુકવણીનો સારાંશ"
+  "settlementSummary": "ચુકવણીનો સારાંશ",
+  "shareReportCaption": "📊 *હિસાબમિત્ર રિપોર્ટ* · {title} · {period}"
 }

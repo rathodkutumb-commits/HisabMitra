@@ -16,7 +16,9 @@ import java.io.File
 import java.security.MessageDigest
 
 /**
- * Hosts two small platform channels:
+ * Hosts three small platform channels:
+ *  - hisabmitra/system: open this app's "App info" settings page (battery
+ *    restrictions, so reminders arrive on time).
  *  - hisabmitra/contacts: system contact picker (no READ_CONTACTS permission;
  *    the picker grants temporary access to the chosen row only).
  *  - hisabmitra/installer: inspect a downloaded APK's package name, version
@@ -33,6 +35,20 @@ class MainActivity : FlutterActivity() {
         MethodChannel(messenger, "hisabmitra/contacts").setMethodCallHandler { call, result ->
             when (call.method) {
                 "pickContact" -> pickContact(result)
+                else -> result.notImplemented()
+            }
+        }
+
+        MethodChannel(messenger, "hisabmitra/system").setMethodCallHandler { call, result ->
+            when (call.method) {
+                "openAppDetails" -> {
+                    try {
+                        openAppDetails()
+                        result.success(null)
+                    } catch (e: Exception) {
+                        result.error("unavailable", "Could not open app settings", null)
+                    }
+                }
                 else -> result.notImplemented()
             }
         }
@@ -188,6 +204,17 @@ class MainActivity : FlutterActivity() {
             )
             startActivity(intent)
         }
+    }
+
+    // ------------------------------------------------------------ app settings
+
+    /** Android's "App info" page, where battery restrictions can be lifted. */
+    private fun openAppDetails() {
+        val intent = Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.parse("package:$packageName"),
+        )
+        startActivity(intent)
     }
 
     private fun launchInstaller(path: String) {

@@ -14,6 +14,7 @@ import '../../settings/application/settings_controller.dart';
 import '../../settings/domain/app_preferences.dart';
 import '../application/ai_chat_controller.dart';
 import '../data/claude_answer_service.dart';
+import 'ai_examples.dart';
 
 class AiChatScreen extends ConsumerStatefulWidget {
   const AiChatScreen({super.key});
@@ -56,14 +57,12 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
     final l = context.l10n;
     final prefs = ref.watch(settingsControllerProvider);
     final messages = ref.watch(aiChatControllerProvider);
-    final examples = [
-      l.aiExample1,
-      l.aiExample2,
-      l.aiExample3,
-      l.aiExample4,
-      l.aiExample5,
-      l.aiExample6,
-    ];
+    final names = ref.watch(aiExampleNamesProvider).value;
+    final sections = buildAiExamples(
+      l,
+      personName: names?.person,
+      groupName: names?.group,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -110,18 +109,25 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
                               l.aiHelp,
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
-                            const SizedBox(height: 16),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                for (final e in examples)
-                                  ActionChip(
-                                    label: Text(e),
-                                    onPressed: () => _send(e),
-                                  ),
-                              ],
-                            ),
+                            for (final section in sections) ...[
+                              const SizedBox(height: 16),
+                              Text(
+                                section.title,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  for (final e in section.examples)
+                                    ActionChip(
+                                      label: Text(e.text),
+                                      onPressed: () => _send(e.text),
+                                    ),
+                                ],
+                              ),
+                            ],
                           ],
                         )
                       : ListView.builder(

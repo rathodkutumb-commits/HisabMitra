@@ -60,5 +60,8 @@
   "justMarkPaid": "ફક્ત ચૂકવ્યું નોંધો",
   "paymentsDueThisMonth": "આ મહિને ભરવાની ચુકવણી",
   "addRecurringPayment": "નિયમિત ચુકવણી ઉમેરો",
-  "notificationPaymentBody": "{amount} ભરવાના છે"
+  "notificationPaymentBody": "{amount} ભરવાના છે",
+  "reminderBatteryTip": "કેટલાક ફોનમાં (Xiaomi, Oppo, Vivo વગેરે) બૅટરી બચત રિમાઇન્ડર રોકી શકે છે. રિમાઇન્ડર સમયસર મળે તે માટે હિસાબમિત્રને બેકગ્રાઉન્ડમાં ચાલવાની મંજૂરી આપો.",
+  "reminderBatteryTipOpen": "સેટિંગ્સ ખોલો",
+  "reminderBatteryTipDismiss": "સમજાયું"
 }

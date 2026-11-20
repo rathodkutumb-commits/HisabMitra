@@ -406,12 +406,22 @@ class BackupService {
   ///    callback (which swaps the files) and reopen the database.
   /// 3. The swapped-in database is integrity-checked before the old files
   ///    are discarded; on any failure the previous files are put back.
+  ///
+  /// [prepareRestoredDatabase] runs on the restored database file before it
+  /// is swapped in (e.g. queue it for upload to the account), so the change
+  /// and the restore happen together.
   Future<RestoreResult> restore(
     BackupInspection inspection, {
     required Future<void> Function(Future<void> Function() whileClosed)
     replaceDatabase,
+    Future<void> Function(String restoredDatabasePath)? prepareRestoredDatabase,
   }) async {
     final safety = await createBackup(kind: BackupKind.safety);
+    if (prepareRestoredDatabase != null) {
+      await prepareRestoredDatabase(
+        p.join(inspection.stagingDir.path, 'database.sqlite'),
+      );
+    }
     final dbPath = await _databasePath();
     final attachments = await _attachmentsDir();
     final base = await _baseDir();
@@ -497,17 +507,5 @@ class BackupService {
     final f = File(row.filePath);
     if (f.existsSync()) f.deleteSync();
     await (_db.delete(_db.backupHistory)..where((b) => b.id.equals(id))).go();
-  }
-
-  /// Keeps only the newest [keep] automatic backups.
-  Future<void> pruneAutomatic({int keep = 7}) async {
-    final autos =
-        await (_db.select(_db.backupHistory)
-              ..where((b) => b.kind.equalsValue(BackupKind.automatic))
-              ..orderBy([(b) => OrderingTerm.desc(b.createdAt)]))
-            .get();
-    for (final row in autos.skip(keep)) {
-      await deleteBackup(row.id);
-    }
   }
 }

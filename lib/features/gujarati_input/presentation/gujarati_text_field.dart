@@ -35,6 +35,10 @@ class GujaratiTextField extends ConsumerStatefulWidget {
   final FormFieldValidator<String>? validator;
   final bool autofocus;
 
+  /// How many Gujarati keypads are open right now. Floating buttons hide
+  /// while it is above zero so they never cover the keypad.
+  static final openKeypads = ValueNotifier<int>(0);
+
   @override
   ConsumerState<GujaratiTextField> createState() => _GujaratiTextFieldState();
 }
@@ -90,7 +94,9 @@ class _GujaratiTextFieldState extends ConsumerState<GujaratiTextField> {
       ),
       enableDrag: false,
     );
+    GujaratiTextField.openKeypads.value++;
     _keypad!.closed.then((_) {
+      GujaratiTextField.openKeypads.value--;
       _keypad = null;
       if (mounted && _keypadSpace != 0) setState(() => _keypadSpace = 0);
     });

@@ -38,11 +38,15 @@ means the backup cannot be opened.
 | Kind | When | Kept |
 |---|---|---|
 | Manual | Backup screen → "Back up now" | until deleted |
-| Automatic | daily or weekly (Settings → Backup); checked when the app starts or returns to the foreground | newest 7 |
 | Safety | automatically before every restore | until deleted |
 
-Limitation: Android does not run the app in the background for this, so an
-automatic backup happens on the first app open after it is due.
+Automatic backups were removed in Part B (2026-11-20): the account holds
+the records. Older automatic backup files stay listed until deleted.
+
+**Restore with an account:** needs internet. The restored records replace
+the hisab saved in the account (a `reset` is queued first, then every
+record — see SYNC_ARCHITECTURE.md); groups are not taken from the backup and
+are downloaded again from the account.
 
 ## Restore steps
 

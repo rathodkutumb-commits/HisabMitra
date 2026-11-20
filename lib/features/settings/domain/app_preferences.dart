@@ -18,8 +18,6 @@ enum GroupView { spreadsheet, cards, timeline }
 /// Excel-like sheet with a running balance.
 enum TransactionsView { list, sheet }
 
-enum AutoBackupFrequency { off, daily, weekly }
-
 enum AiProvider { local, online }
 
 enum GujaratiInputMode { system, transliteration, keypad }
@@ -32,8 +30,6 @@ bool _bool(String? raw, bool fallback) => switch (raw) {
   'false' => false,
   _ => fallback,
 };
-
-DateTime? _date(String? raw) => raw == null ? null : DateTime.tryParse(raw);
 
 /// All user preferences. Persisted as key/value strings in `app_settings`.
 /// Secrets (session, API keys) are **not** part of this class.
@@ -52,17 +48,16 @@ class AppPreferences {
     required this.groupNotifications,
     required this.reminderNotifications,
     required this.hideAmountsInNotifications,
-    required this.cloudSyncEnabled,
-    required this.autoBackup,
     required this.aiEnabled,
     required this.aiProvider,
     required this.aiConsent,
     required this.aiShareNames,
     required this.gujaratiInputMode,
-    required this.lastAutoBackupAt,
     required this.accountVerified,
     required this.tourPending,
     required this.sampleDataLoaded,
+    required this.reminderBatteryTipDismissed,
+    required this.initialSyncDone,
   });
 
   static const supportedLanguages = ['en', 'gu'];
@@ -100,13 +95,8 @@ class AppPreferences {
       groupNotifications: _bool(m[_kGroupNotify], true),
       reminderNotifications: _bool(m[_kReminderNotify], true),
       hideAmountsInNotifications: _bool(m[_kHideAmounts], true),
-      cloudSyncEnabled: _bool(m[_kCloudSync], false),
-      autoBackup: _enum(
-        AutoBackupFrequency.values,
-        m[_kAutoBackup],
-        AutoBackupFrequency.off,
-      ),
-      aiEnabled: _bool(m[_kAiEnabled], false),
+      // On by default since 2026-11-20 (the on-phone engine sends nothing).
+      aiEnabled: _bool(m[_kAiEnabled], true),
       aiProvider: _enum(AiProvider.values, m[_kAiProvider], AiProvider.local),
       aiConsent: _bool(m[_kAiConsent], false),
       aiShareNames: _bool(m[_kAiNames], false),
@@ -115,10 +105,11 @@ class AppPreferences {
         m[_kInputMode],
         GujaratiInputMode.system,
       ),
-      lastAutoBackupAt: _date(m[_kLastAutoBackup]),
       accountVerified: _bool(m[_kAccountVerified], false),
       tourPending: _bool(m[_kTourPending], false),
       sampleDataLoaded: _bool(m[_kSampleData], false),
+      reminderBatteryTipDismissed: _bool(m[_kBatteryTip], false),
+      initialSyncDone: _bool(m[_kInitialSync], false),
     );
   }
 
@@ -138,11 +129,13 @@ class AppPreferences {
   static const _kSampleData = 'tour.sampleData';
   static const _kGroupNotify = 'groups.notifications';
   static const _kReminderNotify = 'notifications.reminders';
+  static const _kBatteryTip = 'reminders.batteryTipDismissed';
+  static const _kInitialSync = 'sync.initialDone';
   static const _kHideAmounts = 'notifications.hideAmounts';
-  static const _kCloudSync = 'sync.enabled';
-  static const _kAutoBackup = 'backup.auto';
-  static const _kLastAutoBackup = 'backup.lastAuto';
-  static const _kAiEnabled = 'ai.enabled';
+  // New key on 2026-11-20 so every install gets the assistant on once: the
+  // old 'ai.enabled' was saved with every settings change, so a stored
+  // "false" can't be told apart from the old default and is ignored.
+  static const _kAiEnabled = 'ai.assistant.enabled';
   static const _kAiProvider = 'ai.provider';
   static const _kAiConsent = 'ai.consent';
   static const _kAiNames = 'ai.shareNames';
@@ -168,17 +161,21 @@ class AppPreferences {
 
   /// Tour sample data is in the database (shows a "remove" banner).
   final bool sampleDataLoaded;
+
+  /// The reminders screen's battery-saving tip was dismissed ("Got it").
+  final bool reminderBatteryTipDismissed;
+
+  /// The phone and the account have been synced once (first upload of old
+  /// phone data / download on a new phone).
+  final bool initialSyncDone;
   final bool groupNotifications;
   final bool reminderNotifications;
   final bool hideAmountsInNotifications;
-  final bool cloudSyncEnabled;
-  final AutoBackupFrequency autoBackup;
   final bool aiEnabled;
   final AiProvider aiProvider;
   final bool aiConsent;
   final bool aiShareNames;
   final GujaratiInputMode gujaratiInputMode;
-  final DateTime? lastAutoBackupAt;
 
   /// Online AI requires the assistant on, the online engine selected and
   /// explicit data-sharing consent.
@@ -198,8 +195,6 @@ class AppPreferences {
     _kGroupNotify: '$groupNotifications',
     _kReminderNotify: '$reminderNotifications',
     _kHideAmounts: '$hideAmountsInNotifications',
-    _kCloudSync: '$cloudSyncEnabled',
-    _kAutoBackup: autoBackup.name,
     _kAiEnabled: '$aiEnabled',
     _kAiProvider: aiProvider.name,
     _kAiConsent: '$aiConsent',
@@ -208,8 +203,8 @@ class AppPreferences {
     _kAccountVerified: '$accountVerified',
     _kTourPending: '$tourPending',
     _kSampleData: '$sampleDataLoaded',
-    if (lastAutoBackupAt != null)
-      _kLastAutoBackup: lastAutoBackupAt!.toUtc().toIso8601String(),
+    _kBatteryTip: '$reminderBatteryTipDismissed',
+    _kInitialSync: '$initialSyncDone',
   };
 
   AppPreferences copyWith({
@@ -224,17 +219,16 @@ class AppPreferences {
     bool? groupNotifications,
     bool? reminderNotifications,
     bool? hideAmountsInNotifications,
-    bool? cloudSyncEnabled,
-    AutoBackupFrequency? autoBackup,
     bool? aiEnabled,
     AiProvider? aiProvider,
     bool? aiConsent,
     bool? aiShareNames,
     GujaratiInputMode? gujaratiInputMode,
-    DateTime? lastAutoBackupAt,
     bool? accountVerified,
     bool? tourPending,
     bool? sampleDataLoaded,
+    bool? reminderBatteryTipDismissed,
+    bool? initialSyncDone,
   }) {
     return AppPreferences(
       palette: palette ?? this.palette,
@@ -251,17 +245,17 @@ class AppPreferences {
           reminderNotifications ?? this.reminderNotifications,
       hideAmountsInNotifications:
           hideAmountsInNotifications ?? this.hideAmountsInNotifications,
-      cloudSyncEnabled: cloudSyncEnabled ?? this.cloudSyncEnabled,
-      autoBackup: autoBackup ?? this.autoBackup,
       aiEnabled: aiEnabled ?? this.aiEnabled,
       aiProvider: aiProvider ?? this.aiProvider,
       aiConsent: aiConsent ?? this.aiConsent,
       aiShareNames: aiShareNames ?? this.aiShareNames,
       gujaratiInputMode: gujaratiInputMode ?? this.gujaratiInputMode,
-      lastAutoBackupAt: lastAutoBackupAt ?? this.lastAutoBackupAt,
       accountVerified: accountVerified ?? this.accountVerified,
       tourPending: tourPending ?? this.tourPending,
       sampleDataLoaded: sampleDataLoaded ?? this.sampleDataLoaded,
+      reminderBatteryTipDismissed:
+          reminderBatteryTipDismissed ?? this.reminderBatteryTipDismissed,
+      initialSyncDone: initialSyncDone ?? this.initialSyncDone,
     );
   }
 

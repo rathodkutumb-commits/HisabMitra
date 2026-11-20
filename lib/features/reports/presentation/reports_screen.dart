@@ -16,6 +16,7 @@ import '../../transactions/presentation/widgets/transaction_tile.dart';
 import '../data/export_service.dart';
 import '../data/report_service.dart';
 import 'export_actions.dart';
+import '../../ai_assistant/presentation/ai_fab.dart';
 
 enum ReportKind {
   overview('overview'),
@@ -73,6 +74,10 @@ class _ExportButtons extends ConsumerWidget {
             ? exporter.reportPdf(data, l, fmt)
             : exporter.reportCsv(data, l, fmt),
         mime: pdf ? 'application/pdf' : 'text/csv',
+        caption: l.shareReportCaption(
+          l.reportsTitle,
+          l.reportPeriod(fmt.date(range.start), fmt.date(range.endInclusive)),
+        ),
       );
     }
 
@@ -111,6 +116,7 @@ class ReportsScreen extends ConsumerWidget {
     final range = ref.watch(periodControllerProvider).range;
     final report = ref.watch(reportProvider(range));
     return Scaffold(
+      floatingActionButton: const AiFabStack(),
       appBar: AppBar(
         title: Text(l.reportsTitle),
         actions: const [_ExportButtons()],

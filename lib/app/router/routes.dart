@@ -6,6 +6,9 @@ abstract final class Routes {
   static const profileSetup = '/welcome/profile';
   static const verifyEmail = '/welcome/verify';
 
+  /// First sync of this phone with the account (upload / download).
+  static const accountSync = '/welcome/sync';
+
   static const home = '/home';
   static const transactions = '/transactions';
   static const people = '/people';

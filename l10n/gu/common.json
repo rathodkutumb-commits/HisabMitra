@@ -54,7 +54,7 @@
   "discardChangesMessage": "ન સાચવેલા ફેરફારો ગુમ થઈ જશે.",
   "discard": "છોડી દો",
   "keepEditing": "ફેરફાર ચાલુ રાખો",
-  "offlineBanner": "તમે ઑફલાઇન છો. તમારો ડેટા આ ફોનમાં સુરક્ષિત છે.",
+  "offlineBanner": "તમે ઑફલાઇન છો. તમારા ફેરફાર આ ફોનમાં સચવાયેલા છે અને ઇન્ટરનેટ આવતાં તમારા એકાઉન્ટમાં પહોંચી જશે.",
   "pmCash": "રોકડ",
   "pmUpi": "UPI",
   "pmBankTransfer": "બેંક ટ્રાન્સફર",
@@ -76,5 +76,8 @@
   "periodThisYear": "આ વર્ષે",
   "periodCustom": "પસંદગીની તારીખો",
   "notConfigured": "ગોઠવાયેલ નથી",
-  "privateOnDevice": "ખાનગી · આ ફોનમાં સંગ્રહિત"
+  "privateOnDevice": "ખાનગી · તમારા એકાઉન્ટમાં સચવાયેલું",
+  "exitAppTitle": "હિસાબમિત્ર બંધ કરવી છે?",
+  "exitAppConfirm": "બંધ કરો",
+  "exitAppStay": "રહો"
 }

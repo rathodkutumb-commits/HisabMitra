@@ -35,12 +35,33 @@ abstract interface class CloudGateway {
     required String appVersion,
   });
 
+  /// Sends one queued change: `apply_group_op`, or `apply_personal_op` when
+  /// [OutboundOp.isPersonal].
   Future<OpResult> applyOp(OutboundOp op);
   Future<List<RemoteEvent>> pullEvents({
     required int afterSeq,
     int limit = 500,
   });
   Future<GroupSnapshot> fetchGroupSnapshot(String groupId);
+
+  /// The user's own change feed after [afterSeq] (scope `personal`).
+  Future<List<RemoteEvent>> pullPersonalEvents({
+    required int afterSeq,
+    int limit = 500,
+  });
+
+  /// Every live personal record of the user (new or reset phone).
+  Future<PersonalSnapshot> fetchPersonalSnapshot();
+
+  /// Bill files in the private `personal-attachments` bucket, stored at
+  /// `<user id>/<storageName>`.
+  Future<void> uploadPersonalFile({
+    required String storageName,
+    required List<int> bytes,
+    required String mimeType,
+  });
+  Future<List<int>> downloadPersonalFile(String storageName);
+  Future<void> deletePersonalFile(String storageName);
 
   Future<CreatedInvitation> createInvitation({
     required String groupId,
@@ -108,6 +129,23 @@ class NotConfiguredCloudGateway implements CloudGateway {
   }) async => _fail();
   @override
   Future<GroupSnapshot> fetchGroupSnapshot(String groupId) async => _fail();
+  @override
+  Future<List<RemoteEvent>> pullPersonalEvents({
+    required int afterSeq,
+    int limit = 500,
+  }) async => _fail();
+  @override
+  Future<PersonalSnapshot> fetchPersonalSnapshot() async => _fail();
+  @override
+  Future<void> uploadPersonalFile({
+    required String storageName,
+    required List<int> bytes,
+    required String mimeType,
+  }) async => _fail();
+  @override
+  Future<List<int>> downloadPersonalFile(String storageName) async => _fail();
+  @override
+  Future<void> deletePersonalFile(String storageName) async => _fail();
   @override
   Future<CreatedInvitation> createInvitation({
     required String groupId,

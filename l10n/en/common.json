@@ -68,7 +68,7 @@
   "discardChangesMessage": "Your unsaved changes will be lost.",
   "discard": "Discard",
   "keepEditing": "Keep editing",
-  "offlineBanner": "You are offline. Your data is safe on this device.",
+  "offlineBanner": "You are offline. Your changes are saved on this phone and will reach your account when you are back online.",
   "pmCash": "Cash",
   "pmUpi": "UPI",
   "pmBankTransfer": "Bank transfer",
@@ -104,5 +104,8 @@
   "periodThisYear": "This year",
   "periodCustom": "Custom range",
   "notConfigured": "Not configured",
-  "privateOnDevice": "Private · stored on this device"
+  "privateOnDevice": "Private · saved to your account",
+  "exitAppTitle": "Exit HisabMitra?",
+  "exitAppConfirm": "Exit",
+  "exitAppStay": "Stay"
 }

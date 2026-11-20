@@ -48,6 +48,33 @@ final localAiEngineProvider = Provider<LocalAiEngine>(
   ),
 );
 
+/// The user's most recently changed person and (active) group, used to
+/// personalise the example questions. Null when there are none.
+final aiExampleNamesProvider =
+    FutureProvider.autoDispose<({String? person, String? group})>((ref) async {
+      final people = await ref.watch(peopleRepositoryProvider).watchAll().first;
+      final groups = await ref
+          .watch(groupRepositoryProvider)
+          .watchGroups()
+          .first;
+      String? person;
+      if (people.isNotEmpty) {
+        person = people
+            .reduce((a, b) => b.updatedAt.isAfter(a.updatedAt) ? b : a)
+            .name;
+      }
+      String? group;
+      if (groups.isNotEmpty) {
+        group = groups
+            .reduce(
+              (a, b) => b.group.updatedAt.isAfter(a.group.updatedAt) ? b : a,
+            )
+            .group
+            .name;
+      }
+      return (person: person, group: group);
+    });
+
 /// Chat history lives in memory only and disappears when the app closes.
 class AiChatController extends Notifier<List<ChatMessage>> {
   var _busy = false;

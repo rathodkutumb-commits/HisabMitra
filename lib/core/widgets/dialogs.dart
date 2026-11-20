@@ -8,6 +8,7 @@ Future<bool> confirmAction(
   required String title,
   String? message,
   String? confirmLabel,
+  String? cancelLabel,
   bool destructive = false,
 }) async {
   final l = context.l10n;
@@ -20,7 +21,7 @@ Future<bool> confirmAction(
       actions: [
         TextButton(
           onPressed: () => Navigator.of(ctx).pop(false),
-          child: Text(l.cancel),
+          child: Text(cancelLabel ?? l.cancel),
         ),
         FilledButton(
           style: destructive

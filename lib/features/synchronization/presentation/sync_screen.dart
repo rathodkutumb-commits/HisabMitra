@@ -25,13 +25,9 @@ class SyncScreen extends ConsumerWidget {
         ref.watch(openConflictsProvider).value ?? const <ConflictRow>[];
     final online = ref.watch(connectivityProvider).value ?? true;
     final session = ref.watch(cloudSessionProvider).value;
-    final enabled = ref.watch(settingsControllerProvider).cloudSyncEnabled;
-
     String? blocker;
     if (session == null) {
       blocker = l.syncSignInNeeded;
-    } else if (!enabled) {
-      blocker = l.syncDisabled;
     } else if (!online) {
       blocker = l.syncOffline;
     }
@@ -162,12 +158,21 @@ class _ConflictCard extends ConsumerWidget {
     final remote = conflict.remotePayload == null
         ? null
         : (jsonDecode(conflict.remotePayload!) as Map).cast<String, Object?>();
-    final type = switch (conflict.entityType) {
-      'group' => l.entityGroup,
-      'member' => l.entityMember,
-      'settlement' => l.entitySettlement,
-      _ => l.entityExpense,
-    };
+    final type = conflict.scope == 'personal'
+        ? switch (conflict.entityType) {
+            'person' => l.entityPerson,
+            'ledger_entry' => l.entityLedgerEntry,
+            'ledger_repayment' => l.entityRepayment,
+            'reminder' => l.entityReminder,
+            'attachment' => l.entityBill,
+            _ => l.entityTransaction,
+          }
+        : switch (conflict.entityType) {
+            'group' => l.entityGroup,
+            'member' => l.entityMember,
+            'settlement' => l.entitySettlement,
+            _ => l.entityExpense,
+          };
     Future<void> resolve(bool keepLocal) async {
       try {
         await ref

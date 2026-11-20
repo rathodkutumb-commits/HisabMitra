@@ -41,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Current schema version. Bump together with a new step in [migration]
   /// and a `dart run drift_dev make-migrations` schema dump.
-  static const int currentSchemaVersion = 3;
+  static const int currentSchemaVersion = 4;
 
   static const String fileName = 'hisabmitra.sqlite';
 
@@ -70,6 +70,37 @@ class AppDatabase extends _$AppDatabase {
         // v3: compulsory, verified email on the user's own profile.
         final p = schema.localUserProfile;
         await m.addColumn(p, p.email);
+      },
+      from3To4: (m, schema) async {
+        // v4: personal records are saved to the account (upload state), and
+        // the sync tables carry a scope (group / personal).
+        await m.addColumn(schema.persons, schema.persons.revision);
+        await m.addColumn(schema.persons, schema.persons.syncState);
+        await m.addColumn(schema.transactions, schema.transactions.revision);
+        await m.addColumn(schema.transactions, schema.transactions.syncState);
+        await m.addColumn(schema.moneyLedger, schema.moneyLedger.revision);
+        await m.addColumn(schema.moneyLedger, schema.moneyLedger.syncState);
+        await m.addColumn(
+          schema.moneySettlements,
+          schema.moneySettlements.revision,
+        );
+        await m.addColumn(
+          schema.moneySettlements,
+          schema.moneySettlements.syncState,
+        );
+        await m.addColumn(schema.reminders, schema.reminders.revision);
+        await m.addColumn(schema.reminders, schema.reminders.syncState);
+        await m.addColumn(schema.attachments, schema.attachments.revision);
+        await m.addColumn(schema.attachments, schema.attachments.syncState);
+        await m.addColumn(schema.syncOutbox, schema.syncOutbox.scope);
+        // The inbox key becomes (scope, seq): rebuild the table.
+        await m.alterTable(
+          TableMigration(
+            schema.syncInbox,
+            newColumns: [schema.syncInbox.scope, schema.syncInbox.opId],
+          ),
+        );
+        await m.addColumn(schema.syncConflicts, schema.syncConflicts.scope);
       },
     ),
     beforeOpen: (details) async {

@@ -9,8 +9,11 @@
   "attachmentOpenExternal": "Open in another app",
   "attachmentDeleteConfirm": "Remove this attachment?",
   "attachmentViewerTitle": "Attachment",
-  "attachmentPrivateNote": "Stored privately on this phone. Not uploaded anywhere.",
+  "attachmentPrivateNote": "Saved to your HisabMitra account.",
   "attachmentShareToGroup": "Share with group",
   "attachmentSharedToGroup": "Shared with group",
-  "attachmentRemove": "Remove"
+  "attachmentRemove": "Remove",
+  "photoRecovered": "We saved the photo you took. Add it to a new expense?",
+  "photoRecoveredAction": "Add expense",
+  "attachmentDownloadRetry": "Couldn't load this bill. Check your internet and try again."
 }

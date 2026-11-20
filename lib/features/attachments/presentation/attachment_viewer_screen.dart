@@ -44,8 +44,8 @@ class AttachmentViewerScreen extends ConsumerWidget {
                 onPressed: () async {
                   final file = await ref
                       .read(attachmentServiceProvider)
-                      .fileFor(a.storedName);
-                  if (!file.existsSync()) {
+                      .ensureLocal(a);
+                  if (file == null) {
                     if (context.mounted) {
                       showFailure(context, const AttachmentFailure('missing'));
                     }
@@ -86,23 +86,44 @@ class AttachmentViewerScreen extends ConsumerWidget {
   }
 }
 
-class _AttachmentBody extends ConsumerWidget {
+class _AttachmentBody extends ConsumerStatefulWidget {
   const _AttachmentBody({required this.row});
 
   final AttachmentRow row;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_AttachmentBody> createState() => _AttachmentBodyState();
+}
+
+class _AttachmentBodyState extends ConsumerState<_AttachmentBody> {
+  late Future<File?> _file = _load();
+
+  AttachmentRow get row => widget.row;
+
+  /// The file on this phone, downloaded from the account when needed.
+  Future<File?> _load() => ref.read(attachmentServiceProvider).ensureLocal(row);
+
+  @override
+  Widget build(BuildContext context) {
     final l = context.l10n;
-    return FutureBuilder<File>(
-      future: ref.read(attachmentServiceProvider).fileFor(row.storedName),
+    return FutureBuilder<File?>(
+      future: _file,
       builder: (context, snap) {
-        if (!snap.hasData) return const LoadingView();
-        final file = snap.data!;
-        if (!file.existsSync()) {
+        if (snap.connectionState != ConnectionState.done) {
+          return const LoadingView();
+        }
+        final file = snap.data;
+        if (file == null) {
+          final canDownload = row.remotePath?.isNotEmpty ?? false;
           return EmptyState(
             icon: Icons.broken_image_rounded,
-            title: l.attachmentMissing,
+            title: canDownload
+                ? l.attachmentDownloadRetry
+                : l.attachmentMissing,
+            actionLabel: canDownload ? l.retry : null,
+            onAction: canDownload
+                ? () => setState(() => _file = _load())
+                : null,
           );
         }
         if (row.mimeType.startsWith('image/')) {

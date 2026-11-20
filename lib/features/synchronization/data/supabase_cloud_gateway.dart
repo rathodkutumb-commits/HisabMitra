@@ -207,7 +207,7 @@ class SupabaseCloudGateway implements CloudGateway {
   @override
   Future<OpResult> applyOp(OutboundOp op) => _call(() async {
     final res = await _client.rpc<Object?>(
-      'apply_group_op',
+      op.isPersonal ? 'apply_personal_op' : 'apply_group_op',
       params: {'p_op': op.toJson()},
     );
     return OpResult.fromJson((res! as Map).cast<String, Object?>());
@@ -227,6 +227,28 @@ class SupabaseCloudGateway implements CloudGateway {
         .order('seq', ascending: true)
         .limit(limit);
     return [for (final r in rows) RemoteEvent.fromJson(r)];
+  });
+
+  @override
+  Future<List<RemoteEvent>> pullPersonalEvents({
+    required int afterSeq,
+    int limit = 500,
+  }) => _call(() async {
+    final rows = await _client
+        .from('personal_sync_events')
+        .select(
+          'seq, entity_type, entity_id, op_type, revision, payload, op_id',
+        )
+        .gt('seq', afterSeq)
+        .order('seq', ascending: true)
+        .limit(limit);
+    return [for (final r in rows) RemoteEvent.fromJson(r, scope: 'personal')];
+  });
+
+  @override
+  Future<PersonalSnapshot> fetchPersonalSnapshot() => _call(() async {
+    final res = await _client.rpc<Object?>('get_personal_snapshot');
+    return PersonalSnapshot.fromJson((res! as Map).cast<String, Object?>());
   });
 
   @override
@@ -329,6 +351,43 @@ class SupabaseCloudGateway implements CloudGateway {
   @override
   Future<List<int>> downloadGroupAttachment(String storagePath) =>
       _call(() => _client.storage.from(_bucket).download(storagePath));
+
+  static const _personalBucket = 'personal-attachments';
+
+  String _personalPath(String storageName) {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) throw const AuthFailure('session_expired');
+    return '$uid/$storageName';
+  }
+
+  @override
+  Future<void> uploadPersonalFile({
+    required String storageName,
+    required List<int> bytes,
+    required String mimeType,
+  }) => _call(() async {
+    await _client.storage
+        .from(_personalBucket)
+        .uploadBinary(
+          _personalPath(storageName),
+          Uint8List.fromList(bytes),
+          fileOptions: FileOptions(contentType: mimeType, upsert: true),
+        );
+  });
+
+  @override
+  Future<List<int>> downloadPersonalFile(String storageName) => _call(
+    () => _client.storage
+        .from(_personalBucket)
+        .download(_personalPath(storageName)),
+  );
+
+  @override
+  Future<void> deletePersonalFile(String storageName) => _call(() async {
+    await _client.storage.from(_personalBucket).remove([
+      _personalPath(storageName),
+    ]);
+  });
 
   // ----------------------------------------------------------- account
 

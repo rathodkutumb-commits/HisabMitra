@@ -45,7 +45,7 @@
   "chooseCategory": "શ્રેણી પસંદ કરો",
   "transactionSaved": "નોંધ સાચવી",
   "transactionDeleted": "નોંધ કાઢી નાખી",
-  "deleteTransactionMessage": "આ નોંધ અને તેનાં જોડાણો આ ફોનમાંથી કાઢી નખાશે.",
+  "deleteTransactionMessage": "આ નોંધ અને તેનાં જોડાણો તમારા એકાઉન્ટમાંથી અને આ ફોનમાંથી કાઢી નખાશે.",
   "dayNet": "ચોખ્ખું {amount}",
   "monthIncomeShort": "જમા",
   "monthExpenseShort": "ઉધાર",

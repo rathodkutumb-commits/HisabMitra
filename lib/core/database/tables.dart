@@ -30,6 +30,15 @@ mixin SyncColumns on Table {
   DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
+/// Upload state of a personal record (schema v4). Personal records are saved
+/// to the user's account; the phone keeps a working copy.
+mixin PersonalSyncColumns on Table {
+  /// Server revision this local row is based on (0 = never uploaded).
+  IntColumn get revision => integer().withDefault(const Constant(0))();
+  TextColumn get syncState =>
+      textEnum<SyncState>().withDefault(const Constant('localOnly'))();
+}
+
 // ----------------------------------------------------------- user & settings
 
 @DataClassName('LocalUserProfileRow')
@@ -116,7 +125,7 @@ class Categories extends Table with Timestamps {
 
 @DataClassName('PersonRow')
 @TableIndex(name: 'idx_persons_name', columns: {#name})
-class Persons extends Table with Timestamps {
+class Persons extends Table with Timestamps, PersonalSyncColumns {
   @override
   String get tableName => 'persons';
 
@@ -135,7 +144,7 @@ class Persons extends Table with Timestamps {
 @TableIndex(name: 'idx_transactions_date', columns: {#txnDate})
 @TableIndex(name: 'idx_transactions_category', columns: {#categoryId})
 @TableIndex(name: 'idx_transactions_person', columns: {#personId})
-class Transactions extends Table with Timestamps {
+class Transactions extends Table with Timestamps, PersonalSyncColumns {
   @override
   String get tableName => 'transactions';
 
@@ -164,7 +173,7 @@ class Transactions extends Table with Timestamps {
 @DataClassName('LedgerEntryRow')
 @TableIndex(name: 'idx_ledger_person', columns: {#personId})
 @TableIndex(name: 'idx_ledger_due', columns: {#dueDate})
-class MoneyLedger extends Table with Timestamps {
+class MoneyLedger extends Table with Timestamps, PersonalSyncColumns {
   @override
   String get tableName => 'money_ledger';
 
@@ -188,7 +197,7 @@ class MoneyLedger extends Table with Timestamps {
 /// corrected only through an explicit edit that keeps `updatedAt`.
 @DataClassName('LedgerRepaymentRow')
 @TableIndex(name: 'idx_settlements_ledger', columns: {#ledgerId})
-class MoneySettlements extends Table with Timestamps {
+class MoneySettlements extends Table with Timestamps, PersonalSyncColumns {
   @override
   String get tableName => 'money_settlements';
 
@@ -355,7 +364,7 @@ class GroupSettlementsCache extends Table with Timestamps, SyncColumns {
 @TableIndex(name: 'idx_att_txn', columns: {#transactionId})
 @TableIndex(name: 'idx_att_ledger', columns: {#ledgerEntryId})
 @TableIndex(name: 'idx_att_gexp', columns: {#groupExpenseId})
-class Attachments extends Table {
+class Attachments extends Table with PersonalSyncColumns {
   @override
   String get tableName => 'attachments';
 
@@ -399,7 +408,7 @@ class Attachments extends Table {
 
 @DataClassName('ReminderRow')
 @TableIndex(name: 'idx_reminders_due', columns: {#status, #dueAt})
-class Reminders extends Table with Timestamps {
+class Reminders extends Table with Timestamps, PersonalSyncColumns {
   @override
   String get tableName => 'reminders';
 
@@ -469,6 +478,9 @@ class SyncOutbox extends Table {
 
   /// Idempotency key sent to the server.
   TextColumn get opId => text()();
+
+  /// `group` or `personal` (v4). Personal rows use an empty [groupId].
+  TextColumn get scope => text().withDefault(const Constant('group'))();
   TextColumn get groupId => text()();
   TextColumn get entityType => text()();
   TextColumn get entityId => text()();
@@ -496,6 +508,9 @@ class SyncInbox extends Table {
 
   /// Server event sequence number (monotonic).
   IntColumn get seq => integer()();
+
+  /// `group` or `personal` (v4). Personal rows use an empty [groupId].
+  TextColumn get scope => text().withDefault(const Constant('group'))();
   TextColumn get groupId => text()();
   TextColumn get entityType => text()();
   TextColumn get entityId => text()();
@@ -506,8 +521,12 @@ class SyncInbox extends Table {
   DateTimeColumn get appliedAt => dateTime().nullable()();
   TextColumn get error => text().nullable()();
 
+  /// Operation that caused the event (personal feed; v4).
+  TextColumn get opId => text().nullable()();
+
+  /// Group and personal feeds number their events separately (v4).
   @override
-  Set<Column> get primaryKey => {seq};
+  Set<Column> get primaryKey => {scope, seq};
 }
 
 @DataClassName('ConflictRow')
@@ -521,6 +540,9 @@ class SyncConflicts extends Table {
   TextColumn get entityType => text()();
   TextColumn get entityId => text()();
   TextColumn get opId => text().nullable()();
+
+  /// `group` or `personal` (v4). Personal rows use an empty [groupId].
+  TextColumn get scope => text().withDefault(const Constant('group'))();
   TextColumn get localPayload => text()();
   TextColumn get remotePayload => text().nullable()();
   IntColumn get remoteRevision => integer()();

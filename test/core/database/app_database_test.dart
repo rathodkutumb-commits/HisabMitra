@@ -13,8 +13,8 @@ void main() {
   setUp(() => db = newTestDatabase());
   tearDown(() => db.close());
 
-  test('schema version is 3 (v3: verified email on the profile)', () {
-    expect(db.schemaVersion, 3);
+  test('schema version is 4 (v4: personal records saved to the account)', () {
+    expect(db.schemaVersion, 4);
   });
 
   test('seeds all default categories exactly once', () async {

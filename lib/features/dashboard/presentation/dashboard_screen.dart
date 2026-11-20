@@ -23,6 +23,7 @@ import '../../transactions/domain/transaction_models.dart';
 import '../../transactions/presentation/widgets/transaction_tile.dart';
 import '../application/period_controller.dart';
 import 'income_expense_chart.dart';
+import '../../ai_assistant/presentation/ai_fab.dart';
 
 final _monthlyProvider = StreamProvider<List<MonthTotals>>((ref) {
   final now = ref.watch(clockProvider).now();
@@ -53,6 +54,7 @@ class DashboardScreen extends ConsumerWidget {
     final isNewUser = recent.value?.isEmpty ?? false;
 
     return Scaffold(
+      floatingActionButton: const AiFabStack(),
       appBar: AppBar(
         titleSpacing: 16,
         title: Row(

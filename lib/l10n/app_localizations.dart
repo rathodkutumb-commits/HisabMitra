@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutDescription.
   ///
   /// In en, this message translates to:
-  /// **'HisabMitra keeps your daily hisab, personal khata and family group expenses on your phone — private by default, working without internet.'**
+  /// **'HisabMitra keeps your daily hisab, personal khata and family group expenses in your account, with a copy on your phone so it works without internet.'**
   String get aboutDescription;
 
   /// No description provided for @checkUpdates.
@@ -155,7 +155,7 @@ abstract class AppLocalizations {
   /// No description provided for @updateInstallSteps.
   ///
   /// In en, this message translates to:
-  /// **'The file was verified (checksum, package and signature). Android will now ask you to confirm the installation. Your data stays on the phone.'**
+  /// **'The file was verified (checksum, package and signature). Android will now ask you to confirm the installation. Your hisab stays safe in your account and on this phone.'**
   String get updateInstallSteps;
 
   /// No description provided for @updateAllowInstall.
@@ -221,8 +221,8 @@ abstract class AppLocalizations {
   /// No description provided for @shareAppText.
   ///
   /// In en, this message translates to:
-  /// **'I use HisabMitra to manage my family hisab. Download it here: {url}'**
-  String shareAppText(String url);
+  /// **'📒 *HisabMitra — Smart Hisab, Happy Family*\n\nI keep my family\'s hisab in HisabMitra:\n✅ Daily income and expenses\n🤝 Money given and taken (khata)\n👨‍👩‍👧 Family and trip expense splitting\n📊 Reports in English and ગુજરાતી'**
+  String get shareAppText;
 
   /// No description provided for @licenses.
   ///
@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacySummary.
   ///
   /// In en, this message translates to:
-  /// **'Your personal records, people, khata, reminders and attachments are stored only on this phone. Only groups you choose to share are uploaded, and only for their members. Optional online AI receives summary figures only after your consent. No advertising or tracking SDKs are included.'**
+  /// **'Your personal records, people, khata, reminders and bills are saved to your HisabMitra account, and only you can see them. Group expenses are shared with that group\'s members. Your phone keeps a copy so the app works offline; signing out removes it. Optional online AI receives summary figures only after your consent. No advertising or tracking SDKs are included.'**
   String get privacySummary;
 
   /// No description provided for @termsSummary.
@@ -241,6 +241,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'HisabMitra is a record-keeping tool. Please check important figures yourself; it does not provide financial, tax or legal advice.'**
   String get termsSummary;
+
+  /// No description provided for @shareAppDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'📲 Download free: {url}'**
+  String shareAppDownload(String url);
 
   /// No description provided for @aiTitle.
   ///
@@ -570,6 +576,114 @@ abstract class AppLocalizations {
   /// **'The key is stored encrypted on this phone and is used only for online answers. Online usage is billed to your Anthropic account.'**
   String get aiApiKeyNote;
 
+  /// No description provided for @aiOpenAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask HisabMitra AI'**
+  String get aiOpenAssistant;
+
+  /// No description provided for @aiExamplesSpending.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending'**
+  String get aiExamplesSpending;
+
+  /// No description provided for @aiExamplesIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Income & savings'**
+  String get aiExamplesIncome;
+
+  /// No description provided for @aiExamplesKhata.
+  ///
+  /// In en, this message translates to:
+  /// **'Khata'**
+  String get aiExamplesKhata;
+
+  /// No description provided for @aiExamplesGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get aiExamplesGroups;
+
+  /// No description provided for @aiExamplesAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an entry'**
+  String get aiExamplesAdd;
+
+  /// No description provided for @aiExample7.
+  ///
+  /// In en, this message translates to:
+  /// **'How much did I spend today?'**
+  String get aiExample7;
+
+  /// No description provided for @aiExample8.
+  ///
+  /// In en, this message translates to:
+  /// **'How much did I spend last month?'**
+  String get aiExample8;
+
+  /// No description provided for @aiExample9.
+  ///
+  /// In en, this message translates to:
+  /// **'What is my income this month?'**
+  String get aiExample9;
+
+  /// No description provided for @aiExample10.
+  ///
+  /// In en, this message translates to:
+  /// **'What was my income last month?'**
+  String get aiExample10;
+
+  /// No description provided for @aiExample11.
+  ///
+  /// In en, this message translates to:
+  /// **'What are my savings this month?'**
+  String get aiExample11;
+
+  /// No description provided for @aiExample12.
+  ///
+  /// In en, this message translates to:
+  /// **'What are my savings this year?'**
+  String get aiExample12;
+
+  /// No description provided for @aiExample13.
+  ///
+  /// In en, this message translates to:
+  /// **'Add 250 for groceries'**
+  String get aiExample13;
+
+  /// No description provided for @aiExample14.
+  ///
+  /// In en, this message translates to:
+  /// **'Add salary 25000'**
+  String get aiExample14;
+
+  /// No description provided for @aiExample15.
+  ///
+  /// In en, this message translates to:
+  /// **'Add 500 for fuel'**
+  String get aiExample15;
+
+  /// No description provided for @aiExamplePerson.
+  ///
+  /// In en, this message translates to:
+  /// **'What is my balance with {name}?'**
+  String aiExamplePerson(String name);
+
+  /// No description provided for @aiExampleGroupTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'How much did {group} cost?'**
+  String aiExampleGroupTotal(String group);
+
+  /// No description provided for @aiExampleGroupOwes.
+  ///
+  /// In en, this message translates to:
+  /// **'Who owes whom in {group}?'**
+  String aiExampleGroupOwes(String group);
+
   /// No description provided for @attachments.
   ///
   /// In en, this message translates to:
@@ -633,7 +747,7 @@ abstract class AppLocalizations {
   /// No description provided for @attachmentPrivateNote.
   ///
   /// In en, this message translates to:
-  /// **'Stored privately on this phone. Not uploaded anywhere.'**
+  /// **'Saved to your HisabMitra account.'**
   String get attachmentPrivateNote;
 
   /// No description provided for @attachmentShareToGroup.
@@ -653,6 +767,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove'**
   String get attachmentRemove;
+
+  /// No description provided for @photoRecovered.
+  ///
+  /// In en, this message translates to:
+  /// **'We saved the photo you took. Add it to a new expense?'**
+  String get photoRecovered;
+
+  /// No description provided for @photoRecoveredAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add expense'**
+  String get photoRecoveredAction;
+
+  /// No description provided for @attachmentDownloadRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this bill. Check your internet and try again.'**
+  String get attachmentDownloadRetry;
 
   /// No description provided for @backupTitle.
   ///
@@ -794,7 +926,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupWhere.
   ///
   /// In en, this message translates to:
-  /// **'Backups are stored privately in HisabMitra\'s app storage on this phone. Uninstalling the app deletes them, so use “Save / share copy” to keep a copy elsewhere (for example Google Drive or a computer).'**
+  /// **'Your hisab is saved in your account. A backup is an extra copy, stored privately in HisabMitra\'s app storage on this phone; uninstalling the app deletes it, so use “Save / share copy” to keep it elsewhere (for example Google Drive or a computer).'**
   String get backupWhere;
 
   /// No description provided for @backupFileMissing.
@@ -845,23 +977,29 @@ abstract class AppLocalizations {
   /// **'This file is not a HisabMitra backup.'**
   String get backupNotBackup;
 
-  /// No description provided for @backupAutoInfo.
+  /// No description provided for @shareBackupCaption.
   ///
   /// In en, this message translates to:
-  /// **'Automatic backups run when you open the app and one is due. The newest 7 are kept.'**
-  String get backupAutoInfo;
+  /// **'🔒 *HisabMitra backup* · {date} — keep this file safe; you\'ll need your backup password to restore it.'**
+  String shareBackupCaption(String date);
 
-  /// No description provided for @backupLastAuto.
+  /// No description provided for @shareBackupCaptionPlain.
   ///
   /// In en, this message translates to:
-  /// **'Last automatic backup: {date}'**
-  String backupLastAuto(String date);
+  /// **'🔒 *HisabMitra backup* · {date} — keep this file safe.'**
+  String shareBackupCaptionPlain(String date);
 
-  /// No description provided for @backupNever.
+  /// No description provided for @restoreNeedsInternet.
   ///
   /// In en, this message translates to:
-  /// **'Never'**
-  String get backupNever;
+  /// **'Connect to the internet to restore.'**
+  String get restoreNeedsInternet;
+
+  /// No description provided for @restoreReplacesAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'This replaces the hisab saved in your account with this backup. Groups are not changed.'**
+  String get restoreReplacesAccount;
 
   /// No description provided for @authSendOtp.
   ///
@@ -914,7 +1052,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteAccountConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Delete your cloud account? You will leave all shared groups. Everything on this phone is kept.'**
+  /// **'Delete your account? Your saved hisab, bills and group memberships are deleted from the account and from this phone. This cannot be undone.'**
   String get deleteAccountConfirm;
 
   /// No description provided for @accountDeleted.
@@ -1019,12 +1157,6 @@ abstract class AppLocalizations {
   /// **'Sign in to sync shared groups.'**
   String get syncSignInNeeded;
 
-  /// No description provided for @syncDisabled.
-  ///
-  /// In en, this message translates to:
-  /// **'Cloud sync is turned off in Settings.'**
-  String get syncDisabled;
-
   /// No description provided for @syncDone.
   ///
   /// In en, this message translates to:
@@ -1061,30 +1193,6 @@ abstract class AppLocalizations {
   /// **'Settlement'**
   String get entitySettlement;
 
-  /// No description provided for @shareToCloud.
-  ///
-  /// In en, this message translates to:
-  /// **'Share group online'**
-  String get shareToCloud;
-
-  /// No description provided for @shareToCloudBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Members who use HisabMitra can then join this group and see its members, expenses and settlements. Members\' phone numbers are not uploaded and your personal records are never shared.'**
-  String get shareToCloudBody;
-
-  /// No description provided for @shareToCloudDone.
-  ///
-  /// In en, this message translates to:
-  /// **'Group is now shared'**
-  String get shareToCloudDone;
-
-  /// No description provided for @shareNeedsSignIn.
-  ///
-  /// In en, this message translates to:
-  /// **'Verify your email to share groups.'**
-  String get shareNeedsSignIn;
-
   /// No description provided for @inviteTitle.
   ///
   /// In en, this message translates to:
@@ -1112,7 +1220,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteShareText.
   ///
   /// In en, this message translates to:
-  /// **'Join my group \"{group}\" on HisabMitra: open hisabmitra://join?code={code} or enter the code {code} in the app. The code expires on {date}.'**
+  /// **'👋 *Join my group on HisabMitra!*\n\n👥 Group: *{group}*\n🔑 Invite code: *{code}*\n\nOpen HisabMitra → Groups → Join a group, and enter the code.\n\n⏳ The code is valid till *{date}*.'**
   String inviteShareText(String group, String code, String date);
 
   /// No description provided for @inviteExpires.
@@ -1156,12 +1264,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No invitations yet'**
   String get invitesEmpty;
-
-  /// No description provided for @inviteGroupNotShared.
-  ///
-  /// In en, this message translates to:
-  /// **'Share this group online first.'**
-  String get inviteGroupNotShared;
 
   /// No description provided for @inviteCodeOnce.
   ///
@@ -1324,6 +1426,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Verify email'**
   String get verifyEmailAction;
+
+  /// No description provided for @inviteShareDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'📲 Don\'t have the app? Download it free: {url}'**
+  String inviteShareDownload(String url);
+
+  /// No description provided for @entityPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Person'**
+  String get entityPerson;
+
+  /// No description provided for @entityTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Income or expense'**
+  String get entityTransaction;
+
+  /// No description provided for @entityLedgerEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Khata entry'**
+  String get entityLedgerEntry;
+
+  /// No description provided for @entityRepayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Repayment'**
+  String get entityRepayment;
+
+  /// No description provided for @entityReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder'**
+  String get entityReminder;
+
+  /// No description provided for @entityBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill'**
+  String get entityBill;
+
+  /// No description provided for @inviteSampleGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample groups cannot be shared.'**
+  String get inviteSampleGroup;
+
+  /// No description provided for @accountSyncUploadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your hisab to your account'**
+  String get accountSyncUploadTitle;
+
+  /// No description provided for @accountSyncDownloadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting your hisab'**
+  String get accountSyncDownloadTitle;
+
+  /// No description provided for @accountSyncProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total}'**
+  String accountSyncProgress(String done, String total);
+
+  /// No description provided for @accountSyncOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet. Your hisab will be saved to your account when you\'re back online.'**
+  String get accountSyncOffline;
+
+  /// No description provided for @accountSyncContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue in background'**
+  String get accountSyncContinue;
 
   /// No description provided for @appName.
   ///
@@ -1658,7 +1838,7 @@ abstract class AppLocalizations {
   /// No description provided for @offlineBanner.
   ///
   /// In en, this message translates to:
-  /// **'You are offline. Your data is safe on this device.'**
+  /// **'You are offline. Your changes are saved on this phone and will reach your account when you are back online.'**
   String get offlineBanner;
 
   /// No description provided for @pmCash.
@@ -1790,8 +1970,26 @@ abstract class AppLocalizations {
   /// No description provided for @privateOnDevice.
   ///
   /// In en, this message translates to:
-  /// **'Private · stored on this device'**
+  /// **'Private · saved to your account'**
   String get privateOnDevice;
+
+  /// No description provided for @exitAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit HisabMitra?'**
+  String get exitAppTitle;
+
+  /// No description provided for @exitAppConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get exitAppConfirm;
+
+  /// No description provided for @exitAppStay.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay'**
+  String get exitAppStay;
 
   /// No description provided for @errorNotFound.
   ///
@@ -2144,7 +2342,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteTransactionMessage.
   ///
   /// In en, this message translates to:
-  /// **'This entry and its attachments will be deleted from this phone.'**
+  /// **'This entry and its attachments will be deleted from your account and this phone.'**
   String get deleteTransactionMessage;
 
   /// No description provided for @dayNet.
@@ -3650,7 +3848,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardBody1.
   ///
   /// In en, this message translates to:
-  /// **'Record income and expenses in seconds. Everything stays on your phone and works without internet.'**
+  /// **'Record income and expenses in seconds. Saved to your account, and it works without internet too.'**
   String get onboardBody1;
 
   /// No description provided for @onboardTitle2.
@@ -3692,7 +3890,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileSetupSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Name, email and mobile number are required. We verify your email; your personal records still stay on this phone.'**
+  /// **'Name, email and mobile number are required. We verify your email; your hisab is saved to this account.'**
   String get profileSetupSubtitle;
 
   /// No description provided for @yourName.
@@ -3710,7 +3908,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPromise.
   ///
   /// In en, this message translates to:
-  /// **'Your personal records never leave your phone unless you choose to share them.'**
+  /// **'Your hisab is saved to your account, and only you can see it.'**
   String get privacyPromise;
 
   /// No description provided for @remindersTitle.
@@ -4085,6 +4283,24 @@ abstract class AppLocalizations {
   /// **'{amount} due'**
   String notificationPaymentBody(String amount);
 
+  /// No description provided for @reminderBatteryTip.
+  ///
+  /// In en, this message translates to:
+  /// **'On some phones (Xiaomi, Oppo, Vivo and others) battery saving can stop reminders. Allow HisabMitra to run in the background so they arrive on time.'**
+  String get reminderBatteryTip;
+
+  /// No description provided for @reminderBatteryTipOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get reminderBatteryTipOpen;
+
+  /// No description provided for @reminderBatteryTipDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get reminderBatteryTipDismiss;
+
   /// No description provided for @reportsTitle.
   ///
   /// In en, this message translates to:
@@ -4301,6 +4517,12 @@ abstract class AppLocalizations {
   /// **'Settlement summary'**
   String get settlementSummary;
 
+  /// No description provided for @shareReportCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'📊 *HisabMitra report* · {title} · {period}'**
+  String shareReportCaption(String title, String period);
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:
@@ -4505,18 +4727,6 @@ abstract class AppLocalizations {
   /// **'Cloud sync'**
   String get settingsSync;
 
-  /// No description provided for @settingsCloudSync.
-  ///
-  /// In en, this message translates to:
-  /// **'Sync shared groups'**
-  String get settingsCloudSync;
-
-  /// No description provided for @settingsCloudSyncDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Only groups you share are synced. Personal records always stay on this device.'**
-  String get settingsCloudSyncDesc;
-
   /// No description provided for @settingsSyncStatus.
   ///
   /// In en, this message translates to:
@@ -4535,29 +4745,11 @@ abstract class AppLocalizations {
   /// **'Manual, automatic and encrypted backups'**
   String get settingsBackupDesc;
 
-  /// No description provided for @settingsAutoBackup.
-  ///
-  /// In en, this message translates to:
-  /// **'Automatic backup'**
-  String get settingsAutoBackup;
-
   /// No description provided for @autoBackupOff.
   ///
   /// In en, this message translates to:
   /// **'Off'**
   String get autoBackupOff;
-
-  /// No description provided for @autoBackupDaily.
-  ///
-  /// In en, this message translates to:
-  /// **'Daily'**
-  String get autoBackupDaily;
-
-  /// No description provided for @autoBackupWeekly.
-  ///
-  /// In en, this message translates to:
-  /// **'Weekly'**
-  String get autoBackupWeekly;
 
   /// No description provided for @settingsAi.
   ///
@@ -4688,7 +4880,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsLogoutConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Log out? Your records stay on this device; shared groups stop syncing until you sign in again.'**
+  /// **'Log out? Your hisab stays saved in your account and is removed from this phone. Categories and settings stay on the phone.'**
   String get settingsLogoutConfirm;
 
   /// No description provided for @settingsDeleteAccount.
@@ -4700,7 +4892,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsDeleteAccountDesc.
   ///
   /// In en, this message translates to:
-  /// **'Removes your cloud profile and group memberships. Local data is kept.'**
+  /// **'Deletes your account, its saved hisab and bills, and your group memberships.'**
   String get settingsDeleteAccountDesc;
 
   /// No description provided for @settingsAbout.
@@ -4744,6 +4936,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Terms & conditions'**
   String get settingsTerms;
+
+  /// No description provided for @signOutUnsentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not saved yet'**
+  String get signOutUnsentTitle;
+
+  /// No description provided for @signOutUnsentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} changes haven\'t been saved to your account yet. Logging out now loses them.'**
+  String signOutUnsentBody(String count);
+
+  /// No description provided for @signOutWaitSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait and sync'**
+  String get signOutWaitSync;
+
+  /// No description provided for @signOutAnyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out anyway'**
+  String get signOutAnyway;
 
   /// No description provided for @tourPromptTitle.
   ///

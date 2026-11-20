@@ -14,7 +14,7 @@
   "profileTitle": "Profile",
   "profileName": "Display name",
   "profileSaved": "Profile saved",
-  "deleteAccountConfirm": "Delete your cloud account? You will leave all shared groups. Everything on this phone is kept.",
+  "deleteAccountConfirm": "Delete your account? Your saved hisab, bills and group memberships are deleted from the account and from this phone. This cannot be undone.",
   "accountDeleted": "Cloud account deleted",
   "signedOut": "Signed out",
   "syncTitle": "Sync status",
@@ -53,22 +53,17 @@
   "syncOtherVersion": "Other device's version",
   "syncOffline": "Offline — changes will sync when you are back online.",
   "syncSignInNeeded": "Sign in to sync shared groups.",
-  "syncDisabled": "Cloud sync is turned off in Settings.",
   "syncDone": "Sync complete",
   "syncRunning": "Syncing…",
   "entityGroup": "Group details",
   "entityMember": "Member",
   "entityExpense": "Expense",
   "entitySettlement": "Settlement",
-  "shareToCloud": "Share group online",
-  "shareToCloudBody": "Members who use HisabMitra can then join this group and see its members, expenses and settlements. Members' phone numbers are not uploaded and your personal records are never shared.",
-  "shareToCloudDone": "Group is now shared",
-  "shareNeedsSignIn": "Verify your email to share groups.",
   "inviteTitle": "Invite members",
   "inviteFor": "Invite for",
   "inviteNewMember": "Someone new",
   "inviteCreate": "Create invitation code",
-  "inviteShareText": "Join my group \"{group}\" on HisabMitra: open hisabmitra://join?code={code} or enter the code {code} in the app. The code expires on {date}.",
+  "inviteShareText": "👋 *Join my group on HisabMitra!*\n\n👥 Group: *{group}*\n🔑 Invite code: *{code}*\n\nOpen HisabMitra → Groups → Join a group, and enter the code.\n\n⏳ The code is valid till *{date}*.",
   "@inviteShareText": {
     "placeholders": {
       "group": {
@@ -96,7 +91,6 @@
   "inviteStatusExpired": "Expired",
   "inviteCancel": "Cancel invitation",
   "invitesEmpty": "No invitations yet",
-  "inviteGroupNotShared": "Share this group online first.",
   "inviteCodeOnce": "Share this code now. For security it is shown only once.",
   "joinTitle": "Join a group",
   "joinCode": "Invitation code",
@@ -144,5 +138,20 @@
       }
     }
   },
-  "verifyEmailAction": "Verify email"
+  "verifyEmailAction": "Verify email",
+  "inviteShareDownload": "📲 Don't have the app? Download it free: {url}",
+  "@inviteShareDownload": {"placeholders": {"url": {"type": "String"}}},
+  "entityPerson": "Person",
+  "entityTransaction": "Income or expense",
+  "entityLedgerEntry": "Khata entry",
+  "entityRepayment": "Repayment",
+  "entityReminder": "Reminder",
+  "entityBill": "Bill",
+  "inviteSampleGroup": "Sample groups cannot be shared.",
+  "accountSyncUploadTitle": "Saving your hisab to your account",
+  "accountSyncDownloadTitle": "Getting your hisab",
+  "accountSyncProgress": "{done} of {total}",
+  "@accountSyncProgress": {"placeholders": {"done": {"type": "String"}, "total": {"type": "String"}}},
+  "accountSyncOffline": "No internet. Your hisab will be saved to your account when you're back online.",
+  "accountSyncContinue": "Continue in background"
 }

@@ -59,7 +59,7 @@
   "chooseCategory": "Choose a category",
   "transactionSaved": "Entry saved",
   "transactionDeleted": "Entry deleted",
-  "deleteTransactionMessage": "This entry and its attachments will be deleted from this phone.",
+  "deleteTransactionMessage": "This entry and its attachments will be deleted from your account and this phone.",
   "dayNet": "Net {amount}",
   "@dayNet": {
     "placeholders": {

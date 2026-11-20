@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/database/app_database.dart';
+import '../../core/widgets/exit_confirm_scope.dart';
 import '../../features/about/presentation/about_screen.dart';
 import '../../features/ai_assistant/presentation/ai_screens.dart';
 import '../../features/attachments/presentation/attachment_viewer_screen.dart';
@@ -45,6 +46,8 @@ import '../../features/transactions/presentation/transaction_form_screen.dart';
 import '../../features/transactions/presentation/transactions_screen.dart';
 import 'home_shell.dart';
 import 'routes.dart';
+import '../../features/synchronization/application/account_sync_controller.dart';
+import '../../features/synchronization/presentation/account_sync_screen.dart';
 
 final _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
@@ -52,10 +55,11 @@ final routerProvider = Provider<GoRouter>((ref) {
   final refresh = ValueNotifier(0);
   ref.listen(
     settingsControllerProvider.select(
-      (p) => (p.onboardingComplete, p.accountVerified),
+      (p) => (p.onboardingComplete, p.accountVerified, p.initialSyncDone),
     ),
     (_, _) => refresh.value++,
   );
+  ref.listen(accountSyncDeferredProvider, (_, _) => refresh.value++);
 
   String? q(GoRouterState s, String key) => s.uri.queryParameters[key];
 
@@ -96,22 +100,44 @@ final routerProvider = Provider<GoRouter>((ref) {
             ? null
             : Routes.profileSetup;
       }
+      // Personal records live in the account: sync this phone with it once
+      // (upload old phone data, or download on a new phone).
+      final needsFirstSync =
+          ref.read(cloudGatewayProvider).isConfigured &&
+          prefs.accountVerified &&
+          !prefs.initialSyncDone &&
+          !ref.read(accountSyncDeferredProvider);
+      if (needsFirstSync) {
+        return path == Routes.accountSync ? null : Routes.accountSync;
+      }
       if (inWelcome) return Routes.home;
       return null;
     },
     routes: [
       GoRoute(path: Routes.splash, builder: (_, _) => const SplashScreen()),
-      GoRoute(path: Routes.language, builder: (_, _) => const LanguageScreen()),
-      GoRoute(path: Routes.intro, builder: (_, _) => const IntroScreen()),
+      GoRoute(
+        path: Routes.language,
+        builder: (_, _) => const ExitConfirmScope(child: LanguageScreen()),
+      ),
+      GoRoute(
+        path: Routes.intro,
+        builder: (_, _) => const ExitConfirmScope(child: IntroScreen()),
+      ),
       GoRoute(
         path: Routes.profileSetup,
-        builder: (_, _) => const ProfileSetupScreen(),
+        builder: (_, _) => const ExitConfirmScope(child: ProfileSetupScreen()),
+      ),
+      GoRoute(
+        path: Routes.accountSync,
+        builder: (_, _) => const ExitConfirmScope(child: AccountSyncScreen()),
       ),
       GoRoute(
         path: Routes.verifyEmail,
-        builder: (_, s) => VerifyEmailScreen(
-          authCode: q(s, 'authCode'),
-          linkError: q(s, 'linkError') == '1',
+        builder: (_, s) => ExitConfirmScope(
+          child: VerifyEmailScreen(
+            authCode: q(s, 'authCode'),
+            linkError: q(s, 'linkError') == '1',
+          ),
         ),
       ),
       StatefulShellRoute.indexedStack(

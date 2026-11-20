@@ -1,11 +1,12 @@
-import 'dart:math';
-
 import 'package:drift/drift.dart';
 
 import '../../../core/database/app_database.dart';
 import '../../../core/errors/app_failure.dart';
 import '../../../core/providers.dart';
 import '../domain/reminder_schedule.dart';
+import '../../synchronization/data/personal_outbox.dart';
+import '../../synchronization/domain/personal_entity.dart';
+import 'notification_ids.dart';
 
 /// Platform notification scheduling (implemented by NotificationService).
 abstract interface class ReminderScheduler {
@@ -14,13 +15,19 @@ abstract interface class ReminderScheduler {
 }
 
 class ReminderRepository {
-  ReminderRepository(this._db, this._clock, this._ids, this._scheduler);
+  ReminderRepository(
+    this._db,
+    this._clock,
+    this._ids,
+    this._scheduler, {
+    PersonalOutbox? outbox,
+  }) : _outbox = outbox ?? PersonalOutbox(_db, _clock, _ids);
 
   final AppDatabase _db;
   final Clock _clock;
   final IdGenerator _ids;
   final ReminderScheduler _scheduler;
-  final _random = Random.secure();
+  final PersonalOutbox _outbox;
 
   Stream<List<ReminderRow>> watchPending({int? limit}) {
     final q = _db.select(_db.reminders)
@@ -39,16 +46,6 @@ class ReminderRepository {
   Future<ReminderRow?> getById(String id) => (_db.select(
     _db.reminders,
   )..where((r) => r.id.equals(id))).getSingleOrNull();
-
-  Future<int> _newNotificationId() async {
-    while (true) {
-      final candidate = 1 + _random.nextInt(0x7FFFFFFE);
-      final clash = await (_db.select(
-        _db.reminders,
-      )..where((r) => r.notificationId.equals(candidate))).getSingleOrNull();
-      if (clash == null) return candidate;
-    }
-  }
 
   Future<void> _validate(ReminderDraft d, {required int completed}) async {
     final amount = d.amountPaise;
@@ -86,51 +83,58 @@ class ReminderRepository {
     await _validate(d, completed: existing?.completedOccurrences ?? 0);
     final now = _clock.now();
     final note = d.note?.trim();
-    late final String id;
-    if (d.id == null) {
-      id = _ids.newId();
-      await _db
-          .into(_db.reminders)
-          .insert(
-            RemindersCompanion.insert(
-              id: id,
-              kind: d.kind,
-              title: title,
-              note: Value(note == null || note.isEmpty ? null : note),
-              dueAt: d.dueAt,
-              repeat: Value(d.repeat),
-              amountPaise: Value(d.amountPaise),
-              categoryId: Value(d.categoryId),
-              anchorDay: Value(d.dueAt.day),
-              totalOccurrences: Value(d.totalOccurrences),
-              personId: Value(d.personId),
-              ledgerEntryId: Value(d.ledgerEntryId),
-              groupId: Value(d.groupId),
-              notificationId: await _newNotificationId(),
-              createdAt: now,
-              updatedAt: now,
-            ),
-          );
-    } else {
-      id = d.id!;
-      final n = await (_db.update(_db.reminders)..where((r) => r.id.equals(id)))
-          .write(
-            RemindersCompanion(
-              kind: Value(d.kind),
-              title: Value(title),
-              note: Value(note == null || note.isEmpty ? null : note),
-              dueAt: Value(d.dueAt),
-              repeat: Value(d.repeat),
-              amountPaise: Value(d.amountPaise),
-              categoryId: Value(d.categoryId),
-              anchorDay: Value(d.dueAt.day),
-              totalOccurrences: Value(d.totalOccurrences),
-              status: const Value(ReminderStatus.pending),
-              updatedAt: Value(now),
-            ),
-          );
-      if (n == 0) throw const NotFoundFailure();
-    }
+    // The reminder and its upload to the account are saved together.
+    final id = await _db.transaction(() async {
+      late final String id;
+      if (d.id == null) {
+        id = _ids.newId();
+        await _db
+            .into(_db.reminders)
+            .insert(
+              RemindersCompanion.insert(
+                id: id,
+                kind: d.kind,
+                title: title,
+                note: Value(note == null || note.isEmpty ? null : note),
+                dueAt: d.dueAt,
+                repeat: Value(d.repeat),
+                amountPaise: Value(d.amountPaise),
+                categoryId: Value(d.categoryId),
+                anchorDay: Value(d.dueAt.day),
+                totalOccurrences: Value(d.totalOccurrences),
+                personId: Value(d.personId),
+                ledgerEntryId: Value(d.ledgerEntryId),
+                groupId: Value(d.groupId),
+                notificationId: await newNotificationId(_db),
+                createdAt: now,
+                updatedAt: now,
+              ),
+            );
+      } else {
+        id = d.id!;
+        final n =
+            await (_db.update(
+              _db.reminders,
+            )..where((r) => r.id.equals(id))).write(
+              RemindersCompanion(
+                kind: Value(d.kind),
+                title: Value(title),
+                note: Value(note == null || note.isEmpty ? null : note),
+                dueAt: Value(d.dueAt),
+                repeat: Value(d.repeat),
+                amountPaise: Value(d.amountPaise),
+                categoryId: Value(d.categoryId),
+                anchorDay: Value(d.dueAt.day),
+                totalOccurrences: Value(d.totalOccurrences),
+                status: const Value(ReminderStatus.pending),
+                updatedAt: Value(now),
+              ),
+            );
+        if (n == 0) throw const NotFoundFailure();
+      }
+      await _outbox.upsert(PersonalEntity.reminder, id);
+      return id;
+    });
     final row = (await getById(id))!;
     await _scheduler.cancel(row.notificationId);
     if (row.dueAt.isAfter(now)) await _scheduler.schedule(row);
@@ -158,16 +162,19 @@ class ReminderRepository {
         due = next(due);
       }
     }
-    await (_db.update(_db.reminders)..where((x) => x.id.equals(id))).write(
-      RemindersCompanion(
-        completedOccurrences: Value(completed),
-        dueAt: due == null ? const Value.absent() : Value(due),
-        status: due == null
-            ? const Value(ReminderStatus.done)
-            : const Value.absent(),
-        updatedAt: Value(now),
-      ),
-    );
+    await _db.transaction(() async {
+      await (_db.update(_db.reminders)..where((x) => x.id.equals(id))).write(
+        RemindersCompanion(
+          completedOccurrences: Value(completed),
+          dueAt: due == null ? const Value.absent() : Value(due),
+          status: due == null
+              ? const Value(ReminderStatus.done)
+              : const Value.absent(),
+          updatedAt: Value(now),
+        ),
+      );
+      await _outbox.upsert(PersonalEntity.reminder, id);
+    });
     if (due != null && due.isAfter(now)) {
       await _scheduler.schedule((await getById(id))!);
     }
@@ -188,16 +195,22 @@ class ReminderRepository {
     final r = await getById(id);
     if (r == null) return;
     await _scheduler.cancel(r.notificationId);
-    await (_db.delete(_db.reminders)..where((x) => x.id.equals(id))).go();
+    await _db.transaction(() async {
+      await _outbox.delete(PersonalEntity.reminder, id);
+      await (_db.delete(_db.reminders)..where((x) => x.id.equals(id))).go();
+    });
   }
 
   Future<void> _setStatus(String id, ReminderStatus status) =>
-      (_db.update(_db.reminders)..where((x) => x.id.equals(id))).write(
-        RemindersCompanion(
-          status: Value(status),
-          updatedAt: Value(_clock.now()),
-        ),
-      );
+      _db.transaction(() async {
+        await (_db.update(_db.reminders)..where((x) => x.id.equals(id))).write(
+          RemindersCompanion(
+            status: Value(status),
+            updatedAt: Value(_clock.now()),
+          ),
+        );
+        await _outbox.upsert(PersonalEntity.reminder, id);
+      });
 
   /// Re-registers all future pending reminders (after restore, permission
   /// grant or notification setting change).

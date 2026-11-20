@@ -2021,6 +2021,28 @@ class $PersonsTable extends Persons with TableInfo<$PersonsTable, PersonRow> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('localOnly'),
+      ).withConverter<SyncState>($PersonsTable.$convertersyncState);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -2085,6 +2107,8 @@ class $PersonsTable extends Persons with TableInfo<$PersonsTable, PersonRow> {
   List<GeneratedColumn> get $columns => [
     createdAt,
     updatedAt,
+    revision,
+    syncState,
     id,
     name,
     phone,
@@ -2119,6 +2143,12 @@ class $PersonsTable extends Persons with TableInfo<$PersonsTable, PersonRow> {
       );
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
     }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
@@ -2177,6 +2207,16 @@ class $PersonsTable extends Persons with TableInfo<$PersonsTable, PersonRow> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      syncState: $PersonsTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -2208,11 +2248,18 @@ class $PersonsTable extends Persons with TableInfo<$PersonsTable, PersonRow> {
   $PersonsTable createAlias(String alias) {
     return $PersonsTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
 }
 
 class PersonRow extends DataClass implements Insertable<PersonRow> {
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  /// Server revision this local row is based on (0 = never uploaded).
+  final int revision;
+  final SyncState syncState;
   final String id;
   final String name;
   final String? phone;
@@ -2222,6 +2269,8 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
   const PersonRow({
     required this.createdAt,
     required this.updatedAt,
+    required this.revision,
+    required this.syncState,
     required this.id,
     required this.name,
     this.phone,
@@ -2234,6 +2283,12 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
     final map = <String, Expression>{};
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['revision'] = Variable<int>(revision);
+    {
+      map['sync_state'] = Variable<String>(
+        $PersonsTable.$convertersyncState.toSql(syncState),
+      );
+    }
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || phone != null) {
@@ -2255,6 +2310,8 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
     return PersonsCompanion(
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      revision: Value(revision),
+      syncState: Value(syncState),
       id: Value(id),
       name: Value(name),
       phone: phone == null && nullToAbsent
@@ -2280,6 +2337,10 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
     return PersonRow(
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      revision: serializer.fromJson<int>(json['revision']),
+      syncState: $PersonsTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       phone: serializer.fromJson<String?>(json['phone']),
@@ -2294,6 +2355,10 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
     return <String, dynamic>{
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'revision': serializer.toJson<int>(revision),
+      'syncState': serializer.toJson<String>(
+        $PersonsTable.$convertersyncState.toJson(syncState),
+      ),
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'phone': serializer.toJson<String?>(phone),
@@ -2306,6 +2371,8 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
   PersonRow copyWith({
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? revision,
+    SyncState? syncState,
     String? id,
     String? name,
     Value<String?> phone = const Value.absent(),
@@ -2315,6 +2382,8 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
   }) => PersonRow(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    revision: revision ?? this.revision,
+    syncState: syncState ?? this.syncState,
     id: id ?? this.id,
     name: name ?? this.name,
     phone: phone.present ? phone.value : this.phone,
@@ -2326,6 +2395,8 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
     return PersonRow(
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       phone: data.phone.present ? data.phone.value : this.phone,
@@ -2342,6 +2413,8 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
     return (StringBuffer('PersonRow(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('phone: $phone, ')
@@ -2356,6 +2429,8 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
   int get hashCode => Object.hash(
     createdAt,
     updatedAt,
+    revision,
+    syncState,
     id,
     name,
     phone,
@@ -2369,6 +2444,8 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
       (other is PersonRow &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
+          other.revision == this.revision &&
+          other.syncState == this.syncState &&
           other.id == this.id &&
           other.name == this.name &&
           other.phone == this.phone &&
@@ -2380,6 +2457,8 @@ class PersonRow extends DataClass implements Insertable<PersonRow> {
 class PersonsCompanion extends UpdateCompanion<PersonRow> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<int> revision;
+  final Value<SyncState> syncState;
   final Value<String> id;
   final Value<String> name;
   final Value<String?> phone;
@@ -2390,6 +2469,8 @@ class PersonsCompanion extends UpdateCompanion<PersonRow> {
   const PersonsCompanion({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.phone = const Value.absent(),
@@ -2401,6 +2482,8 @@ class PersonsCompanion extends UpdateCompanion<PersonRow> {
   PersonsCompanion.insert({
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     required String id,
     required String name,
     this.phone = const Value.absent(),
@@ -2415,6 +2498,8 @@ class PersonsCompanion extends UpdateCompanion<PersonRow> {
   static Insertable<PersonRow> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<int>? revision,
+    Expression<String>? syncState,
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? phone,
@@ -2426,6 +2511,8 @@ class PersonsCompanion extends UpdateCompanion<PersonRow> {
     return RawValuesInsertable({
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (revision != null) 'revision': revision,
+      if (syncState != null) 'sync_state': syncState,
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (phone != null) 'phone': phone,
@@ -2439,6 +2526,8 @@ class PersonsCompanion extends UpdateCompanion<PersonRow> {
   PersonsCompanion copyWith({
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<int>? revision,
+    Value<SyncState>? syncState,
     Value<String>? id,
     Value<String>? name,
     Value<String?>? phone,
@@ -2450,6 +2539,8 @@ class PersonsCompanion extends UpdateCompanion<PersonRow> {
     return PersonsCompanion(
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      revision: revision ?? this.revision,
+      syncState: syncState ?? this.syncState,
       id: id ?? this.id,
       name: name ?? this.name,
       phone: phone ?? this.phone,
@@ -2468,6 +2559,14 @@ class PersonsCompanion extends UpdateCompanion<PersonRow> {
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $PersonsTable.$convertersyncState.toSql(syncState.value),
+      );
     }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
@@ -2498,6 +2597,8 @@ class PersonsCompanion extends UpdateCompanion<PersonRow> {
     return (StringBuffer('PersonsCompanion(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('phone: $phone, ')
@@ -2538,6 +2639,28 @@ class $TransactionsTable extends Transactions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('localOnly'),
+      ).withConverter<SyncState>($TransactionsTable.$convertersyncState);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -2652,6 +2775,8 @@ class $TransactionsTable extends Transactions
   List<GeneratedColumn> get $columns => [
     createdAt,
     updatedAt,
+    revision,
+    syncState,
     id,
     ownerId,
     type,
@@ -2690,6 +2815,12 @@ class $TransactionsTable extends Transactions
       );
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
     }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
@@ -2769,6 +2900,16 @@ class $TransactionsTable extends Transactions
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      syncState: $TransactionsTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -2821,6 +2962,8 @@ class $TransactionsTable extends Transactions
     return $TransactionsTable(attachedDatabase, alias);
   }
 
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
   static JsonTypeConverter2<TransactionType, String, String> $convertertype =
       const EnumNameConverter<TransactionType>(TransactionType.values);
   static JsonTypeConverter2<PaymentMethod, String, String>
@@ -2832,6 +2975,10 @@ class $TransactionsTable extends Transactions
 class TransactionRow extends DataClass implements Insertable<TransactionRow> {
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  /// Server revision this local row is based on (0 = never uploaded).
+  final int revision;
+  final SyncState syncState;
   final String id;
 
   /// `self` locally, or the Supabase user id once signed in.
@@ -2847,6 +2994,8 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
   const TransactionRow({
     required this.createdAt,
     required this.updatedAt,
+    required this.revision,
+    required this.syncState,
     required this.id,
     required this.ownerId,
     required this.type,
@@ -2863,6 +3012,12 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
     final map = <String, Expression>{};
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['revision'] = Variable<int>(revision);
+    {
+      map['sync_state'] = Variable<String>(
+        $TransactionsTable.$convertersyncState.toSql(syncState),
+      );
+    }
     map['id'] = Variable<String>(id);
     map['owner_id'] = Variable<String>(ownerId);
     {
@@ -2892,6 +3047,8 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
     return TransactionsCompanion(
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      revision: Value(revision),
+      syncState: Value(syncState),
       id: Value(id),
       ownerId: Value(ownerId),
       type: Value(type),
@@ -2917,6 +3074,10 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
     return TransactionRow(
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      revision: serializer.fromJson<int>(json['revision']),
+      syncState: $TransactionsTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
       id: serializer.fromJson<String>(json['id']),
       ownerId: serializer.fromJson<String>(json['ownerId']),
       type: $TransactionsTable.$convertertype.fromJson(
@@ -2939,6 +3100,10 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
     return <String, dynamic>{
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'revision': serializer.toJson<int>(revision),
+      'syncState': serializer.toJson<String>(
+        $TransactionsTable.$convertersyncState.toJson(syncState),
+      ),
       'id': serializer.toJson<String>(id),
       'ownerId': serializer.toJson<String>(ownerId),
       'type': serializer.toJson<String>(
@@ -2959,6 +3124,8 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
   TransactionRow copyWith({
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? revision,
+    SyncState? syncState,
     String? id,
     String? ownerId,
     TransactionType? type,
@@ -2972,6 +3139,8 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
   }) => TransactionRow(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    revision: revision ?? this.revision,
+    syncState: syncState ?? this.syncState,
     id: id ?? this.id,
     ownerId: ownerId ?? this.ownerId,
     type: type ?? this.type,
@@ -2987,6 +3156,8 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
     return TransactionRow(
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
       id: data.id.present ? data.id.value : this.id,
       ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
       type: data.type.present ? data.type.value : this.type,
@@ -3013,6 +3184,8 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
     return (StringBuffer('TransactionRow(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('type: $type, ')
@@ -3031,6 +3204,8 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
   int get hashCode => Object.hash(
     createdAt,
     updatedAt,
+    revision,
+    syncState,
     id,
     ownerId,
     type,
@@ -3048,6 +3223,8 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
       (other is TransactionRow &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
+          other.revision == this.revision &&
+          other.syncState == this.syncState &&
           other.id == this.id &&
           other.ownerId == this.ownerId &&
           other.type == this.type &&
@@ -3063,6 +3240,8 @@ class TransactionRow extends DataClass implements Insertable<TransactionRow> {
 class TransactionsCompanion extends UpdateCompanion<TransactionRow> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<int> revision;
+  final Value<SyncState> syncState;
   final Value<String> id;
   final Value<String> ownerId;
   final Value<TransactionType> type;
@@ -3077,6 +3256,8 @@ class TransactionsCompanion extends UpdateCompanion<TransactionRow> {
   const TransactionsCompanion({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     this.id = const Value.absent(),
     this.ownerId = const Value.absent(),
     this.type = const Value.absent(),
@@ -3092,6 +3273,8 @@ class TransactionsCompanion extends UpdateCompanion<TransactionRow> {
   TransactionsCompanion.insert({
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     required String id,
     required String ownerId,
     required TransactionType type,
@@ -3115,6 +3298,8 @@ class TransactionsCompanion extends UpdateCompanion<TransactionRow> {
   static Insertable<TransactionRow> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<int>? revision,
+    Expression<String>? syncState,
     Expression<String>? id,
     Expression<String>? ownerId,
     Expression<String>? type,
@@ -3130,6 +3315,8 @@ class TransactionsCompanion extends UpdateCompanion<TransactionRow> {
     return RawValuesInsertable({
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (revision != null) 'revision': revision,
+      if (syncState != null) 'sync_state': syncState,
       if (id != null) 'id': id,
       if (ownerId != null) 'owner_id': ownerId,
       if (type != null) 'type': type,
@@ -3147,6 +3334,8 @@ class TransactionsCompanion extends UpdateCompanion<TransactionRow> {
   TransactionsCompanion copyWith({
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<int>? revision,
+    Value<SyncState>? syncState,
     Value<String>? id,
     Value<String>? ownerId,
     Value<TransactionType>? type,
@@ -3162,6 +3351,8 @@ class TransactionsCompanion extends UpdateCompanion<TransactionRow> {
     return TransactionsCompanion(
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      revision: revision ?? this.revision,
+      syncState: syncState ?? this.syncState,
       id: id ?? this.id,
       ownerId: ownerId ?? this.ownerId,
       type: type ?? this.type,
@@ -3184,6 +3375,14 @@ class TransactionsCompanion extends UpdateCompanion<TransactionRow> {
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $TransactionsTable.$convertersyncState.toSql(syncState.value),
+      );
     }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
@@ -3230,6 +3429,8 @@ class TransactionsCompanion extends UpdateCompanion<TransactionRow> {
     return (StringBuffer('TransactionsCompanion(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('ownerId: $ownerId, ')
           ..write('type: $type, ')
@@ -3274,6 +3475,28 @@ class $MoneyLedgerTable extends MoneyLedger
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('localOnly'),
+      ).withConverter<SyncState>($MoneyLedgerTable.$convertersyncState);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -3374,6 +3597,8 @@ class $MoneyLedgerTable extends MoneyLedger
   List<GeneratedColumn> get $columns => [
     createdAt,
     updatedAt,
+    revision,
+    syncState,
     id,
     personId,
     direction,
@@ -3411,6 +3636,12 @@ class $MoneyLedgerTable extends MoneyLedger
       );
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
     }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
@@ -3482,6 +3713,16 @@ class $MoneyLedgerTable extends MoneyLedger
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      syncState: $MoneyLedgerTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -3530,6 +3771,8 @@ class $MoneyLedgerTable extends MoneyLedger
     return $MoneyLedgerTable(attachedDatabase, alias);
   }
 
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
   static JsonTypeConverter2<LedgerDirection, String, String>
   $converterdirection = const EnumNameConverter<LedgerDirection>(
     LedgerDirection.values,
@@ -3543,6 +3786,10 @@ class $MoneyLedgerTable extends MoneyLedger
 class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  /// Server revision this local row is based on (0 = never uploaded).
+  final int revision;
+  final SyncState syncState;
   final String id;
   final String personId;
   final LedgerDirection direction;
@@ -3555,6 +3802,8 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
   const LedgerEntryRow({
     required this.createdAt,
     required this.updatedAt,
+    required this.revision,
+    required this.syncState,
     required this.id,
     required this.personId,
     required this.direction,
@@ -3570,6 +3819,12 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
     final map = <String, Expression>{};
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['revision'] = Variable<int>(revision);
+    {
+      map['sync_state'] = Variable<String>(
+        $MoneyLedgerTable.$convertersyncState.toSql(syncState),
+      );
+    }
     map['id'] = Variable<String>(id);
     map['person_id'] = Variable<String>(personId);
     {
@@ -3598,6 +3853,8 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
     return MoneyLedgerCompanion(
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      revision: Value(revision),
+      syncState: Value(syncState),
       id: Value(id),
       personId: Value(personId),
       direction: Value(direction),
@@ -3622,6 +3879,10 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
     return LedgerEntryRow(
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      revision: serializer.fromJson<int>(json['revision']),
+      syncState: $MoneyLedgerTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
       id: serializer.fromJson<String>(json['id']),
       personId: serializer.fromJson<String>(json['personId']),
       direction: $MoneyLedgerTable.$converterdirection.fromJson(
@@ -3643,6 +3904,10 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
     return <String, dynamic>{
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'revision': serializer.toJson<int>(revision),
+      'syncState': serializer.toJson<String>(
+        $MoneyLedgerTable.$convertersyncState.toJson(syncState),
+      ),
       'id': serializer.toJson<String>(id),
       'personId': serializer.toJson<String>(personId),
       'direction': serializer.toJson<String>(
@@ -3662,6 +3927,8 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
   LedgerEntryRow copyWith({
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? revision,
+    SyncState? syncState,
     String? id,
     String? personId,
     LedgerDirection? direction,
@@ -3674,6 +3941,8 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
   }) => LedgerEntryRow(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    revision: revision ?? this.revision,
+    syncState: syncState ?? this.syncState,
     id: id ?? this.id,
     personId: personId ?? this.personId,
     direction: direction ?? this.direction,
@@ -3688,6 +3957,8 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
     return LedgerEntryRow(
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
       id: data.id.present ? data.id.value : this.id,
       personId: data.personId.present ? data.personId.value : this.personId,
       direction: data.direction.present ? data.direction.value : this.direction,
@@ -3711,6 +3982,8 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
     return (StringBuffer('LedgerEntryRow(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('personId: $personId, ')
           ..write('direction: $direction, ')
@@ -3728,6 +4001,8 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
   int get hashCode => Object.hash(
     createdAt,
     updatedAt,
+    revision,
+    syncState,
     id,
     personId,
     direction,
@@ -3744,6 +4019,8 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
       (other is LedgerEntryRow &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
+          other.revision == this.revision &&
+          other.syncState == this.syncState &&
           other.id == this.id &&
           other.personId == this.personId &&
           other.direction == this.direction &&
@@ -3758,6 +4035,8 @@ class LedgerEntryRow extends DataClass implements Insertable<LedgerEntryRow> {
 class MoneyLedgerCompanion extends UpdateCompanion<LedgerEntryRow> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<int> revision;
+  final Value<SyncState> syncState;
   final Value<String> id;
   final Value<String> personId;
   final Value<LedgerDirection> direction;
@@ -3771,6 +4050,8 @@ class MoneyLedgerCompanion extends UpdateCompanion<LedgerEntryRow> {
   const MoneyLedgerCompanion({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     this.id = const Value.absent(),
     this.personId = const Value.absent(),
     this.direction = const Value.absent(),
@@ -3785,6 +4066,8 @@ class MoneyLedgerCompanion extends UpdateCompanion<LedgerEntryRow> {
   MoneyLedgerCompanion.insert({
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     required String id,
     required String personId,
     required LedgerDirection direction,
@@ -3806,6 +4089,8 @@ class MoneyLedgerCompanion extends UpdateCompanion<LedgerEntryRow> {
   static Insertable<LedgerEntryRow> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<int>? revision,
+    Expression<String>? syncState,
     Expression<String>? id,
     Expression<String>? personId,
     Expression<String>? direction,
@@ -3820,6 +4105,8 @@ class MoneyLedgerCompanion extends UpdateCompanion<LedgerEntryRow> {
     return RawValuesInsertable({
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (revision != null) 'revision': revision,
+      if (syncState != null) 'sync_state': syncState,
       if (id != null) 'id': id,
       if (personId != null) 'person_id': personId,
       if (direction != null) 'direction': direction,
@@ -3836,6 +4123,8 @@ class MoneyLedgerCompanion extends UpdateCompanion<LedgerEntryRow> {
   MoneyLedgerCompanion copyWith({
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<int>? revision,
+    Value<SyncState>? syncState,
     Value<String>? id,
     Value<String>? personId,
     Value<LedgerDirection>? direction,
@@ -3850,6 +4139,8 @@ class MoneyLedgerCompanion extends UpdateCompanion<LedgerEntryRow> {
     return MoneyLedgerCompanion(
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      revision: revision ?? this.revision,
+      syncState: syncState ?? this.syncState,
       id: id ?? this.id,
       personId: personId ?? this.personId,
       direction: direction ?? this.direction,
@@ -3871,6 +4162,14 @@ class MoneyLedgerCompanion extends UpdateCompanion<LedgerEntryRow> {
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $MoneyLedgerTable.$convertersyncState.toSql(syncState.value),
+      );
     }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
@@ -3914,6 +4213,8 @@ class MoneyLedgerCompanion extends UpdateCompanion<LedgerEntryRow> {
     return (StringBuffer('MoneyLedgerCompanion(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('personId: $personId, ')
           ..write('direction: $direction, ')
@@ -3957,6 +4258,28 @@ class $MoneySettlementsTable extends MoneySettlements
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('localOnly'),
+      ).withConverter<SyncState>($MoneySettlementsTable.$convertersyncState);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -4028,6 +4351,8 @@ class $MoneySettlementsTable extends MoneySettlements
   List<GeneratedColumn> get $columns => [
     createdAt,
     updatedAt,
+    revision,
+    syncState,
     id,
     ledgerId,
     amountPaise,
@@ -4062,6 +4387,12 @@ class $MoneySettlementsTable extends MoneySettlements
       );
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
     }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
@@ -4118,6 +4449,16 @@ class $MoneySettlementsTable extends MoneySettlements
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      syncState: $MoneySettlementsTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -4152,6 +4493,8 @@ class $MoneySettlementsTable extends MoneySettlements
     return $MoneySettlementsTable(attachedDatabase, alias);
   }
 
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
   static JsonTypeConverter2<PaymentMethod, String, String>
   $converterpaymentMethod = const EnumNameConverter<PaymentMethod>(
     PaymentMethod.values,
@@ -4162,6 +4505,10 @@ class LedgerRepaymentRow extends DataClass
     implements Insertable<LedgerRepaymentRow> {
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  /// Server revision this local row is based on (0 = never uploaded).
+  final int revision;
+  final SyncState syncState;
   final String id;
   final String ledgerId;
   final int amountPaise;
@@ -4171,6 +4518,8 @@ class LedgerRepaymentRow extends DataClass
   const LedgerRepaymentRow({
     required this.createdAt,
     required this.updatedAt,
+    required this.revision,
+    required this.syncState,
     required this.id,
     required this.ledgerId,
     required this.amountPaise,
@@ -4183,6 +4532,12 @@ class LedgerRepaymentRow extends DataClass
     final map = <String, Expression>{};
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['revision'] = Variable<int>(revision);
+    {
+      map['sync_state'] = Variable<String>(
+        $MoneySettlementsTable.$convertersyncState.toSql(syncState),
+      );
+    }
     map['id'] = Variable<String>(id);
     map['ledger_id'] = Variable<String>(ledgerId);
     map['amount_paise'] = Variable<int>(amountPaise);
@@ -4202,6 +4557,8 @@ class LedgerRepaymentRow extends DataClass
     return MoneySettlementsCompanion(
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      revision: Value(revision),
+      syncState: Value(syncState),
       id: Value(id),
       ledgerId: Value(ledgerId),
       amountPaise: Value(amountPaise),
@@ -4221,6 +4578,10 @@ class LedgerRepaymentRow extends DataClass
     return LedgerRepaymentRow(
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      revision: serializer.fromJson<int>(json['revision']),
+      syncState: $MoneySettlementsTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
       id: serializer.fromJson<String>(json['id']),
       ledgerId: serializer.fromJson<String>(json['ledgerId']),
       amountPaise: serializer.fromJson<int>(json['amountPaise']),
@@ -4237,6 +4598,10 @@ class LedgerRepaymentRow extends DataClass
     return <String, dynamic>{
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'revision': serializer.toJson<int>(revision),
+      'syncState': serializer.toJson<String>(
+        $MoneySettlementsTable.$convertersyncState.toJson(syncState),
+      ),
       'id': serializer.toJson<String>(id),
       'ledgerId': serializer.toJson<String>(ledgerId),
       'amountPaise': serializer.toJson<int>(amountPaise),
@@ -4251,6 +4616,8 @@ class LedgerRepaymentRow extends DataClass
   LedgerRepaymentRow copyWith({
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? revision,
+    SyncState? syncState,
     String? id,
     String? ledgerId,
     int? amountPaise,
@@ -4260,6 +4627,8 @@ class LedgerRepaymentRow extends DataClass
   }) => LedgerRepaymentRow(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    revision: revision ?? this.revision,
+    syncState: syncState ?? this.syncState,
     id: id ?? this.id,
     ledgerId: ledgerId ?? this.ledgerId,
     amountPaise: amountPaise ?? this.amountPaise,
@@ -4271,6 +4640,8 @@ class LedgerRepaymentRow extends DataClass
     return LedgerRepaymentRow(
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
       id: data.id.present ? data.id.value : this.id,
       ledgerId: data.ledgerId.present ? data.ledgerId.value : this.ledgerId,
       amountPaise: data.amountPaise.present
@@ -4289,6 +4660,8 @@ class LedgerRepaymentRow extends DataClass
     return (StringBuffer('LedgerRepaymentRow(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('ledgerId: $ledgerId, ')
           ..write('amountPaise: $amountPaise, ')
@@ -4303,6 +4676,8 @@ class LedgerRepaymentRow extends DataClass
   int get hashCode => Object.hash(
     createdAt,
     updatedAt,
+    revision,
+    syncState,
     id,
     ledgerId,
     amountPaise,
@@ -4316,6 +4691,8 @@ class LedgerRepaymentRow extends DataClass
       (other is LedgerRepaymentRow &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
+          other.revision == this.revision &&
+          other.syncState == this.syncState &&
           other.id == this.id &&
           other.ledgerId == this.ledgerId &&
           other.amountPaise == this.amountPaise &&
@@ -4327,6 +4704,8 @@ class LedgerRepaymentRow extends DataClass
 class MoneySettlementsCompanion extends UpdateCompanion<LedgerRepaymentRow> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<int> revision;
+  final Value<SyncState> syncState;
   final Value<String> id;
   final Value<String> ledgerId;
   final Value<int> amountPaise;
@@ -4337,6 +4716,8 @@ class MoneySettlementsCompanion extends UpdateCompanion<LedgerRepaymentRow> {
   const MoneySettlementsCompanion({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     this.id = const Value.absent(),
     this.ledgerId = const Value.absent(),
     this.amountPaise = const Value.absent(),
@@ -4348,6 +4729,8 @@ class MoneySettlementsCompanion extends UpdateCompanion<LedgerRepaymentRow> {
   MoneySettlementsCompanion.insert({
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     required String id,
     required String ledgerId,
     required int amountPaise,
@@ -4365,6 +4748,8 @@ class MoneySettlementsCompanion extends UpdateCompanion<LedgerRepaymentRow> {
   static Insertable<LedgerRepaymentRow> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<int>? revision,
+    Expression<String>? syncState,
     Expression<String>? id,
     Expression<String>? ledgerId,
     Expression<int>? amountPaise,
@@ -4376,6 +4761,8 @@ class MoneySettlementsCompanion extends UpdateCompanion<LedgerRepaymentRow> {
     return RawValuesInsertable({
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (revision != null) 'revision': revision,
+      if (syncState != null) 'sync_state': syncState,
       if (id != null) 'id': id,
       if (ledgerId != null) 'ledger_id': ledgerId,
       if (amountPaise != null) 'amount_paise': amountPaise,
@@ -4389,6 +4776,8 @@ class MoneySettlementsCompanion extends UpdateCompanion<LedgerRepaymentRow> {
   MoneySettlementsCompanion copyWith({
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<int>? revision,
+    Value<SyncState>? syncState,
     Value<String>? id,
     Value<String>? ledgerId,
     Value<int>? amountPaise,
@@ -4400,6 +4789,8 @@ class MoneySettlementsCompanion extends UpdateCompanion<LedgerRepaymentRow> {
     return MoneySettlementsCompanion(
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      revision: revision ?? this.revision,
+      syncState: syncState ?? this.syncState,
       id: id ?? this.id,
       ledgerId: ledgerId ?? this.ledgerId,
       amountPaise: amountPaise ?? this.amountPaise,
@@ -4418,6 +4809,14 @@ class MoneySettlementsCompanion extends UpdateCompanion<LedgerRepaymentRow> {
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $MoneySettlementsTable.$convertersyncState.toSql(syncState.value),
+      );
     }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
@@ -4452,6 +4851,8 @@ class MoneySettlementsCompanion extends UpdateCompanion<LedgerRepaymentRow> {
     return (StringBuffer('MoneySettlementsCompanion(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('ledgerId: $ledgerId, ')
           ..write('amountPaise: $amountPaise, ')
@@ -8212,6 +8613,28 @@ class $AttachmentsTable extends Attachments
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $AttachmentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('localOnly'),
+      ).withConverter<SyncState>($AttachmentsTable.$convertersyncState);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -8340,6 +8763,8 @@ class $AttachmentsTable extends Attachments
   );
   @override
   List<GeneratedColumn> get $columns => [
+    revision,
+    syncState,
     id,
     transactionId,
     ledgerEntryId,
@@ -8364,6 +8789,12 @@ class $AttachmentsTable extends Attachments
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -8462,6 +8893,16 @@ class $AttachmentsTable extends Attachments
   AttachmentRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return AttachmentRow(
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      syncState: $AttachmentsTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -8513,9 +8954,15 @@ class $AttachmentsTable extends Attachments
   $AttachmentsTable createAlias(String alias) {
     return $AttachmentsTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
 }
 
 class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
+  /// Server revision this local row is based on (0 = never uploaded).
+  final int revision;
+  final SyncState syncState;
   final String id;
   final String? transactionId;
   final String? ledgerEntryId;
@@ -8530,6 +8977,8 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
   final String? remotePath;
   final DateTime createdAt;
   const AttachmentRow({
+    required this.revision,
+    required this.syncState,
     required this.id,
     this.transactionId,
     this.ledgerEntryId,
@@ -8545,6 +8994,12 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    map['revision'] = Variable<int>(revision);
+    {
+      map['sync_state'] = Variable<String>(
+        $AttachmentsTable.$convertersyncState.toSql(syncState),
+      );
+    }
     map['id'] = Variable<String>(id);
     if (!nullToAbsent || transactionId != null) {
       map['transaction_id'] = Variable<String>(transactionId);
@@ -8569,6 +9024,8 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
 
   AttachmentsCompanion toCompanion(bool nullToAbsent) {
     return AttachmentsCompanion(
+      revision: Value(revision),
+      syncState: Value(syncState),
       id: Value(id),
       transactionId: transactionId == null && nullToAbsent
           ? const Value.absent()
@@ -8597,6 +9054,10 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return AttachmentRow(
+      revision: serializer.fromJson<int>(json['revision']),
+      syncState: $AttachmentsTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
       id: serializer.fromJson<String>(json['id']),
       transactionId: serializer.fromJson<String?>(json['transactionId']),
       ledgerEntryId: serializer.fromJson<String?>(json['ledgerEntryId']),
@@ -8614,6 +9075,10 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'revision': serializer.toJson<int>(revision),
+      'syncState': serializer.toJson<String>(
+        $AttachmentsTable.$convertersyncState.toJson(syncState),
+      ),
       'id': serializer.toJson<String>(id),
       'transactionId': serializer.toJson<String?>(transactionId),
       'ledgerEntryId': serializer.toJson<String?>(ledgerEntryId),
@@ -8629,6 +9094,8 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
   }
 
   AttachmentRow copyWith({
+    int? revision,
+    SyncState? syncState,
     String? id,
     Value<String?> transactionId = const Value.absent(),
     Value<String?> ledgerEntryId = const Value.absent(),
@@ -8641,6 +9108,8 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
     Value<String?> remotePath = const Value.absent(),
     DateTime? createdAt,
   }) => AttachmentRow(
+    revision: revision ?? this.revision,
+    syncState: syncState ?? this.syncState,
     id: id ?? this.id,
     transactionId: transactionId.present
         ? transactionId.value
@@ -8661,6 +9130,8 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
   );
   AttachmentRow copyWithCompanion(AttachmentsCompanion data) {
     return AttachmentRow(
+      revision: data.revision.present ? data.revision.value : this.revision,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
       id: data.id.present ? data.id.value : this.id,
       transactionId: data.transactionId.present
           ? data.transactionId.value
@@ -8690,6 +9161,8 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
   @override
   String toString() {
     return (StringBuffer('AttachmentRow(')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('transactionId: $transactionId, ')
           ..write('ledgerEntryId: $ledgerEntryId, ')
@@ -8707,6 +9180,8 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
 
   @override
   int get hashCode => Object.hash(
+    revision,
+    syncState,
     id,
     transactionId,
     ledgerEntryId,
@@ -8723,6 +9198,8 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is AttachmentRow &&
+          other.revision == this.revision &&
+          other.syncState == this.syncState &&
           other.id == this.id &&
           other.transactionId == this.transactionId &&
           other.ledgerEntryId == this.ledgerEntryId &&
@@ -8737,6 +9214,8 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
 }
 
 class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
+  final Value<int> revision;
+  final Value<SyncState> syncState;
   final Value<String> id;
   final Value<String?> transactionId;
   final Value<String?> ledgerEntryId;
@@ -8750,6 +9229,8 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const AttachmentsCompanion({
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     this.id = const Value.absent(),
     this.transactionId = const Value.absent(),
     this.ledgerEntryId = const Value.absent(),
@@ -8764,6 +9245,8 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
     this.rowid = const Value.absent(),
   });
   AttachmentsCompanion.insert({
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     required String id,
     this.transactionId = const Value.absent(),
     this.ledgerEntryId = const Value.absent(),
@@ -8784,6 +9267,8 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
        sha256 = Value(sha256),
        createdAt = Value(createdAt);
   static Insertable<AttachmentRow> custom({
+    Expression<int>? revision,
+    Expression<String>? syncState,
     Expression<String>? id,
     Expression<String>? transactionId,
     Expression<String>? ledgerEntryId,
@@ -8798,6 +9283,8 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (revision != null) 'revision': revision,
+      if (syncState != null) 'sync_state': syncState,
       if (id != null) 'id': id,
       if (transactionId != null) 'transaction_id': transactionId,
       if (ledgerEntryId != null) 'ledger_entry_id': ledgerEntryId,
@@ -8814,6 +9301,8 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
   }
 
   AttachmentsCompanion copyWith({
+    Value<int>? revision,
+    Value<SyncState>? syncState,
     Value<String>? id,
     Value<String?>? transactionId,
     Value<String?>? ledgerEntryId,
@@ -8828,6 +9317,8 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
     Value<int>? rowid,
   }) {
     return AttachmentsCompanion(
+      revision: revision ?? this.revision,
+      syncState: syncState ?? this.syncState,
       id: id ?? this.id,
       transactionId: transactionId ?? this.transactionId,
       ledgerEntryId: ledgerEntryId ?? this.ledgerEntryId,
@@ -8846,6 +9337,14 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $AttachmentsTable.$convertersyncState.toSql(syncState.value),
+      );
+    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -8888,6 +9387,8 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
   @override
   String toString() {
     return (StringBuffer('AttachmentsCompanion(')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('transactionId: $transactionId, ')
           ..write('ledgerEntryId: $ledgerEntryId, ')
@@ -8933,6 +9434,28 @@ class $RemindersTable extends Reminders
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('localOnly'),
+      ).withConverter<SyncState>($RemindersTable.$convertersyncState);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -9122,6 +9645,8 @@ class $RemindersTable extends Reminders
   List<GeneratedColumn> get $columns => [
     createdAt,
     updatedAt,
+    revision,
+    syncState,
     id,
     kind,
     title,
@@ -9166,6 +9691,12 @@ class $RemindersTable extends Reminders
       );
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
     }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
@@ -9282,6 +9813,16 @@ class $RemindersTable extends Reminders
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      syncState: $RemindersTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -9360,6 +9901,8 @@ class $RemindersTable extends Reminders
     return $RemindersTable(attachedDatabase, alias);
   }
 
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
   static JsonTypeConverter2<ReminderKind, String, String> $converterkind =
       const EnumNameConverter<ReminderKind>(ReminderKind.values);
   static JsonTypeConverter2<ReminderRepeat, String, String> $converterrepeat =
@@ -9371,6 +9914,10 @@ class $RemindersTable extends Reminders
 class ReminderRow extends DataClass implements Insertable<ReminderRow> {
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  /// Server revision this local row is based on (0 = never uploaded).
+  final int revision;
+  final SyncState syncState;
   final String id;
   final ReminderKind kind;
   final String title;
@@ -9403,6 +9950,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
   const ReminderRow({
     required this.createdAt,
     required this.updatedAt,
+    required this.revision,
+    required this.syncState,
     required this.id,
     required this.kind,
     required this.title,
@@ -9425,6 +9974,12 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     final map = <String, Expression>{};
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['revision'] = Variable<int>(revision);
+    {
+      map['sync_state'] = Variable<String>(
+        $RemindersTable.$convertersyncState.toSql(syncState),
+      );
+    }
     map['id'] = Variable<String>(id);
     {
       map['kind'] = Variable<String>(
@@ -9476,6 +10031,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     return RemindersCompanion(
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      revision: Value(revision),
+      syncState: Value(syncState),
       id: Value(id),
       kind: Value(kind),
       title: Value(title),
@@ -9517,6 +10074,10 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     return ReminderRow(
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      revision: serializer.fromJson<int>(json['revision']),
+      syncState: $RemindersTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
       id: serializer.fromJson<String>(json['id']),
       kind: $RemindersTable.$converterkind.fromJson(
         serializer.fromJson<String>(json['kind']),
@@ -9549,6 +10110,10 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     return <String, dynamic>{
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'revision': serializer.toJson<int>(revision),
+      'syncState': serializer.toJson<String>(
+        $RemindersTable.$convertersyncState.toJson(syncState),
+      ),
       'id': serializer.toJson<String>(id),
       'kind': serializer.toJson<String>(
         $RemindersTable.$converterkind.toJson(kind),
@@ -9577,6 +10142,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
   ReminderRow copyWith({
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? revision,
+    SyncState? syncState,
     String? id,
     ReminderKind? kind,
     String? title,
@@ -9596,6 +10163,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
   }) => ReminderRow(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    revision: revision ?? this.revision,
+    syncState: syncState ?? this.syncState,
     id: id ?? this.id,
     kind: kind ?? this.kind,
     title: title ?? this.title,
@@ -9621,6 +10190,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     return ReminderRow(
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
       id: data.id.present ? data.id.value : this.id,
       kind: data.kind.present ? data.kind.value : this.kind,
       title: data.title.present ? data.title.value : this.title,
@@ -9657,6 +10228,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     return (StringBuffer('ReminderRow(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('kind: $kind, ')
           ..write('title: $title, ')
@@ -9681,6 +10254,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
   int get hashCode => Object.hash(
     createdAt,
     updatedAt,
+    revision,
+    syncState,
     id,
     kind,
     title,
@@ -9704,6 +10279,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
       (other is ReminderRow &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
+          other.revision == this.revision &&
+          other.syncState == this.syncState &&
           other.id == this.id &&
           other.kind == this.kind &&
           other.title == this.title &&
@@ -9725,6 +10302,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
 class RemindersCompanion extends UpdateCompanion<ReminderRow> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<int> revision;
+  final Value<SyncState> syncState;
   final Value<String> id;
   final Value<ReminderKind> kind;
   final Value<String> title;
@@ -9745,6 +10324,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
   const RemindersCompanion({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     this.id = const Value.absent(),
     this.kind = const Value.absent(),
     this.title = const Value.absent(),
@@ -9766,6 +10347,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
   RemindersCompanion.insert({
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
     required String id,
     required ReminderKind kind,
     required String title,
@@ -9793,6 +10376,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
   static Insertable<ReminderRow> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<int>? revision,
+    Expression<String>? syncState,
     Expression<String>? id,
     Expression<String>? kind,
     Expression<String>? title,
@@ -9814,6 +10399,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     return RawValuesInsertable({
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (revision != null) 'revision': revision,
+      if (syncState != null) 'sync_state': syncState,
       if (id != null) 'id': id,
       if (kind != null) 'kind': kind,
       if (title != null) 'title': title,
@@ -9838,6 +10425,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
   RemindersCompanion copyWith({
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<int>? revision,
+    Value<SyncState>? syncState,
     Value<String>? id,
     Value<ReminderKind>? kind,
     Value<String>? title,
@@ -9859,6 +10448,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     return RemindersCompanion(
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      revision: revision ?? this.revision,
+      syncState: syncState ?? this.syncState,
       id: id ?? this.id,
       kind: kind ?? this.kind,
       title: title ?? this.title,
@@ -9887,6 +10478,14 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $RemindersTable.$convertersyncState.toSql(syncState.value),
+      );
     }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
@@ -9953,6 +10552,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     return (StringBuffer('RemindersCompanion(')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
           ..write('id: $id, ')
           ..write('kind: $kind, ')
           ..write('title: $title, ')
@@ -9989,6 +10590,16 @@ class $SyncOutboxTable extends SyncOutbox
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _scopeMeta = const VerificationMeta('scope');
+  @override
+  late final GeneratedColumn<String> scope = GeneratedColumn<String>(
+    'scope',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('group'),
   );
   static const VerificationMeta _groupIdMeta = const VerificationMeta(
     'groupId',
@@ -10113,6 +10724,7 @@ class $SyncOutboxTable extends SyncOutbox
   @override
   List<GeneratedColumn> get $columns => [
     opId,
+    scope,
     groupId,
     entityType,
     entityId,
@@ -10144,6 +10756,12 @@ class $SyncOutboxTable extends SyncOutbox
       );
     } else if (isInserting) {
       context.missing(_opIdMeta);
+    }
+    if (data.containsKey('scope')) {
+      context.handle(
+        _scopeMeta,
+        scope.isAcceptableOrUnknown(data['scope']!, _scopeMeta),
+      );
     }
     if (data.containsKey('group_id')) {
       context.handle(
@@ -10238,6 +10856,10 @@ class $SyncOutboxTable extends SyncOutbox
         DriftSqlType.string,
         data['${effectivePrefix}op_id'],
       )!,
+      scope: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}scope'],
+      )!,
       groupId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}group_id'],
@@ -10299,6 +10921,9 @@ class $SyncOutboxTable extends SyncOutbox
 class OutboxRow extends DataClass implements Insertable<OutboxRow> {
   /// Idempotency key sent to the server.
   final String opId;
+
+  /// `group` or `personal` (v4). Personal rows use an empty [groupId].
+  final String scope;
   final String groupId;
   final String entityType;
   final String entityId;
@@ -10314,6 +10939,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
   final DateTime createdAt;
   const OutboxRow({
     required this.opId,
+    required this.scope,
     required this.groupId,
     required this.entityType,
     required this.entityId,
@@ -10330,6 +10956,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['op_id'] = Variable<String>(opId);
+    map['scope'] = Variable<String>(scope);
     map['group_id'] = Variable<String>(groupId);
     map['entity_type'] = Variable<String>(entityType);
     map['entity_id'] = Variable<String>(entityId);
@@ -10355,6 +10982,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
   SyncOutboxCompanion toCompanion(bool nullToAbsent) {
     return SyncOutboxCompanion(
       opId: Value(opId),
+      scope: Value(scope),
       groupId: Value(groupId),
       entityType: Value(entityType),
       entityId: Value(entityId),
@@ -10380,6 +11008,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return OutboxRow(
       opId: serializer.fromJson<String>(json['opId']),
+      scope: serializer.fromJson<String>(json['scope']),
       groupId: serializer.fromJson<String>(json['groupId']),
       entityType: serializer.fromJson<String>(json['entityType']),
       entityId: serializer.fromJson<String>(json['entityId']),
@@ -10400,6 +11029,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'opId': serializer.toJson<String>(opId),
+      'scope': serializer.toJson<String>(scope),
       'groupId': serializer.toJson<String>(groupId),
       'entityType': serializer.toJson<String>(entityType),
       'entityId': serializer.toJson<String>(entityId),
@@ -10418,6 +11048,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
 
   OutboxRow copyWith({
     String? opId,
+    String? scope,
     String? groupId,
     String? entityType,
     String? entityId,
@@ -10431,6 +11062,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
     DateTime? createdAt,
   }) => OutboxRow(
     opId: opId ?? this.opId,
+    scope: scope ?? this.scope,
     groupId: groupId ?? this.groupId,
     entityType: entityType ?? this.entityType,
     entityId: entityId ?? this.entityId,
@@ -10448,6 +11080,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
   OutboxRow copyWithCompanion(SyncOutboxCompanion data) {
     return OutboxRow(
       opId: data.opId.present ? data.opId.value : this.opId,
+      scope: data.scope.present ? data.scope.value : this.scope,
       groupId: data.groupId.present ? data.groupId.value : this.groupId,
       entityType: data.entityType.present
           ? data.entityType.value
@@ -10472,6 +11105,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
   String toString() {
     return (StringBuffer('OutboxRow(')
           ..write('opId: $opId, ')
+          ..write('scope: $scope, ')
           ..write('groupId: $groupId, ')
           ..write('entityType: $entityType, ')
           ..write('entityId: $entityId, ')
@@ -10490,6 +11124,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
   @override
   int get hashCode => Object.hash(
     opId,
+    scope,
     groupId,
     entityType,
     entityId,
@@ -10507,6 +11142,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
       identical(this, other) ||
       (other is OutboxRow &&
           other.opId == this.opId &&
+          other.scope == this.scope &&
           other.groupId == this.groupId &&
           other.entityType == this.entityType &&
           other.entityId == this.entityId &&
@@ -10522,6 +11158,7 @@ class OutboxRow extends DataClass implements Insertable<OutboxRow> {
 
 class SyncOutboxCompanion extends UpdateCompanion<OutboxRow> {
   final Value<String> opId;
+  final Value<String> scope;
   final Value<String> groupId;
   final Value<String> entityType;
   final Value<String> entityId;
@@ -10536,6 +11173,7 @@ class SyncOutboxCompanion extends UpdateCompanion<OutboxRow> {
   final Value<int> rowid;
   const SyncOutboxCompanion({
     this.opId = const Value.absent(),
+    this.scope = const Value.absent(),
     this.groupId = const Value.absent(),
     this.entityType = const Value.absent(),
     this.entityId = const Value.absent(),
@@ -10551,6 +11189,7 @@ class SyncOutboxCompanion extends UpdateCompanion<OutboxRow> {
   });
   SyncOutboxCompanion.insert({
     required String opId,
+    this.scope = const Value.absent(),
     required String groupId,
     required String entityType,
     required String entityId,
@@ -10573,6 +11212,7 @@ class SyncOutboxCompanion extends UpdateCompanion<OutboxRow> {
        createdAt = Value(createdAt);
   static Insertable<OutboxRow> custom({
     Expression<String>? opId,
+    Expression<String>? scope,
     Expression<String>? groupId,
     Expression<String>? entityType,
     Expression<String>? entityId,
@@ -10588,6 +11228,7 @@ class SyncOutboxCompanion extends UpdateCompanion<OutboxRow> {
   }) {
     return RawValuesInsertable({
       if (opId != null) 'op_id': opId,
+      if (scope != null) 'scope': scope,
       if (groupId != null) 'group_id': groupId,
       if (entityType != null) 'entity_type': entityType,
       if (entityId != null) 'entity_id': entityId,
@@ -10605,6 +11246,7 @@ class SyncOutboxCompanion extends UpdateCompanion<OutboxRow> {
 
   SyncOutboxCompanion copyWith({
     Value<String>? opId,
+    Value<String>? scope,
     Value<String>? groupId,
     Value<String>? entityType,
     Value<String>? entityId,
@@ -10620,6 +11262,7 @@ class SyncOutboxCompanion extends UpdateCompanion<OutboxRow> {
   }) {
     return SyncOutboxCompanion(
       opId: opId ?? this.opId,
+      scope: scope ?? this.scope,
       groupId: groupId ?? this.groupId,
       entityType: entityType ?? this.entityType,
       entityId: entityId ?? this.entityId,
@@ -10640,6 +11283,9 @@ class SyncOutboxCompanion extends UpdateCompanion<OutboxRow> {
     final map = <String, Expression>{};
     if (opId.present) {
       map['op_id'] = Variable<String>(opId.value);
+    }
+    if (scope.present) {
+      map['scope'] = Variable<String>(scope.value);
     }
     if (groupId.present) {
       map['group_id'] = Variable<String>(groupId.value);
@@ -10686,6 +11332,7 @@ class SyncOutboxCompanion extends UpdateCompanion<OutboxRow> {
   String toString() {
     return (StringBuffer('SyncOutboxCompanion(')
           ..write('opId: $opId, ')
+          ..write('scope: $scope, ')
           ..write('groupId: $groupId, ')
           ..write('entityType: $entityType, ')
           ..write('entityId: $entityId, ')
@@ -10716,7 +11363,17 @@ class $SyncInboxTable extends SyncInbox
     aliasedName,
     false,
     type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _scopeMeta = const VerificationMeta('scope');
+  @override
+  late final GeneratedColumn<String> scope = GeneratedColumn<String>(
+    'scope',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
+    defaultValue: const Constant('group'),
   );
   static const VerificationMeta _groupIdMeta = const VerificationMeta(
     'groupId',
@@ -10813,9 +11470,19 @@ class $SyncInboxTable extends SyncInbox
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _opIdMeta = const VerificationMeta('opId');
+  @override
+  late final GeneratedColumn<String> opId = GeneratedColumn<String>(
+    'op_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     seq,
+    scope,
     groupId,
     entityType,
     entityId,
@@ -10825,6 +11492,7 @@ class $SyncInboxTable extends SyncInbox
     receivedAt,
     appliedAt,
     error,
+    opId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -10842,6 +11510,14 @@ class $SyncInboxTable extends SyncInbox
       context.handle(
         _seqMeta,
         seq.isAcceptableOrUnknown(data['seq']!, _seqMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_seqMeta);
+    }
+    if (data.containsKey('scope')) {
+      context.handle(
+        _scopeMeta,
+        scope.isAcceptableOrUnknown(data['scope']!, _scopeMeta),
       );
     }
     if (data.containsKey('group_id')) {
@@ -10915,11 +11591,17 @@ class $SyncInboxTable extends SyncInbox
         error.isAcceptableOrUnknown(data['error']!, _errorMeta),
       );
     }
+    if (data.containsKey('op_id')) {
+      context.handle(
+        _opIdMeta,
+        opId.isAcceptableOrUnknown(data['op_id']!, _opIdMeta),
+      );
+    }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {seq};
+  Set<GeneratedColumn> get $primaryKey => {scope, seq};
   @override
   InboxRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -10927,6 +11609,10 @@ class $SyncInboxTable extends SyncInbox
       seq: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}seq'],
+      )!,
+      scope: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}scope'],
       )!,
       groupId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -10964,6 +11650,10 @@ class $SyncInboxTable extends SyncInbox
         DriftSqlType.string,
         data['${effectivePrefix}error'],
       ),
+      opId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}op_id'],
+      ),
     );
   }
 
@@ -10976,6 +11666,9 @@ class $SyncInboxTable extends SyncInbox
 class InboxRow extends DataClass implements Insertable<InboxRow> {
   /// Server event sequence number (monotonic).
   final int seq;
+
+  /// `group` or `personal` (v4). Personal rows use an empty [groupId].
+  final String scope;
   final String groupId;
   final String entityType;
   final String entityId;
@@ -10985,8 +11678,12 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
   final DateTime receivedAt;
   final DateTime? appliedAt;
   final String? error;
+
+  /// Operation that caused the event (personal feed; v4).
+  final String? opId;
   const InboxRow({
     required this.seq,
+    required this.scope,
     required this.groupId,
     required this.entityType,
     required this.entityId,
@@ -10996,11 +11693,13 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
     required this.receivedAt,
     this.appliedAt,
     this.error,
+    this.opId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['seq'] = Variable<int>(seq);
+    map['scope'] = Variable<String>(scope);
     map['group_id'] = Variable<String>(groupId);
     map['entity_type'] = Variable<String>(entityType);
     map['entity_id'] = Variable<String>(entityId);
@@ -11014,12 +11713,16 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
     if (!nullToAbsent || error != null) {
       map['error'] = Variable<String>(error);
     }
+    if (!nullToAbsent || opId != null) {
+      map['op_id'] = Variable<String>(opId);
+    }
     return map;
   }
 
   SyncInboxCompanion toCompanion(bool nullToAbsent) {
     return SyncInboxCompanion(
       seq: Value(seq),
+      scope: Value(scope),
       groupId: Value(groupId),
       entityType: Value(entityType),
       entityId: Value(entityId),
@@ -11033,6 +11736,7 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
       error: error == null && nullToAbsent
           ? const Value.absent()
           : Value(error),
+      opId: opId == null && nullToAbsent ? const Value.absent() : Value(opId),
     );
   }
 
@@ -11043,6 +11747,7 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return InboxRow(
       seq: serializer.fromJson<int>(json['seq']),
+      scope: serializer.fromJson<String>(json['scope']),
       groupId: serializer.fromJson<String>(json['groupId']),
       entityType: serializer.fromJson<String>(json['entityType']),
       entityId: serializer.fromJson<String>(json['entityId']),
@@ -11052,6 +11757,7 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
       receivedAt: serializer.fromJson<DateTime>(json['receivedAt']),
       appliedAt: serializer.fromJson<DateTime?>(json['appliedAt']),
       error: serializer.fromJson<String?>(json['error']),
+      opId: serializer.fromJson<String?>(json['opId']),
     );
   }
   @override
@@ -11059,6 +11765,7 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'seq': serializer.toJson<int>(seq),
+      'scope': serializer.toJson<String>(scope),
       'groupId': serializer.toJson<String>(groupId),
       'entityType': serializer.toJson<String>(entityType),
       'entityId': serializer.toJson<String>(entityId),
@@ -11068,11 +11775,13 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
       'receivedAt': serializer.toJson<DateTime>(receivedAt),
       'appliedAt': serializer.toJson<DateTime?>(appliedAt),
       'error': serializer.toJson<String?>(error),
+      'opId': serializer.toJson<String?>(opId),
     };
   }
 
   InboxRow copyWith({
     int? seq,
+    String? scope,
     String? groupId,
     String? entityType,
     String? entityId,
@@ -11082,8 +11791,10 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
     DateTime? receivedAt,
     Value<DateTime?> appliedAt = const Value.absent(),
     Value<String?> error = const Value.absent(),
+    Value<String?> opId = const Value.absent(),
   }) => InboxRow(
     seq: seq ?? this.seq,
+    scope: scope ?? this.scope,
     groupId: groupId ?? this.groupId,
     entityType: entityType ?? this.entityType,
     entityId: entityId ?? this.entityId,
@@ -11093,10 +11804,12 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
     receivedAt: receivedAt ?? this.receivedAt,
     appliedAt: appliedAt.present ? appliedAt.value : this.appliedAt,
     error: error.present ? error.value : this.error,
+    opId: opId.present ? opId.value : this.opId,
   );
   InboxRow copyWithCompanion(SyncInboxCompanion data) {
     return InboxRow(
       seq: data.seq.present ? data.seq.value : this.seq,
+      scope: data.scope.present ? data.scope.value : this.scope,
       groupId: data.groupId.present ? data.groupId.value : this.groupId,
       entityType: data.entityType.present
           ? data.entityType.value
@@ -11112,6 +11825,7 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
           : this.receivedAt,
       appliedAt: data.appliedAt.present ? data.appliedAt.value : this.appliedAt,
       error: data.error.present ? data.error.value : this.error,
+      opId: data.opId.present ? data.opId.value : this.opId,
     );
   }
 
@@ -11119,6 +11833,7 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
   String toString() {
     return (StringBuffer('InboxRow(')
           ..write('seq: $seq, ')
+          ..write('scope: $scope, ')
           ..write('groupId: $groupId, ')
           ..write('entityType: $entityType, ')
           ..write('entityId: $entityId, ')
@@ -11127,7 +11842,8 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
           ..write('remoteRevision: $remoteRevision, ')
           ..write('receivedAt: $receivedAt, ')
           ..write('appliedAt: $appliedAt, ')
-          ..write('error: $error')
+          ..write('error: $error, ')
+          ..write('opId: $opId')
           ..write(')'))
         .toString();
   }
@@ -11135,6 +11851,7 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
   @override
   int get hashCode => Object.hash(
     seq,
+    scope,
     groupId,
     entityType,
     entityId,
@@ -11144,12 +11861,14 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
     receivedAt,
     appliedAt,
     error,
+    opId,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is InboxRow &&
           other.seq == this.seq &&
+          other.scope == this.scope &&
           other.groupId == this.groupId &&
           other.entityType == this.entityType &&
           other.entityId == this.entityId &&
@@ -11158,11 +11877,13 @@ class InboxRow extends DataClass implements Insertable<InboxRow> {
           other.remoteRevision == this.remoteRevision &&
           other.receivedAt == this.receivedAt &&
           other.appliedAt == this.appliedAt &&
-          other.error == this.error);
+          other.error == this.error &&
+          other.opId == this.opId);
 }
 
 class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
   final Value<int> seq;
+  final Value<String> scope;
   final Value<String> groupId;
   final Value<String> entityType;
   final Value<String> entityId;
@@ -11172,8 +11893,11 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
   final Value<DateTime> receivedAt;
   final Value<DateTime?> appliedAt;
   final Value<String?> error;
+  final Value<String?> opId;
+  final Value<int> rowid;
   const SyncInboxCompanion({
     this.seq = const Value.absent(),
+    this.scope = const Value.absent(),
     this.groupId = const Value.absent(),
     this.entityType = const Value.absent(),
     this.entityId = const Value.absent(),
@@ -11183,9 +11907,12 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
     this.receivedAt = const Value.absent(),
     this.appliedAt = const Value.absent(),
     this.error = const Value.absent(),
+    this.opId = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   SyncInboxCompanion.insert({
-    this.seq = const Value.absent(),
+    required int seq,
+    this.scope = const Value.absent(),
     required String groupId,
     required String entityType,
     required String entityId,
@@ -11195,7 +11922,10 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
     required DateTime receivedAt,
     this.appliedAt = const Value.absent(),
     this.error = const Value.absent(),
-  }) : groupId = Value(groupId),
+    this.opId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : seq = Value(seq),
+       groupId = Value(groupId),
        entityType = Value(entityType),
        entityId = Value(entityId),
        opType = Value(opType),
@@ -11204,6 +11934,7 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
        receivedAt = Value(receivedAt);
   static Insertable<InboxRow> custom({
     Expression<int>? seq,
+    Expression<String>? scope,
     Expression<String>? groupId,
     Expression<String>? entityType,
     Expression<String>? entityId,
@@ -11213,9 +11944,12 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
     Expression<DateTime>? receivedAt,
     Expression<DateTime>? appliedAt,
     Expression<String>? error,
+    Expression<String>? opId,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (seq != null) 'seq': seq,
+      if (scope != null) 'scope': scope,
       if (groupId != null) 'group_id': groupId,
       if (entityType != null) 'entity_type': entityType,
       if (entityId != null) 'entity_id': entityId,
@@ -11225,11 +11959,14 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
       if (receivedAt != null) 'received_at': receivedAt,
       if (appliedAt != null) 'applied_at': appliedAt,
       if (error != null) 'error': error,
+      if (opId != null) 'op_id': opId,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   SyncInboxCompanion copyWith({
     Value<int>? seq,
+    Value<String>? scope,
     Value<String>? groupId,
     Value<String>? entityType,
     Value<String>? entityId,
@@ -11239,9 +11976,12 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
     Value<DateTime>? receivedAt,
     Value<DateTime?>? appliedAt,
     Value<String?>? error,
+    Value<String?>? opId,
+    Value<int>? rowid,
   }) {
     return SyncInboxCompanion(
       seq: seq ?? this.seq,
+      scope: scope ?? this.scope,
       groupId: groupId ?? this.groupId,
       entityType: entityType ?? this.entityType,
       entityId: entityId ?? this.entityId,
@@ -11251,6 +11991,8 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
       receivedAt: receivedAt ?? this.receivedAt,
       appliedAt: appliedAt ?? this.appliedAt,
       error: error ?? this.error,
+      opId: opId ?? this.opId,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -11259,6 +12001,9 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
     final map = <String, Expression>{};
     if (seq.present) {
       map['seq'] = Variable<int>(seq.value);
+    }
+    if (scope.present) {
+      map['scope'] = Variable<String>(scope.value);
     }
     if (groupId.present) {
       map['group_id'] = Variable<String>(groupId.value);
@@ -11287,6 +12032,12 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
     if (error.present) {
       map['error'] = Variable<String>(error.value);
     }
+    if (opId.present) {
+      map['op_id'] = Variable<String>(opId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -11294,6 +12045,7 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
   String toString() {
     return (StringBuffer('SyncInboxCompanion(')
           ..write('seq: $seq, ')
+          ..write('scope: $scope, ')
           ..write('groupId: $groupId, ')
           ..write('entityType: $entityType, ')
           ..write('entityId: $entityId, ')
@@ -11302,7 +12054,9 @@ class SyncInboxCompanion extends UpdateCompanion<InboxRow> {
           ..write('remoteRevision: $remoteRevision, ')
           ..write('receivedAt: $receivedAt, ')
           ..write('appliedAt: $appliedAt, ')
-          ..write('error: $error')
+          ..write('error: $error, ')
+          ..write('opId: $opId, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -11364,6 +12118,16 @@ class $SyncConflictsTable extends SyncConflicts
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
+  );
+  static const VerificationMeta _scopeMeta = const VerificationMeta('scope');
+  @override
+  late final GeneratedColumn<String> scope = GeneratedColumn<String>(
+    'scope',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('group'),
   );
   static const VerificationMeta _localPayloadMeta = const VerificationMeta(
     'localPayload',
@@ -11438,6 +12202,7 @@ class $SyncConflictsTable extends SyncConflicts
     entityType,
     entityId,
     opId,
+    scope,
     localPayload,
     remotePayload,
     remoteRevision,
@@ -11490,6 +12255,12 @@ class $SyncConflictsTable extends SyncConflicts
       context.handle(
         _opIdMeta,
         opId.isAcceptableOrUnknown(data['op_id']!, _opIdMeta),
+      );
+    }
+    if (data.containsKey('scope')) {
+      context.handle(
+        _scopeMeta,
+        scope.isAcceptableOrUnknown(data['scope']!, _scopeMeta),
       );
     }
     if (data.containsKey('local_payload')) {
@@ -11572,6 +12343,10 @@ class $SyncConflictsTable extends SyncConflicts
         DriftSqlType.string,
         data['${effectivePrefix}op_id'],
       ),
+      scope: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}scope'],
+      )!,
       localPayload: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}local_payload'],
@@ -11611,6 +12386,9 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
   final String entityType;
   final String entityId;
   final String? opId;
+
+  /// `group` or `personal` (v4). Personal rows use an empty [groupId].
+  final String scope;
   final String localPayload;
   final String? remotePayload;
   final int remoteRevision;
@@ -11625,6 +12403,7 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
     required this.entityType,
     required this.entityId,
     this.opId,
+    required this.scope,
     required this.localPayload,
     this.remotePayload,
     required this.remoteRevision,
@@ -11642,6 +12421,7 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
     if (!nullToAbsent || opId != null) {
       map['op_id'] = Variable<String>(opId);
     }
+    map['scope'] = Variable<String>(scope);
     map['local_payload'] = Variable<String>(localPayload);
     if (!nullToAbsent || remotePayload != null) {
       map['remote_payload'] = Variable<String>(remotePayload);
@@ -11664,6 +12444,7 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
       entityType: Value(entityType),
       entityId: Value(entityId),
       opId: opId == null && nullToAbsent ? const Value.absent() : Value(opId),
+      scope: Value(scope),
       localPayload: Value(localPayload),
       remotePayload: remotePayload == null && nullToAbsent
           ? const Value.absent()
@@ -11690,6 +12471,7 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
       entityType: serializer.fromJson<String>(json['entityType']),
       entityId: serializer.fromJson<String>(json['entityId']),
       opId: serializer.fromJson<String?>(json['opId']),
+      scope: serializer.fromJson<String>(json['scope']),
       localPayload: serializer.fromJson<String>(json['localPayload']),
       remotePayload: serializer.fromJson<String?>(json['remotePayload']),
       remoteRevision: serializer.fromJson<int>(json['remoteRevision']),
@@ -11707,6 +12489,7 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
       'entityType': serializer.toJson<String>(entityType),
       'entityId': serializer.toJson<String>(entityId),
       'opId': serializer.toJson<String?>(opId),
+      'scope': serializer.toJson<String>(scope),
       'localPayload': serializer.toJson<String>(localPayload),
       'remotePayload': serializer.toJson<String?>(remotePayload),
       'remoteRevision': serializer.toJson<int>(remoteRevision),
@@ -11722,6 +12505,7 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
     String? entityType,
     String? entityId,
     Value<String?> opId = const Value.absent(),
+    String? scope,
     String? localPayload,
     Value<String?> remotePayload = const Value.absent(),
     int? remoteRevision,
@@ -11734,6 +12518,7 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
     entityType: entityType ?? this.entityType,
     entityId: entityId ?? this.entityId,
     opId: opId.present ? opId.value : this.opId,
+    scope: scope ?? this.scope,
     localPayload: localPayload ?? this.localPayload,
     remotePayload: remotePayload.present
         ? remotePayload.value
@@ -11752,6 +12537,7 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
           : this.entityType,
       entityId: data.entityId.present ? data.entityId.value : this.entityId,
       opId: data.opId.present ? data.opId.value : this.opId,
+      scope: data.scope.present ? data.scope.value : this.scope,
       localPayload: data.localPayload.present
           ? data.localPayload.value
           : this.localPayload,
@@ -11781,6 +12567,7 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
           ..write('entityType: $entityType, ')
           ..write('entityId: $entityId, ')
           ..write('opId: $opId, ')
+          ..write('scope: $scope, ')
           ..write('localPayload: $localPayload, ')
           ..write('remotePayload: $remotePayload, ')
           ..write('remoteRevision: $remoteRevision, ')
@@ -11798,6 +12585,7 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
     entityType,
     entityId,
     opId,
+    scope,
     localPayload,
     remotePayload,
     remoteRevision,
@@ -11814,6 +12602,7 @@ class ConflictRow extends DataClass implements Insertable<ConflictRow> {
           other.entityType == this.entityType &&
           other.entityId == this.entityId &&
           other.opId == this.opId &&
+          other.scope == this.scope &&
           other.localPayload == this.localPayload &&
           other.remotePayload == this.remotePayload &&
           other.remoteRevision == this.remoteRevision &&
@@ -11828,6 +12617,7 @@ class SyncConflictsCompanion extends UpdateCompanion<ConflictRow> {
   final Value<String> entityType;
   final Value<String> entityId;
   final Value<String?> opId;
+  final Value<String> scope;
   final Value<String> localPayload;
   final Value<String?> remotePayload;
   final Value<int> remoteRevision;
@@ -11841,6 +12631,7 @@ class SyncConflictsCompanion extends UpdateCompanion<ConflictRow> {
     this.entityType = const Value.absent(),
     this.entityId = const Value.absent(),
     this.opId = const Value.absent(),
+    this.scope = const Value.absent(),
     this.localPayload = const Value.absent(),
     this.remotePayload = const Value.absent(),
     this.remoteRevision = const Value.absent(),
@@ -11855,6 +12646,7 @@ class SyncConflictsCompanion extends UpdateCompanion<ConflictRow> {
     required String entityType,
     required String entityId,
     this.opId = const Value.absent(),
+    this.scope = const Value.absent(),
     required String localPayload,
     this.remotePayload = const Value.absent(),
     required int remoteRevision,
@@ -11875,6 +12667,7 @@ class SyncConflictsCompanion extends UpdateCompanion<ConflictRow> {
     Expression<String>? entityType,
     Expression<String>? entityId,
     Expression<String>? opId,
+    Expression<String>? scope,
     Expression<String>? localPayload,
     Expression<String>? remotePayload,
     Expression<int>? remoteRevision,
@@ -11889,6 +12682,7 @@ class SyncConflictsCompanion extends UpdateCompanion<ConflictRow> {
       if (entityType != null) 'entity_type': entityType,
       if (entityId != null) 'entity_id': entityId,
       if (opId != null) 'op_id': opId,
+      if (scope != null) 'scope': scope,
       if (localPayload != null) 'local_payload': localPayload,
       if (remotePayload != null) 'remote_payload': remotePayload,
       if (remoteRevision != null) 'remote_revision': remoteRevision,
@@ -11905,6 +12699,7 @@ class SyncConflictsCompanion extends UpdateCompanion<ConflictRow> {
     Value<String>? entityType,
     Value<String>? entityId,
     Value<String?>? opId,
+    Value<String>? scope,
     Value<String>? localPayload,
     Value<String?>? remotePayload,
     Value<int>? remoteRevision,
@@ -11919,6 +12714,7 @@ class SyncConflictsCompanion extends UpdateCompanion<ConflictRow> {
       entityType: entityType ?? this.entityType,
       entityId: entityId ?? this.entityId,
       opId: opId ?? this.opId,
+      scope: scope ?? this.scope,
       localPayload: localPayload ?? this.localPayload,
       remotePayload: remotePayload ?? this.remotePayload,
       remoteRevision: remoteRevision ?? this.remoteRevision,
@@ -11946,6 +12742,9 @@ class SyncConflictsCompanion extends UpdateCompanion<ConflictRow> {
     }
     if (opId.present) {
       map['op_id'] = Variable<String>(opId.value);
+    }
+    if (scope.present) {
+      map['scope'] = Variable<String>(scope.value);
     }
     if (localPayload.present) {
       map['local_payload'] = Variable<String>(localPayload.value);
@@ -11979,6 +12778,7 @@ class SyncConflictsCompanion extends UpdateCompanion<ConflictRow> {
           ..write('entityType: $entityType, ')
           ..write('entityId: $entityId, ')
           ..write('opId: $opId, ')
+          ..write('scope: $scope, ')
           ..write('localPayload: $localPayload, ')
           ..write('remotePayload: $remotePayload, ')
           ..write('remoteRevision: $remoteRevision, ')
@@ -13493,6 +14293,8 @@ typedef $$CategoriesTableProcessedTableManager =
 typedef $$PersonsTableCreateCompanionBuilder = PersonsCompanion Function({
   required DateTime createdAt,
   required DateTime updatedAt,
+  Value<int> revision,
+  Value<SyncState> syncState,
   required String id,
   required String name,
   Value<String?> phone,
@@ -13504,6 +14306,8 @@ typedef $$PersonsTableCreateCompanionBuilder = PersonsCompanion Function({
 typedef $$PersonsTableUpdateCompanionBuilder = PersonsCompanion Function({
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
+  Value<int> revision,
+  Value<SyncState> syncState,
   Value<String> id,
   Value<String> name,
   Value<String?> phone,
@@ -13611,6 +14415,17 @@ class $$PersonsTableFilterComposer
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
@@ -13762,6 +14577,16 @@ class $$PersonsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -13807,6 +14632,12 @@ class $$PersonsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
 
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
@@ -13965,6 +14796,8 @@ class $$PersonsTableTableManager
               ({
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> phone = const Value.absent(),
@@ -13975,6 +14808,8 @@ class $$PersonsTableTableManager
               }) => PersonsCompanion(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 name: name,
                 phone: phone,
@@ -13987,6 +14822,8 @@ class $$PersonsTableTableManager
               ({
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 required String id,
                 required String name,
                 Value<String?> phone = const Value.absent(),
@@ -13997,6 +14834,8 @@ class $$PersonsTableTableManager
               }) => PersonsCompanion.insert(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 name: name,
                 phone: phone,
@@ -14142,6 +14981,8 @@ typedef $$TransactionsTableCreateCompanionBuilder =
     TransactionsCompanion Function({
       required DateTime createdAt,
       required DateTime updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
       required String id,
       required String ownerId,
       required TransactionType type,
@@ -14158,6 +14999,8 @@ typedef $$TransactionsTableUpdateCompanionBuilder =
     TransactionsCompanion Function({
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
       Value<String> id,
       Value<String> ownerId,
       Value<TransactionType> type,
@@ -14246,6 +15089,17 @@ class $$TransactionsTableFilterComposer
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
@@ -14380,6 +15234,16 @@ class $$TransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -14481,6 +15345,12 @@ class $$TransactionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
 
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
@@ -14619,6 +15489,8 @@ class $$TransactionsTableTableManager
               ({
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> ownerId = const Value.absent(),
                 Value<TransactionType> type = const Value.absent(),
@@ -14633,6 +15505,8 @@ class $$TransactionsTableTableManager
               }) => TransactionsCompanion(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 ownerId: ownerId,
                 type: type,
@@ -14649,6 +15523,8 @@ class $$TransactionsTableTableManager
               ({
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 required String id,
                 required String ownerId,
                 required TransactionType type,
@@ -14663,6 +15539,8 @@ class $$TransactionsTableTableManager
               }) => TransactionsCompanion.insert(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 ownerId: ownerId,
                 type: type,
@@ -14787,6 +15665,8 @@ typedef $$MoneyLedgerTableCreateCompanionBuilder =
     MoneyLedgerCompanion Function({
       required DateTime createdAt,
       required DateTime updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
       required String id,
       required String personId,
       required LedgerDirection direction,
@@ -14802,6 +15682,8 @@ typedef $$MoneyLedgerTableUpdateCompanionBuilder =
     MoneyLedgerCompanion Function({
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
       Value<String> id,
       Value<String> personId,
       Value<LedgerDirection> direction,
@@ -14910,6 +15792,17 @@ class $$MoneyLedgerTableFilterComposer
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
@@ -15071,6 +15964,16 @@ class $$MoneyLedgerTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -15149,6 +16052,12 @@ class $$MoneyLedgerTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
 
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
@@ -15315,6 +16224,8 @@ class $$MoneyLedgerTableTableManager
               ({
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> personId = const Value.absent(),
                 Value<LedgerDirection> direction = const Value.absent(),
@@ -15328,6 +16239,8 @@ class $$MoneyLedgerTableTableManager
               }) => MoneyLedgerCompanion(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 personId: personId,
                 direction: direction,
@@ -15343,6 +16256,8 @@ class $$MoneyLedgerTableTableManager
               ({
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 required String id,
                 required String personId,
                 required LedgerDirection direction,
@@ -15356,6 +16271,8 @@ class $$MoneyLedgerTableTableManager
               }) => MoneyLedgerCompanion.insert(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 personId: personId,
                 direction: direction,
@@ -15512,6 +16429,8 @@ typedef $$MoneySettlementsTableCreateCompanionBuilder =
     MoneySettlementsCompanion Function({
       required DateTime createdAt,
       required DateTime updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
       required String id,
       required String ledgerId,
       required int amountPaise,
@@ -15524,6 +16443,8 @@ typedef $$MoneySettlementsTableUpdateCompanionBuilder =
     MoneySettlementsCompanion Function({
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
       Value<String> id,
       Value<String> ledgerId,
       Value<int> amountPaise,
@@ -15582,6 +16503,17 @@ class $$MoneySettlementsTableFilterComposer
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
@@ -15652,6 +16584,16 @@ class $$MoneySettlementsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -15715,6 +16657,12 @@ class $$MoneySettlementsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
 
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
@@ -15792,6 +16740,8 @@ class $$MoneySettlementsTableTableManager
               ({
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> ledgerId = const Value.absent(),
                 Value<int> amountPaise = const Value.absent(),
@@ -15802,6 +16752,8 @@ class $$MoneySettlementsTableTableManager
               }) => MoneySettlementsCompanion(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 ledgerId: ledgerId,
                 amountPaise: amountPaise,
@@ -15814,6 +16766,8 @@ class $$MoneySettlementsTableTableManager
               ({
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 required String id,
                 required String ledgerId,
                 required int amountPaise,
@@ -15824,6 +16778,8 @@ class $$MoneySettlementsTableTableManager
               }) => MoneySettlementsCompanion.insert(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 ledgerId: ledgerId,
                 amountPaise: amountPaise,
@@ -19613,6 +20569,8 @@ typedef $$GroupSettlementsCacheTableProcessedTableManager =
     >;
 typedef $$AttachmentsTableCreateCompanionBuilder =
     AttachmentsCompanion Function({
+      Value<int> revision,
+      Value<SyncState> syncState,
       required String id,
       Value<String?> transactionId,
       Value<String?> ledgerEntryId,
@@ -19628,6 +20586,8 @@ typedef $$AttachmentsTableCreateCompanionBuilder =
     });
 typedef $$AttachmentsTableUpdateCompanionBuilder =
     AttachmentsCompanion Function({
+      Value<int> revision,
+      Value<SyncState> syncState,
       Value<String> id,
       Value<String?> transactionId,
       Value<String?> ledgerEntryId,
@@ -19710,6 +20670,17 @@ class $$AttachmentsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -19829,6 +20800,16 @@ class $$AttachmentsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -19948,6 +20929,12 @@ class $$AttachmentsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -20081,6 +21068,8 @@ class $$AttachmentsTableTableManager
               $$AttachmentsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String?> transactionId = const Value.absent(),
                 Value<String?> ledgerEntryId = const Value.absent(),
@@ -20094,6 +21083,8 @@ class $$AttachmentsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AttachmentsCompanion(
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 transactionId: transactionId,
                 ledgerEntryId: ledgerEntryId,
@@ -20109,6 +21100,8 @@ class $$AttachmentsTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 required String id,
                 Value<String?> transactionId = const Value.absent(),
                 Value<String?> ledgerEntryId = const Value.absent(),
@@ -20122,6 +21115,8 @@ class $$AttachmentsTableTableManager
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => AttachmentsCompanion.insert(
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 transactionId: transactionId,
                 ledgerEntryId: ledgerEntryId,
@@ -20234,6 +21229,8 @@ typedef $$AttachmentsTableProcessedTableManager =
 typedef $$RemindersTableCreateCompanionBuilder = RemindersCompanion Function({
   required DateTime createdAt,
   required DateTime updatedAt,
+  Value<int> revision,
+  Value<SyncState> syncState,
   required String id,
   required ReminderKind kind,
   required String title,
@@ -20255,6 +21252,8 @@ typedef $$RemindersTableCreateCompanionBuilder = RemindersCompanion Function({
 typedef $$RemindersTableUpdateCompanionBuilder = RemindersCompanion Function({
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
+  Value<int> revision,
+  Value<SyncState> syncState,
   Value<String> id,
   Value<ReminderKind> kind,
   Value<String> title,
@@ -20366,6 +21365,17 @@ class $$RemindersTableFilterComposer
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
@@ -20542,6 +21552,16 @@ class $$RemindersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -20709,6 +21729,12 @@ class $$RemindersTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
 
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
@@ -20882,6 +21908,8 @@ class $$RemindersTableTableManager
               ({
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<ReminderKind> kind = const Value.absent(),
                 Value<String> title = const Value.absent(),
@@ -20902,6 +21930,8 @@ class $$RemindersTableTableManager
               }) => RemindersCompanion(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 kind: kind,
                 title: title,
@@ -20924,6 +21954,8 @@ class $$RemindersTableTableManager
               ({
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
                 required String id,
                 required ReminderKind kind,
                 required String title,
@@ -20944,6 +21976,8 @@ class $$RemindersTableTableManager
               }) => RemindersCompanion.insert(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
                 id: id,
                 kind: kind,
                 title: title,
@@ -21073,6 +22107,7 @@ typedef $$RemindersTableProcessedTableManager =
     >;
 typedef $$SyncOutboxTableCreateCompanionBuilder = SyncOutboxCompanion Function({
   required String opId,
+  Value<String> scope,
   required String groupId,
   required String entityType,
   required String entityId,
@@ -21088,6 +22123,7 @@ typedef $$SyncOutboxTableCreateCompanionBuilder = SyncOutboxCompanion Function({
 });
 typedef $$SyncOutboxTableUpdateCompanionBuilder = SyncOutboxCompanion Function({
   Value<String> opId,
+  Value<String> scope,
   Value<String> groupId,
   Value<String> entityType,
   Value<String> entityId,
@@ -21113,6 +22149,11 @@ class $$SyncOutboxTableFilterComposer
   });
   ColumnFilters<String> get opId => $composableBuilder(
     column: $table.opId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scope => $composableBuilder(
+    column: $table.scope,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -21187,6 +22228,11 @@ class $$SyncOutboxTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get scope => $composableBuilder(
+    column: $table.scope,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get groupId => $composableBuilder(
     column: $table.groupId,
     builder: (column) => ColumnOrderings(column),
@@ -21254,6 +22300,9 @@ class $$SyncOutboxTableAnnotationComposer
   });
   GeneratedColumn<String> get opId =>
       $composableBuilder(column: $table.opId, builder: (column) => column);
+
+  GeneratedColumn<String> get scope =>
+      $composableBuilder(column: $table.scope, builder: (column) => column);
 
   GeneratedColumn<String> get groupId =>
       $composableBuilder(column: $table.groupId, builder: (column) => column);
@@ -21327,6 +22376,7 @@ class $$SyncOutboxTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> opId = const Value.absent(),
+                Value<String> scope = const Value.absent(),
                 Value<String> groupId = const Value.absent(),
                 Value<String> entityType = const Value.absent(),
                 Value<String> entityId = const Value.absent(),
@@ -21341,6 +22391,7 @@ class $$SyncOutboxTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => SyncOutboxCompanion(
                 opId: opId,
+                scope: scope,
                 groupId: groupId,
                 entityType: entityType,
                 entityId: entityId,
@@ -21357,6 +22408,7 @@ class $$SyncOutboxTableTableManager
           createCompanionCallback:
               ({
                 required String opId,
+                Value<String> scope = const Value.absent(),
                 required String groupId,
                 required String entityType,
                 required String entityId,
@@ -21371,6 +22423,7 @@ class $$SyncOutboxTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => SyncOutboxCompanion.insert(
                 opId: opId,
+                scope: scope,
                 groupId: groupId,
                 entityType: entityType,
                 entityId: entityId,
@@ -21416,7 +22469,8 @@ typedef $$SyncOutboxTableProcessedTableManager =
       PrefetchHooks Function()
     >;
 typedef $$SyncInboxTableCreateCompanionBuilder = SyncInboxCompanion Function({
-  Value<int> seq,
+  required int seq,
+  Value<String> scope,
   required String groupId,
   required String entityType,
   required String entityId,
@@ -21426,9 +22480,12 @@ typedef $$SyncInboxTableCreateCompanionBuilder = SyncInboxCompanion Function({
   required DateTime receivedAt,
   Value<DateTime?> appliedAt,
   Value<String?> error,
+  Value<String?> opId,
+  Value<int> rowid,
 });
 typedef $$SyncInboxTableUpdateCompanionBuilder = SyncInboxCompanion Function({
   Value<int> seq,
+  Value<String> scope,
   Value<String> groupId,
   Value<String> entityType,
   Value<String> entityId,
@@ -21438,6 +22495,8 @@ typedef $$SyncInboxTableUpdateCompanionBuilder = SyncInboxCompanion Function({
   Value<DateTime> receivedAt,
   Value<DateTime?> appliedAt,
   Value<String?> error,
+  Value<String?> opId,
+  Value<int> rowid,
 });
 
 class $$SyncInboxTableFilterComposer
@@ -21451,6 +22510,11 @@ class $$SyncInboxTableFilterComposer
   });
   ColumnFilters<int> get seq => $composableBuilder(
     column: $table.seq,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scope => $composableBuilder(
+    column: $table.scope,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -21498,6 +22562,11 @@ class $$SyncInboxTableFilterComposer
     column: $table.error,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<String> get opId => $composableBuilder(
+    column: $table.opId,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$SyncInboxTableOrderingComposer
@@ -21511,6 +22580,11 @@ class $$SyncInboxTableOrderingComposer
   });
   ColumnOrderings<int> get seq => $composableBuilder(
     column: $table.seq,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get scope => $composableBuilder(
+    column: $table.scope,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -21558,6 +22632,11 @@ class $$SyncInboxTableOrderingComposer
     column: $table.error,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get opId => $composableBuilder(
+    column: $table.opId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SyncInboxTableAnnotationComposer
@@ -21571,6 +22650,9 @@ class $$SyncInboxTableAnnotationComposer
   });
   GeneratedColumn<int> get seq =>
       $composableBuilder(column: $table.seq, builder: (column) => column);
+
+  GeneratedColumn<String> get scope =>
+      $composableBuilder(column: $table.scope, builder: (column) => column);
 
   GeneratedColumn<String> get groupId =>
       $composableBuilder(column: $table.groupId, builder: (column) => column);
@@ -21604,6 +22686,9 @@ class $$SyncInboxTableAnnotationComposer
 
   GeneratedColumn<String> get error =>
       $composableBuilder(column: $table.error, builder: (column) => column);
+
+  GeneratedColumn<String> get opId =>
+      $composableBuilder(column: $table.opId, builder: (column) => column);
 }
 
 class $$SyncInboxTableTableManager
@@ -21635,6 +22720,7 @@ class $$SyncInboxTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> seq = const Value.absent(),
+                Value<String> scope = const Value.absent(),
                 Value<String> groupId = const Value.absent(),
                 Value<String> entityType = const Value.absent(),
                 Value<String> entityId = const Value.absent(),
@@ -21644,8 +22730,11 @@ class $$SyncInboxTableTableManager
                 Value<DateTime> receivedAt = const Value.absent(),
                 Value<DateTime?> appliedAt = const Value.absent(),
                 Value<String?> error = const Value.absent(),
+                Value<String?> opId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
               }) => SyncInboxCompanion(
                 seq: seq,
+                scope: scope,
                 groupId: groupId,
                 entityType: entityType,
                 entityId: entityId,
@@ -21655,10 +22744,13 @@ class $$SyncInboxTableTableManager
                 receivedAt: receivedAt,
                 appliedAt: appliedAt,
                 error: error,
+                opId: opId,
+                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                Value<int> seq = const Value.absent(),
+                required int seq,
+                Value<String> scope = const Value.absent(),
                 required String groupId,
                 required String entityType,
                 required String entityId,
@@ -21668,8 +22760,11 @@ class $$SyncInboxTableTableManager
                 required DateTime receivedAt,
                 Value<DateTime?> appliedAt = const Value.absent(),
                 Value<String?> error = const Value.absent(),
+                Value<String?> opId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
               }) => SyncInboxCompanion.insert(
                 seq: seq,
+                scope: scope,
                 groupId: groupId,
                 entityType: entityType,
                 entityId: entityId,
@@ -21679,6 +22774,8 @@ class $$SyncInboxTableTableManager
                 receivedAt: receivedAt,
                 appliedAt: appliedAt,
                 error: error,
+                opId: opId,
+                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -21718,6 +22815,7 @@ typedef $$SyncConflictsTableCreateCompanionBuilder =
       required String entityType,
       required String entityId,
       Value<String?> opId,
+      Value<String> scope,
       required String localPayload,
       Value<String?> remotePayload,
       required int remoteRevision,
@@ -21733,6 +22831,7 @@ typedef $$SyncConflictsTableUpdateCompanionBuilder =
       Value<String> entityType,
       Value<String> entityId,
       Value<String?> opId,
+      Value<String> scope,
       Value<String> localPayload,
       Value<String?> remotePayload,
       Value<int> remoteRevision,
@@ -21773,6 +22872,11 @@ class $$SyncConflictsTableFilterComposer
 
   ColumnFilters<String> get opId => $composableBuilder(
     column: $table.opId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scope => $composableBuilder(
+    column: $table.scope,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -21841,6 +22945,11 @@ class $$SyncConflictsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get scope => $composableBuilder(
+    column: $table.scope,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get localPayload => $composableBuilder(
     column: $table.localPayload,
     builder: (column) => ColumnOrderings(column),
@@ -21897,6 +23006,9 @@ class $$SyncConflictsTableAnnotationComposer
 
   GeneratedColumn<String> get opId =>
       $composableBuilder(column: $table.opId, builder: (column) => column);
+
+  GeneratedColumn<String> get scope =>
+      $composableBuilder(column: $table.scope, builder: (column) => column);
 
   GeneratedColumn<String> get localPayload => $composableBuilder(
     column: $table.localPayload,
@@ -21965,6 +23077,7 @@ class $$SyncConflictsTableTableManager
                 Value<String> entityType = const Value.absent(),
                 Value<String> entityId = const Value.absent(),
                 Value<String?> opId = const Value.absent(),
+                Value<String> scope = const Value.absent(),
                 Value<String> localPayload = const Value.absent(),
                 Value<String?> remotePayload = const Value.absent(),
                 Value<int> remoteRevision = const Value.absent(),
@@ -21978,6 +23091,7 @@ class $$SyncConflictsTableTableManager
                 entityType: entityType,
                 entityId: entityId,
                 opId: opId,
+                scope: scope,
                 localPayload: localPayload,
                 remotePayload: remotePayload,
                 remoteRevision: remoteRevision,
@@ -21993,6 +23107,7 @@ class $$SyncConflictsTableTableManager
                 required String entityType,
                 required String entityId,
                 Value<String?> opId = const Value.absent(),
+                Value<String> scope = const Value.absent(),
                 required String localPayload,
                 Value<String?> remotePayload = const Value.absent(),
                 required int remoteRevision,
@@ -22006,6 +23121,7 @@ class $$SyncConflictsTableTableManager
                 entityType: entityType,
                 entityId: entityId,
                 opId: opId,
+                scope: scope,
                 localPayload: localPayload,
                 remotePayload: remotePayload,
                 remoteRevision: remoteRevision,

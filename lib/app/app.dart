@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../features/backup/application/backup_providers.dart';
+import '../features/attachments/data/attachment_service.dart';
 import '../features/reminders/application/notification_service.dart';
 import '../features/settings/application/settings_controller.dart';
 import '../features/tour/presentation/tour_overlay.dart';
@@ -11,6 +13,7 @@ import '../features/synchronization/application/sync_controller.dart';
 import '../l10n/app_localizations.dart';
 import '../main.dart';
 import 'router/app_router.dart';
+import 'router/routes.dart';
 import 'theme/app_theme.dart';
 
 final _messengerKey = GlobalKey<ScaffoldMessengerState>();
@@ -36,7 +39,31 @@ class _HisabMitraAppState extends ConsumerState<HisabMitraApp>
         );
       }
       _onForeground();
+      unawaited(_recoverCameraPhoto());
     });
+  }
+
+  /// After Android closed the app while the camera was open, offers the
+  /// photo for a new expense (the next new form picks it up).
+  Future<void> _recoverCameraPhoto() async {
+    if (kIsWeb || !Platform.isAndroid) return;
+    final photo = await ref.read(attachmentServiceProvider).recoverLostPhoto();
+    if (photo == null || !mounted) return;
+    ref.read(recoveredPhotoProvider.notifier).set(photo);
+    final messenger = _messengerKey.currentState;
+    if (messenger == null) return;
+    final l = AppLocalizations.of(messenger.context);
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(l.photoRecovered),
+        duration: const Duration(seconds: 10),
+        action: SnackBarAction(
+          label: l.photoRecoveredAction,
+          onPressed: () =>
+              ref.read(routerProvider).push(Routes.newTransaction()),
+        ),
+      ),
+    );
   }
 
   @override
@@ -54,7 +81,6 @@ class _HisabMitraAppState extends ConsumerState<HisabMitraApp>
   /// setup, a due automatic backup and a sync attempt. Never blocks the UI.
   void _onForeground() {
     unawaited(ref.read(notificationServiceProvider).initialize());
-    unawaited(ref.read(autoBackupRunnerProvider).runIfDue());
     unawaited(ref.read(syncControllerProvider.notifier).syncNow(silent: true));
   }
 

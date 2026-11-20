@@ -9,6 +9,7 @@ import '../../../core/widgets/common_widgets.dart';
 import '../../tour/application/tour_controller.dart';
 import '../../../core/widgets/hm_logo.dart';
 import '../../profile/data/profile_repository.dart';
+import '../../ai_assistant/presentation/ai_fab.dart';
 
 class MoreScreen extends ConsumerWidget {
   const MoreScreen({super.key});
@@ -34,6 +35,7 @@ class MoreScreen extends ConsumerWidget {
     );
 
     return Scaffold(
+      floatingActionButton: const AiFabStack(),
       appBar: AppBar(title: Text(l.navMore)),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 24),

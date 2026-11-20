@@ -13,11 +13,11 @@ import '../../../core/widgets/dialogs.dart';
 import '../../settings/application/settings_controller.dart';
 import '../../settings/domain/app_preferences.dart';
 import '../data/group_repository.dart';
-import 'group_cloud_screens.dart';
 import '../domain/expense_status.dart';
 import '../domain/group_models.dart';
 import 'group_expense_views.dart';
 import 'group_labels.dart';
+import '../../ai_assistant/presentation/ai_fab.dart';
 
 class GroupDetailScreen extends ConsumerWidget {
   const GroupDetailScreen({
@@ -41,8 +41,6 @@ class GroupDetailScreen extends ConsumerWidget {
       switch (action) {
         case 'edit':
           await context.push(Routes.editGroup(groupId));
-        case 'share':
-          await shareGroupToCloud(context, ref, groupId);
         case 'remind':
           await context.push(Routes.newReminder(groupId: groupId));
         case 'history':
@@ -105,11 +103,6 @@ class GroupDetailScreen extends ConsumerWidget {
                   onSelected: (a) => _menu(context, ref, a, d),
                   itemBuilder: (_) => [
                     PopupMenuItem(value: 'edit', child: Text(l.editGroup)),
-                    if (AppConfig.isCloudConfigured && !d.group.isShared)
-                      PopupMenuItem(
-                        value: 'share',
-                        child: Text(l.shareToCloud),
-                      ),
                     PopupMenuItem(value: 'remind', child: Text(l.remindLater)),
                     PopupMenuItem(
                       value: 'history',
@@ -138,12 +131,14 @@ class GroupDetailScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            floatingActionButton: FloatingActionButton.extended(
-              // Unique: the tab shell keeps several FAB screens alive.
-              heroTag: 'fab-group-detail',
-              onPressed: () => context.push(Routes.newGroupExpense(groupId)),
-              icon: const Icon(Icons.add_rounded),
-              label: Text(l.addGroupExpense),
+            floatingActionButton: AiFabStack(
+              child: FloatingActionButton.extended(
+                // Unique: the tab shell keeps several FAB screens alive.
+                heroTag: 'fab-group-detail',
+                onPressed: () => context.push(Routes.newGroupExpense(groupId)),
+                icon: const Icon(Icons.add_rounded),
+                label: Text(l.addGroupExpense),
+              ),
             ),
             body: TabBarView(
               children: [

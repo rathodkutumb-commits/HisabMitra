@@ -11,6 +11,7 @@ import '../../../core/widgets/common_widgets.dart';
 import '../data/group_repository.dart';
 import '../domain/group_models.dart';
 import 'group_labels.dart';
+import '../../ai_assistant/presentation/ai_fab.dart';
 
 class GroupsScreen extends ConsumerStatefulWidget {
   const GroupsScreen({super.key});
@@ -48,12 +49,14 @@ class _GroupsScreenState extends ConsumerState<GroupsScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        // Unique: the tab shell keeps several FAB screens alive.
-        heroTag: 'fab-groups',
-        onPressed: () => context.push(Routes.newGroup),
-        icon: const Icon(Icons.group_add_rounded),
-        label: Text(l.createGroup),
+      floatingActionButton: AiFabStack(
+        child: FloatingActionButton.extended(
+          // Unique: the tab shell keeps several FAB screens alive.
+          heroTag: 'fab-groups',
+          onPressed: () => context.push(Routes.newGroup),
+          icon: const Icon(Icons.group_add_rounded),
+          label: Text(l.createGroup),
+        ),
       ),
       body: AsyncValueView(
         value: groups,

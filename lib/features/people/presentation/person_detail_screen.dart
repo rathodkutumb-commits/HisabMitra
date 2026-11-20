@@ -17,6 +17,7 @@ import '../../transactions/data/transaction_repository.dart';
 import '../../transactions/domain/transaction_models.dart';
 import '../../transactions/presentation/widgets/transaction_tile.dart';
 import '../data/people_repository.dart';
+import '../../ai_assistant/presentation/ai_fab.dart';
 
 class PersonDetailScreen extends ConsumerWidget {
   const PersonDetailScreen({super.key, required this.personId});
@@ -63,6 +64,7 @@ class PersonDetailScreen extends ConsumerWidget {
         return DefaultTabController(
           length: 3,
           child: Scaffold(
+            floatingActionButton: const AiFabStack(),
             appBar: AppBar(
               title: Text(p.name),
               actions: [

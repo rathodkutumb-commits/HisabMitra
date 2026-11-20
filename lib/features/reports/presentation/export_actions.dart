@@ -18,6 +18,7 @@ Future<void> runExport(
   BuildContext context,
   Future<File> Function() build, {
   required String mime,
+  String? caption,
 }) async {
   final l = context.l10n;
   final navigator = Navigator.of(context, rootNavigator: true);
@@ -51,7 +52,7 @@ Future<void> runExport(
     return;
   }
   final container = ProviderScope.containerOf(context);
-  await container.read(exportServiceProvider).share(file, mime);
+  await container.read(exportServiceProvider).share(file, mime, text: caption);
 }
 
 /// App-bar menu exporting the currently filtered transactions.
@@ -86,12 +87,14 @@ class ExportMenuButton extends ConsumerWidget {
             context,
             () => exporter.transactionsCsv(items, l, fmt),
             mime: 'text/csv',
+            caption: l.shareReportCaption(l.navTransactions, subtitle),
           );
         } else {
           await runExport(
             context,
             () => exporter.transactionsPdf(items, l, fmt, subtitle: subtitle),
             mime: 'application/pdf',
+            caption: l.shareReportCaption(l.navTransactions, subtitle),
           );
         }
       },

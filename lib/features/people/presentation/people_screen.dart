@@ -8,6 +8,7 @@ import '../../../core/l10n/l10n_x.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../money_ledger/data/ledger_repository.dart';
 import '../data/people_repository.dart';
+import '../../ai_assistant/presentation/ai_fab.dart';
 
 enum _PeopleFilter { all, toReceive, toPay, settled }
 
@@ -61,12 +62,14 @@ class _PeopleScreenState extends ConsumerState<PeopleScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        // Unique: the tab shell keeps several FAB screens alive.
-        heroTag: 'fab-people',
-        onPressed: () => _showAddSheet(context),
-        icon: const Icon(Icons.add_rounded),
-        label: Text(l.addEntry),
+      floatingActionButton: AiFabStack(
+        child: FloatingActionButton.extended(
+          // Unique: the tab shell keeps several FAB screens alive.
+          heroTag: 'fab-people',
+          onPressed: () => _showAddSheet(context),
+          icon: const Icon(Icons.add_rounded),
+          label: Text(l.addEntry),
+        ),
       ),
       body: AsyncValueView(
         value: summaries,

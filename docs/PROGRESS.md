@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-11-19.
+Last updated: 2026-11-20.
 
 ## Status by phase
 
@@ -19,6 +19,71 @@ Last updated: 2026-11-19.
 | 11. Testing & release | Mostly done | CI + release workflows, device tests; release keystore and GitHub repo not created yet |
 
 ## Session log
+
+### 2026-11-20 (Part B: personal data in the account; branch `part-a-fixes`, not released, not applied live)
+
+Design `docs/superpowers/specs/2026-11-20-personal-data-in-supabase-design.md`;
+plan `docs/superpowers/plans/2026-11-20-personal-data-in-supabase.md`.
+Owner's choices: Supabase is the main copy with a working copy on the phone
+(offline works); categories stay on the phone; manual backup/restore kept,
+automatic backups removed.
+
+- **Cloud:** `personal_*` tables (owner-only RLS), `apply_personal_op`
+  (idempotent, revision-checked, linked deletes mirror the phone, `reset`
+  for restore), `personal_sync_events`, `get_personal_snapshot`; private
+  `personal-attachments` bucket; `delete-account` removes personal files.
+  SQL tests 91/91 (53 old + 38 new).
+- **Phone:** schema v4 (upload state on personal tables; sync tables
+  scoped `group`/`personal`; inbox key `(scope, seq)`). Every personal write
+  queues an upload in the same SQLite transaction; push/pull for both scopes;
+  conflicts for personal records; missing custom categories re-created from
+  the entry's copy; reminders get their own notification id per phone.
+- **Groups** are always saved to the account ("Share to cloud" removed;
+  the tour's sample group stays on the phone). Group bills upload
+  automatically; bills download on demand.
+- **First sync** screen ("Saving your hisab to your account" / "Getting
+  your hisab"), sign-out and account deletion clear the phone's copy (with a
+  warning about unsent changes), sync switch removed, restore replaces the
+  account's personal data (groups untouched), texts and docs rewritten.
+- Found and fixed on the way: a one-off read of open conflicts through a
+  watched stream could hang a sync while the Sync screen was open.
+- Results: `flutter analyze` clean; `flutter test` **407 passing**; format
+  clean. **Not yet applied to the live Supabase project** (needs the owner's
+  database password or an access token) and not yet checked on a device.
+
+### 2026-11-20 (Part A: fixes and small features; branch `part-a-fixes`, not released)
+
+Owner's test of v1.0.1 found a crash and rough edges. Design:
+`docs/superpowers/specs/2026-11-20-fixes-and-small-features-design.md`; plan:
+`docs/superpowers/plans/2026-11-20-fixes-and-small-features.md`.
+
+- **Camera/gallery crash fixed.** Root cause (confirmed on the emulator with a
+  release build): the attachment thumbnail's loading placeholder was the
+  thumbnail itself, so release builds recursed until "Stack overflow" and
+  Android closed the app as not responding. Regression test added. A photo
+  taken just before Android closes the app is recovered for the next new
+  expense.
+- **Back button:** Hisab/Khata/Groups/More tabs go to Home; Home, onboarding
+  and sign-in ask "Exit HisabMitra?" (Exit / Stay).
+- **Floating AI button** on the tabs and list/detail pages (above the page's
+  own button; hidden on forms, chat, onboarding, with the keyboard or keypad
+  open, or when AI is off). The on-phone assistant is now on by default
+  (new settings key, so existing installs get it on once).
+- **Reminders on time:** exact alarms (`USE_EXACT_ALARM`), fallback to inexact
+  if refused; battery-saving tip with "Open settings" on the Reminders screen.
+- **AI examples:** 15 grouped examples plus up to 3 from the user's own people
+  and groups, each tested to reach its answer in English and Gujarati.
+- **Shared messages:** group invite and share-app texts redesigned (spacing,
+  emojis, WhatsApp bold; owner approved); the non-tappable `hisabmitra://`
+  link removed until part C adds an https link; captions on report and backup
+  shares.
+- Results: `flutter analyze` clean; `flutter test` **346 passing**; format
+  clean. Release APK on the `test_device` emulator: photo attaches with no
+  freeze; back/exit dialog; AI button positions and chat examples; reminder
+  registered as an exact alarm (`window=0`), still registered after a reboot
+  and after reinstalling the APK, and the notification posted at 10:00:00.072
+  for a 10:00 reminder (clock moved forward for the check). Share sheet
+  preview not checked on the device (message text covered by tests).
 
 ### 2026-11-19 (v1.0.1)
 

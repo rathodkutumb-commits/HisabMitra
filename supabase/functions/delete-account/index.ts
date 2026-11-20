@@ -4,7 +4,8 @@
 //   1. Verify the caller's JWT (Authorization header) → user id.
 //   2. Run public.prepare_account_deletion() *as the user* (RLS-aware): shared
 //      group history is kept, ownership is handed over, profile/devices removed.
-//   3. Delete the auth user with the service-role key, which only exists here
+//   3. Remove the user's personal bill files (personal-attachments/<uid>/).
+//   4. Delete the auth user (personal records cascade) with the service-role key, which only exists here
 //      as a server-side secret — never in the mobile app.
 //
 // Deploy: supabase functions deploy delete-account
@@ -45,6 +46,24 @@ Deno.serve(async (req: Request) => {
   }
 
   const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
+
+  // Personal bills: remove every file in the user's folder (paged). Personal
+  // records themselves are deleted with the auth user (on delete cascade).
+  const bucket = admin.storage.from("personal-attachments");
+  for (;;) {
+    const { data: files, error: listError } = await bucket.list(userId, { limit: 100 });
+    if (listError) {
+      console.error("list personal files failed", listError.name);
+      return json({ error: "delete_files_failed" }, 500);
+    }
+    if (!files || files.length === 0) break;
+    const { error: removeError } = await bucket.remove(files.map((f) => `${userId}/${f.name}`));
+    if (removeError) {
+      console.error("remove personal files failed", removeError.name);
+      return json({ error: "delete_files_failed" }, 500);
+    }
+  }
+
   const { error: deleteError } = await admin.auth.admin.deleteUser(userId);
   if (deleteError) {
     console.error("auth delete failed", deleteError.status);

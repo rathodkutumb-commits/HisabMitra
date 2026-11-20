@@ -23,3 +23,4 @@ for f in supabase/migrations/*.sql; do
   run < "$f"
 done
 run < supabase/tests/10_rls_and_rpc_test.sql
+run < supabase/tests/20_personal_data_test.sql

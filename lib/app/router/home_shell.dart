@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/l10n/l10n_x.dart';
+import '../../core/widgets/exit_confirm_scope.dart';
 import '../../features/tour/application/tour_controller.dart';
 
 /// Bottom navigation scaffold for the five main tabs.
@@ -13,6 +14,17 @@ class HomeShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    // Back on a tab other than Home goes to Home; back on Home asks before
+    // closing the app.
+    return ExitConfirmScope(
+      onBack: navigationShell.currentIndex == 0
+          ? null
+          : () => navigationShell.goBranch(0),
+      child: _scaffold(l),
+    );
+  }
+
+  Widget _scaffold(AppLocalizations l) {
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(

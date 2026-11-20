@@ -9,6 +9,7 @@ import '../../../core/l10n/l10n_x.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../settings/application/settings_controller.dart';
 import '../data/ledger_repository.dart';
+import '../../ai_assistant/presentation/ai_fab.dart';
 
 class LedgerHistoryScreen extends StatelessWidget {
   const LedgerHistoryScreen({super.key, this.personId});
@@ -18,6 +19,7 @@ class LedgerHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: const AiFabStack(),
       appBar: AppBar(title: Text(context.l10n.settlementHistoryTitle)),
       body: RepaymentHistoryList(
         personId: personId,

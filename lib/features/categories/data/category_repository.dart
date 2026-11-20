@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/errors/app_failure.dart';
 import '../../../core/providers.dart';
+import '../../synchronization/data/personal_outbox.dart';
+import '../../synchronization/domain/personal_entity.dart';
 
 @immutable
 class CategoryDraft {
@@ -29,11 +31,13 @@ class CategoryDraft {
 }
 
 class CategoryRepository {
-  CategoryRepository(this._db, this._clock, this._ids);
+  CategoryRepository(this._db, this._clock, this._ids, {PersonalOutbox? outbox})
+    : _outbox = outbox ?? PersonalOutbox(_db, _clock, _ids);
 
   final AppDatabase _db;
   final Clock _clock;
   final IdGenerator _ids;
+  final PersonalOutbox _outbox;
 
   Stream<List<CategoryRow>> watchAll([TransactionType? type]) {
     final q = _db.select(_db.categories)
@@ -88,16 +92,43 @@ class CategoryRepository {
     }
     final existing = await getById(d.id!);
     if (existing == null) throw const NotFoundFailure();
-    await (_db.update(_db.categories)..where((c) => c.id.equals(d.id!))).write(
-      CategoriesCompanion(
-        name: d.keepSystemName ? const Value.absent() : Value(name),
-        systemKey: d.keepSystemName ? const Value.absent() : const Value(null),
-        iconKey: Value(d.iconKey),
-        colorValue: Value(d.colorValue),
-        updatedAt: Value(now),
-      ),
-    );
+    await _db.transaction(() async {
+      await (_db.update(
+        _db.categories,
+      )..where((c) => c.id.equals(d.id!))).write(
+        CategoriesCompanion(
+          name: d.keepSystemName ? const Value.absent() : Value(name),
+          systemKey: d.keepSystemName
+              ? const Value.absent()
+              : const Value(null),
+          iconKey: Value(d.iconKey),
+          colorValue: Value(d.colorValue),
+          updatedAt: Value(now),
+        ),
+      );
+      // Categories stay on the phone, but saved entries carry a copy of the
+      // name and look so a new phone shows them right: refresh those copies.
+      await _requeueUsersOf(d.id!);
+    });
     return d.id!;
+  }
+
+  Future<void> _requeueUsersOf(
+    String categoryId, {
+    Iterable<String> extraReminders = const [],
+  }) async {
+    final txnIds = await (_db.select(
+      _db.transactions,
+    )..where((t) => t.categoryId.equals(categoryId))).map((t) => t.id).get();
+    for (final id in txnIds) {
+      await _outbox.upsert(PersonalEntity.transaction, id);
+    }
+    final reminderIds = await (_db.select(
+      _db.reminders,
+    )..where((r) => r.categoryId.equals(categoryId))).map((r) => r.id).get();
+    for (final id in {...reminderIds, ...extraReminders}) {
+      await _outbox.upsert(PersonalEntity.reminder, id);
+    }
   }
 
   /// Deletes a category. If transactions use it, [reassignTo] (same type)
@@ -106,6 +137,10 @@ class CategoryRepository {
     await _db.transaction(() async {
       final category = await getById(id);
       if (category == null) throw const NotFoundFailure();
+      // Reminders using it lose the category (foreign key sets it to null).
+      final reminders = await (_db.select(
+        _db.reminders,
+      )..where((r) => r.categoryId.equals(id))).map((r) => r.id).get();
       final used = await usageCount(id);
       if (used > 0) {
         if (reassignTo == null) throw InUseFailure(used);
@@ -123,6 +158,10 @@ class CategoryRepository {
         );
       }
       await (_db.delete(_db.categories)..where((c) => c.id.equals(id))).go();
+      if (reassignTo != null) await _requeueUsersOf(reassignTo);
+      for (final r in reminders) {
+        await _outbox.upsert(PersonalEntity.reminder, r);
+      }
     });
   }
 }
@@ -132,6 +171,7 @@ final categoryRepositoryProvider = Provider<CategoryRepository>(
     ref.watch(appDatabaseProvider),
     ref.watch(clockProvider),
     ref.watch(idGeneratorProvider),
+    outbox: ref.watch(personalOutboxProvider),
   ),
 );
 

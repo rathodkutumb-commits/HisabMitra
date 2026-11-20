@@ -9,7 +9,7 @@
       }
     }
   },
-  "aboutDescription": "HisabMitra keeps your daily hisab, personal khata and family group expenses on your phone — private by default, working without internet.",
+  "aboutDescription": "HisabMitra keeps your daily hisab, personal khata and family group expenses in your account, with a copy on your phone so it works without internet.",
   "checkUpdates": "Check for updates",
   "updateUpToDate": "You have the latest version.",
   "updateAvailable": "Version {version} is available",
@@ -30,7 +30,7 @@
       }
     }
   },
-  "updateInstallSteps": "The file was verified (checksum, package and signature). Android will now ask you to confirm the installation. Your data stays on the phone.",
+  "updateInstallSteps": "The file was verified (checksum, package and signature). Android will now ask you to confirm the installation. Your hisab stays safe in your account and on this phone.",
   "updateAllowInstall": "Allow HisabMitra to install updates in the next screen, then tap Download & install again.",
   "updateNoChecksum": "This release has no published checksum, so it cannot be installed from inside the app. Open the release page instead.",
   "updateChecksumMismatch": "The downloaded file did not match its published checksum and was deleted.",
@@ -41,17 +41,18 @@
   "releaseNotes": "Release notes",
   "openReleasePage": "GitHub release page",
   "shareApp": "Share HisabMitra",
-  "shareAppText": "I use HisabMitra to manage my family hisab. Download it here: {url}",
-  "@shareAppText": {
+  "shareAppText": "📒 *HisabMitra — Smart Hisab, Happy Family*\n\nI keep my family's hisab in HisabMitra:\n✅ Daily income and expenses\n🤝 Money given and taken (khata)\n👨‍👩‍👧 Family and trip expense splitting\n📊 Reports in English and ગુજરાતી",
+  "licenses": "Open-source licences",
+  "privacySummary": "Your personal records, people, khata, reminders and bills are saved to your HisabMitra account, and only you can see them. Group expenses are shared with that group's members. Your phone keeps a copy so the app works offline; signing out removes it. Optional online AI receives summary figures only after your consent. No advertising or tracking SDKs are included.",
+  "termsSummary": "HisabMitra is a record-keeping tool. Please check important figures yourself; it does not provide financial, tax or legal advice.",
+  "shareAppDownload": "📲 Download free: {url}",
+  "@shareAppDownload": {
     "placeholders": {
       "url": {
         "type": "String"
       }
     }
   },
-  "licenses": "Open-source licences",
-  "privacySummary": "Your personal records, people, khata, reminders and attachments are stored only on this phone. Only groups you choose to share are uploaded, and only for their members. Optional online AI receives summary figures only after your consent. No advertising or tracking SDKs are included.",
-  "termsSummary": "HisabMitra is a record-keeping tool. Please check important figures yourself; it does not provide financial, tax or legal advice.",
   "aiTitle": "HisabMitra assistant",
   "aiDisabledTitle": "The assistant is off",
   "aiDisabledBody": "Turn it on to ask questions about your hisab. Answers are calculated on this phone.",
@@ -330,6 +331,45 @@
   "aiApiKeyRemove": "Remove key",
   "aiApiKeyHint": "Paste your Anthropic API key",
   "aiApiKeyNote": "The key is stored encrypted on this phone and is used only for online answers. Online usage is billed to your Anthropic account.",
+  "aiOpenAssistant": "Ask HisabMitra AI",
+  "aiExamplesSpending": "Spending",
+  "aiExamplesIncome": "Income & savings",
+  "aiExamplesKhata": "Khata",
+  "aiExamplesGroups": "Groups",
+  "aiExamplesAdd": "Add an entry",
+  "aiExample7": "How much did I spend today?",
+  "aiExample8": "How much did I spend last month?",
+  "aiExample9": "What is my income this month?",
+  "aiExample10": "What was my income last month?",
+  "aiExample11": "What are my savings this month?",
+  "aiExample12": "What are my savings this year?",
+  "aiExample13": "Add 250 for groceries",
+  "aiExample14": "Add salary 25000",
+  "aiExample15": "Add 500 for fuel",
+  "aiExamplePerson": "What is my balance with {name}?",
+  "@aiExamplePerson": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "aiExampleGroupTotal": "How much did {group} cost?",
+  "@aiExampleGroupTotal": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "aiExampleGroupOwes": "Who owes whom in {group}?",
+  "@aiExampleGroupOwes": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
   "attachments": "Bills & attachments",
   "attachCamera": "Camera",
   "attachGallery": "Gallery",
@@ -340,10 +380,13 @@
   "attachmentOpenExternal": "Open in another app",
   "attachmentDeleteConfirm": "Remove this attachment?",
   "attachmentViewerTitle": "Attachment",
-  "attachmentPrivateNote": "Stored privately on this phone. Not uploaded anywhere.",
+  "attachmentPrivateNote": "Saved to your HisabMitra account.",
   "attachmentShareToGroup": "Share with group",
   "attachmentSharedToGroup": "Shared with group",
   "attachmentRemove": "Remove",
+  "photoRecovered": "We saved the photo you took. Add it to a new expense?",
+  "photoRecoveredAction": "Add expense",
+  "attachmentDownloadRetry": "Couldn't load this bill. Check your internet and try again.",
   "backupTitle": "Backup & restore",
   "backupNow": "Back up now",
   "backupEncrypt": "Protect with a password",
@@ -389,7 +432,7 @@
       }
     }
   },
-  "backupWhere": "Backups are stored privately in HisabMitra's app storage on this phone. Uninstalling the app deletes them, so use “Save / share copy” to keep a copy elsewhere (for example Google Drive or a computer).",
+  "backupWhere": "Your hisab is saved in your account. A backup is an extra copy, stored privately in HisabMitra's app storage on this phone; uninstalling the app deletes it, so use “Save / share copy” to keep it elsewhere (for example Google Drive or a computer).",
   "backupFileMissing": "File no longer on this phone",
   "backupDeleteConfirm": "Delete this backup file?",
   "backupPasswordRequired": "This backup is encrypted. Enter its password.",
@@ -398,16 +441,24 @@
   "backupNewerSchema": "This backup was made by a newer version of HisabMitra. Update the app first.",
   "backupIntegrity": "The data inside the backup failed its integrity check.",
   "backupNotBackup": "This file is not a HisabMitra backup.",
-  "backupAutoInfo": "Automatic backups run when you open the app and one is due. The newest 7 are kept.",
-  "backupLastAuto": "Last automatic backup: {date}",
-  "@backupLastAuto": {
+  "shareBackupCaption": "🔒 *HisabMitra backup* · {date} — keep this file safe; you'll need your backup password to restore it.",
+  "@shareBackupCaption": {
     "placeholders": {
       "date": {
         "type": "String"
       }
     }
   },
-  "backupNever": "Never",
+  "shareBackupCaptionPlain": "🔒 *HisabMitra backup* · {date} — keep this file safe.",
+  "@shareBackupCaptionPlain": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreNeedsInternet": "Connect to the internet to restore.",
+  "restoreReplacesAccount": "This replaces the hisab saved in your account with this backup. Groups are not changed.",
   "authSendOtp": "Send verification code",
   "authVerify": "Verify",
   "authResend": "Resend code",
@@ -423,7 +474,7 @@
   "profileTitle": "Profile",
   "profileName": "Display name",
   "profileSaved": "Profile saved",
-  "deleteAccountConfirm": "Delete your cloud account? You will leave all shared groups. Everything on this phone is kept.",
+  "deleteAccountConfirm": "Delete your account? Your saved hisab, bills and group memberships are deleted from the account and from this phone. This cannot be undone.",
   "accountDeleted": "Cloud account deleted",
   "signedOut": "Signed out",
   "syncTitle": "Sync status",
@@ -462,22 +513,17 @@
   "syncOtherVersion": "Other device's version",
   "syncOffline": "Offline — changes will sync when you are back online.",
   "syncSignInNeeded": "Sign in to sync shared groups.",
-  "syncDisabled": "Cloud sync is turned off in Settings.",
   "syncDone": "Sync complete",
   "syncRunning": "Syncing…",
   "entityGroup": "Group details",
   "entityMember": "Member",
   "entityExpense": "Expense",
   "entitySettlement": "Settlement",
-  "shareToCloud": "Share group online",
-  "shareToCloudBody": "Members who use HisabMitra can then join this group and see its members, expenses and settlements. Members' phone numbers are not uploaded and your personal records are never shared.",
-  "shareToCloudDone": "Group is now shared",
-  "shareNeedsSignIn": "Verify your email to share groups.",
   "inviteTitle": "Invite members",
   "inviteFor": "Invite for",
   "inviteNewMember": "Someone new",
   "inviteCreate": "Create invitation code",
-  "inviteShareText": "Join my group \"{group}\" on HisabMitra: open hisabmitra://join?code={code} or enter the code {code} in the app. The code expires on {date}.",
+  "inviteShareText": "👋 *Join my group on HisabMitra!*\n\n👥 Group: *{group}*\n🔑 Invite code: *{code}*\n\nOpen HisabMitra → Groups → Join a group, and enter the code.\n\n⏳ The code is valid till *{date}*.",
   "@inviteShareText": {
     "placeholders": {
       "group": {
@@ -505,7 +551,6 @@
   "inviteStatusExpired": "Expired",
   "inviteCancel": "Cancel invitation",
   "invitesEmpty": "No invitations yet",
-  "inviteGroupNotShared": "Share this group online first.",
   "inviteCodeOnce": "Share this code now. For security it is shown only once.",
   "joinTitle": "Join a group",
   "joinCode": "Invitation code",
@@ -554,6 +599,36 @@
     }
   },
   "verifyEmailAction": "Verify email",
+  "inviteShareDownload": "📲 Don't have the app? Download it free: {url}",
+  "@inviteShareDownload": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "entityPerson": "Person",
+  "entityTransaction": "Income or expense",
+  "entityLedgerEntry": "Khata entry",
+  "entityRepayment": "Repayment",
+  "entityReminder": "Reminder",
+  "entityBill": "Bill",
+  "inviteSampleGroup": "Sample groups cannot be shared.",
+  "accountSyncUploadTitle": "Saving your hisab to your account",
+  "accountSyncDownloadTitle": "Getting your hisab",
+  "accountSyncProgress": "{done} of {total}",
+  "@accountSyncProgress": {
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "accountSyncOffline": "No internet. Your hisab will be saved to your account when you're back online.",
+  "accountSyncContinue": "Continue in background",
   "appName": "HisabMitra",
   "appNameGujarati": "હિસાબમિત્ર",
   "appTagline": "Smart Hisab, Happy Family.",
@@ -623,7 +698,7 @@
   "discardChangesMessage": "Your unsaved changes will be lost.",
   "discard": "Discard",
   "keepEditing": "Keep editing",
-  "offlineBanner": "You are offline. Your data is safe on this device.",
+  "offlineBanner": "You are offline. Your changes are saved on this phone and will reach your account when you are back online.",
   "pmCash": "Cash",
   "pmUpi": "UPI",
   "pmBankTransfer": "Bank transfer",
@@ -659,7 +734,10 @@
   "periodThisYear": "This year",
   "periodCustom": "Custom range",
   "notConfigured": "Not configured",
-  "privateOnDevice": "Private · stored on this device",
+  "privateOnDevice": "Private · saved to your account",
+  "exitAppTitle": "Exit HisabMitra?",
+  "exitAppConfirm": "Exit",
+  "exitAppStay": "Stay",
   "errorNotFound": "This record no longer exists.",
   "errorInUse": "{count, plural, =1{It is used by 1 record.} other{It is used by {count} records.}}",
   "@errorInUse": {
@@ -739,7 +817,7 @@
   "chooseCategory": "Choose a category",
   "transactionSaved": "Entry saved",
   "transactionDeleted": "Entry deleted",
-  "deleteTransactionMessage": "This entry and its attachments will be deleted from this phone.",
+  "deleteTransactionMessage": "This entry and its attachments will be deleted from your account and this phone.",
   "dayNet": "Net {amount}",
   "@dayNet": {
     "placeholders": {
@@ -1142,17 +1220,17 @@
   "languageEnglish": "English",
   "languageGujarati": "ગુજરાતી (Gujarati)",
   "onboardTitle1": "Your daily hisab, made simple",
-  "onboardBody1": "Record income and expenses in seconds. Everything stays on your phone and works without internet.",
+  "onboardBody1": "Record income and expenses in seconds. Saved to your account, and it works without internet too.",
   "onboardTitle2": "Lend, borrow, settle",
   "onboardBody2": "Keep a clear khata of money given and taken, with partial repayments and gentle reminders.",
   "onboardTitle3": "Share expenses with family & friends",
   "onboardBody3": "Split trip, festival and household costs fairly — right down to the last paisa.",
   "getStarted": "Get started",
   "profileSetupTitle": "Create your account",
-  "profileSetupSubtitle": "Name, email and mobile number are required. We verify your email; your personal records still stay on this phone.",
+  "profileSetupSubtitle": "Name, email and mobile number are required. We verify your email; your hisab is saved to this account.",
   "yourName": "Your name",
   "startUsing": "Start using HisabMitra",
-  "privacyPromise": "Your personal records never leave your phone unless you choose to share them.",
+  "privacyPromise": "Your hisab is saved to your account, and only you can see it.",
   "remindersTitle": "Reminders",
   "addReminder": "Add reminder",
   "editReminder": "Edit reminder",
@@ -1276,6 +1354,9 @@
       }
     }
   },
+  "reminderBatteryTip": "On some phones (Xiaomi, Oppo, Vivo and others) battery saving can stop reminders. Allow HisabMitra to run in the background so they arrive on time.",
+  "reminderBatteryTipOpen": "Open settings",
+  "reminderBatteryTipDismiss": "Got it",
   "reportsTitle": "Reports",
   "reportOverview": "Income & expense",
   "reportOverviewDesc": "Monthly income, expense and savings",
@@ -1339,6 +1420,17 @@
   "transactionsExportTitle": "Transactions",
   "fullReportTitle": "Financial report",
   "settlementSummary": "Settlement summary",
+  "shareReportCaption": "📊 *HisabMitra report* · {title} · {period}",
+  "@shareReportCaption": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
   "settingsTitle": "Settings",
   "settingsAppearance": "Appearance",
   "settingsTheme": "Colour theme",
@@ -1373,15 +1465,10 @@
   "settingsHideAmounts": "Hide amounts in notifications",
   "settingsHideAmountsDesc": "Notifications show only a generic message",
   "settingsSync": "Cloud sync",
-  "settingsCloudSync": "Sync shared groups",
-  "settingsCloudSyncDesc": "Only groups you share are synced. Personal records always stay on this device.",
   "settingsSyncStatus": "Sync status",
   "settingsBackup": "Backup & restore",
   "settingsBackupDesc": "Manual, automatic and encrypted backups",
-  "settingsAutoBackup": "Automatic backup",
   "autoBackupOff": "Off",
-  "autoBackupDaily": "Daily",
-  "autoBackupWeekly": "Weekly",
   "settingsAi": "AI assistant",
   "settingsAiEnabled": "Enable AI assistant",
   "settingsAiEnabledDesc": "Answers questions using calculations done on this device",
@@ -1403,9 +1490,9 @@
   "settingsAccount": "Account",
   "settingsProfile": "Profile",
   "settingsLogout": "Log out",
-  "settingsLogoutConfirm": "Log out? Your records stay on this device; shared groups stop syncing until you sign in again.",
+  "settingsLogoutConfirm": "Log out? Your hisab stays saved in your account and is removed from this phone. Categories and settings stay on the phone.",
   "settingsDeleteAccount": "Delete cloud account",
-  "settingsDeleteAccountDesc": "Removes your cloud profile and group memberships. Local data is kept.",
+  "settingsDeleteAccountDesc": "Deletes your account, its saved hisab and bills, and your group memberships.",
   "settingsAbout": "About",
   "settingsCategories": "Categories",
   "settingsReminders": "Reminders",
@@ -1413,6 +1500,17 @@
   "settingsReports": "Reports",
   "settingsPrivacyPolicy": "Privacy policy",
   "settingsTerms": "Terms & conditions",
+  "signOutUnsentTitle": "Not saved yet",
+  "signOutUnsentBody": "{count} changes haven't been saved to your account yet. Logging out now loses them.",
+  "@signOutUnsentBody": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "signOutWaitSync": "Wait and sync",
+  "signOutAnyway": "Log out anyway",
   "tourPromptTitle": "Take a quick tour?",
   "tourPromptBody": "See HisabMitra with sample data: two months of income and expenses, money lent and borrowed, and a Goa trip split with friends. You can remove the sample data at the end.",
   "tourStart": "Start tour",

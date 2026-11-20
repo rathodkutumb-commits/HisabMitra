@@ -2,13 +2,17 @@
 
 ## Data location
 
-| Data | Stored | Leaves the phone? |
+Since Part B (2026-11-20) personal records are saved to the user's account;
+the phone keeps a working copy (offline use) that sign-out removes.
+
+| Data | Stored | Who can read it |
 |---|---|---|
-| Transactions, categories, people, personal ledger, reminders, bills | Local SQLite + app-private files | **No.** Only if the user exports/shares a report or backup file. |
+| Transactions, people, personal ledger and repayments, reminders | Supabase (`personal_*` tables) + a copy in local SQLite | Only the owner (RLS `owner_id = auth.uid()`) |
+| Personal bills and receipts | Supabase Storage `personal-attachments/<user id>/` + a local copy | Only the owner |
+| Categories | Local SQLite only (entries carry a copy of their category's name/icon) | — |
 | Settings | Local SQLite | Only inside a backup the user exports |
-| Local groups | Local SQLite | No |
-| Shared groups (members, expenses, splits, settlements) | Local + Supabase | Yes, to members of that group only, after the owner chose "Share to cloud" |
-| Group bills | Local; Supabase Storage only if a member taps "Share with group" | Only for that file |
+| Groups (members, expenses, splits, settlements) | Supabase + local copy; every group is saved to the account (the guided tour's sample group stays on the phone) | Members of that group |
+| Group bills | Supabase Storage `group-attachments` + local copy | Members of that group |
 | Name, email, mobile number | Device + Supabase (email in Auth, name and phone in `user_profiles`, owner-only) | Yes — required for the compulsory account (since 2026-11-19). Group members see only the display name. |
 | Supabase session, AI API key | Android Keystore-backed secure storage | No (session tokens go only to Supabase) |
 | AI questions | — | Only with online AI enabled + consent: the question and computed totals go to Anthropic (AI_ASSISTANT.md) |
@@ -17,9 +21,8 @@
 
 | Feature | What other people / services can see |
 |---|---|
-| Share a group to cloud | Group members see the group's expenses, splits, settlements and member names. Nothing personal outside the group. |
+| Groups | Group members see the group's expenses, splits, settlements, bills and member names. Nothing personal outside the group. |
 | Invite a member | The invitee sees the group after accepting. Codes expire (default 72 h), are single-use and stored only as hashes. |
-| Share a bill with the group | Group members can view that one file. It cannot be edited or deleted through the API. |
 | Online AI | Anthropic processes the question and aggregated figures under the user's own API account. |
 | Update check | GitHub sees an anonymous request for the latest release. |
 
@@ -29,10 +32,18 @@
   out, no service-role key in the app (RLS_SECURITY.md).
 - Optional backup encryption (AES-256-GCM, PBKDF2 210 000); passwords never
   stored.
-- Account deletion (Edge Function) — shared history stays with the group as
-  a plain participant; local data is never deleted by it.
-- Sign-out keeps local data.
+- Account deletion (Edge Function) — personal records and bill files are
+  deleted with the account; shared group history stays with the group as a
+  plain participant; the phone's copy is removed.
+- Sign-out removes the phone's copy (records stay in the account); it warns
+  first when changes have not been uploaded yet.
+- The Supabase project owner can see every user's records in the
+  dashboard; anyone installing the public APK stores data in that project.
 - Notifications hide amounts by default ("Hide amounts in notifications").
+- Reminders use exact alarms (`USE_EXACT_ALARM`, Android 13+; `SCHEDULE_EXACT_ALARM`
+  up to Android 12) so they arrive on time. Google Play allows `USE_EXACT_ALARM`
+  only for alarm/calendar-type apps; a Play listing would need to ask the user
+  for "Alarms & reminders" instead.
 - Input validation on every form and on the server (`CHECK` constraints,
   RPC validation).
 - Errors shown to users are localised messages, never raw database or HTTP

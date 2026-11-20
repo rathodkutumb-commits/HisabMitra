@@ -232,6 +232,57 @@ void main() {
     expect(summary.iOwePaise, 25000);
     expect(summary.owedToMePaise, 0);
   });
+
+  group('groups are saved to the account', () {
+    test('a new group is shared and queued when signed in', () async {
+      final signedIn = GroupRepository(
+        db,
+        _Fixed(DateTime(2026, 5, 1)),
+        const IdGenerator(),
+        currentUserId: () => 'hemang',
+      );
+      await db.delete(db.syncOutbox).go();
+      final id = await signedIn.createGroup(
+        const GroupDraft(name: 'Family', groupType: GroupType.family),
+        selfName: 'Hemang',
+        members: const [MemberDraft(name: 'Priya')],
+      );
+      final g = (await signedIn.watchGroup(id).first)!;
+      expect(g.group.isShared, isTrue);
+      final self = g.members.firstWhere((x) => x.isSelf);
+      expect(self.userId, 'hemang');
+      final ops = await db.select(db.syncOutbox).get();
+      expect(ops.map((o) => o.entityType), containsAll(['group', 'member']));
+      expect(ops.every((o) => o.scope == 'group' && o.groupId == id), isTrue);
+    });
+
+    test('a new group stays on the phone when not signed in', () async {
+      await db.delete(db.syncOutbox).go();
+      final id = await groups.createGroup(
+        const GroupDraft(name: 'Family', groupType: GroupType.family),
+        selfName: 'Hemang',
+      );
+      expect((await groups.watchGroup(id).first)!.group.isShared, isFalse);
+      expect(await db.select(db.syncOutbox).get(), isEmpty);
+    });
+
+    test('a group made with cloud: false stays on the phone', () async {
+      final signedIn = GroupRepository(
+        db,
+        _Fixed(DateTime(2026, 5, 1)),
+        const IdGenerator(),
+        currentUserId: () => 'hemang',
+      );
+      await db.delete(db.syncOutbox).go();
+      final id = await signedIn.createGroup(
+        const GroupDraft(name: 'Sample trip', groupType: GroupType.trip),
+        selfName: 'Hemang',
+        cloud: false,
+      );
+      expect((await signedIn.watchGroup(id).first)!.group.isShared, isFalse);
+      expect(await db.select(db.syncOutbox).get(), isEmpty);
+    });
+  });
 }
 
 class _Fixed extends Clock {

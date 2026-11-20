@@ -12,12 +12,14 @@ class CloudSession {
   final String? phone;
 }
 
-/// One local change sent to `apply_group_op`.
+/// One local change sent to `apply_group_op` (scope `group`) or
+/// `apply_personal_op` (scope `personal`, no group).
 @immutable
 class OutboundOp {
   const OutboundOp({
     required this.opId,
     required this.groupId,
+    this.scope = 'group',
     required this.entityType,
     required this.entityId,
     required this.opType,
@@ -27,15 +29,20 @@ class OutboundOp {
 
   final String opId;
   final String groupId;
+
+  /// `group` or `personal`.
+  final String scope;
   final String entityType;
   final String entityId;
   final String opType;
   final int baseRevision;
   final Map<String, Object?> payload;
 
+  bool get isPersonal => scope == 'personal';
+
   Map<String, Object?> toJson() => {
     'op_id': opId,
-    'group_id': groupId,
+    if (!isPersonal) 'group_id': groupId,
     'entity_type': entityType,
     'entity_id': entityId,
     'op_type': opType,
@@ -75,36 +82,81 @@ class OpRejected extends OpResult {
   final String code;
 }
 
-/// A change event from `sync_events`.
+/// A change event from `sync_events` (scope `group`) or
+/// `personal_sync_events` (scope `personal`, empty [groupId]).
 @immutable
 class RemoteEvent {
   const RemoteEvent({
     required this.seq,
     required this.groupId,
+    this.scope = 'group',
     required this.entityType,
     required this.entityId,
     required this.opType,
     required this.revision,
     required this.payload,
+    this.opId,
   });
 
-  factory RemoteEvent.fromJson(Map<String, Object?> j) => RemoteEvent(
+  factory RemoteEvent.fromJson(
+    Map<String, Object?> j, {
+    String scope = 'group',
+  }) => RemoteEvent(
     seq: (j['seq'] as num).toInt(),
-    groupId: j['group_id']! as String,
+    groupId: j['group_id'] as String? ?? '',
+    scope: scope,
     entityType: j['entity_type']! as String,
-    entityId: j['entity_id']! as String,
+    // The personal reset event has no entity.
+    entityId: j['entity_id'] as String? ?? '',
     opType: j['op_type']! as String,
     revision: (j['revision'] as num).toInt(),
     payload: (j['payload']! as Map).cast<String, Object?>(),
+    opId: j['op_id'] as String?,
   );
 
   final int seq;
   final String groupId;
+
+  /// `group` or `personal`.
+  final String scope;
   final String entityType;
   final String entityId;
   final String opType;
   final int revision;
   final Map<String, Object?> payload;
+
+  /// The operation that caused this event (personal feed only).
+  final String? opId;
+}
+
+/// All of the user's live personal records (`get_personal_snapshot`), by
+/// kind, and the feed position to continue from.
+@immutable
+class PersonalSnapshot {
+  const PersonalSnapshot({required this.rows, required this.maxSeq});
+
+  /// Snapshot keys in the order records must be applied (parents first).
+  static const kinds = [
+    'people',
+    'ledger_entries',
+    'ledger_repayments',
+    'transactions',
+    'reminders',
+    'attachments',
+  ];
+
+  factory PersonalSnapshot.fromJson(Map<String, Object?> j) => PersonalSnapshot(
+    rows: {
+      for (final k in kinds)
+        k: ((j[k] as List?) ?? const [])
+            .map((e) => (e as Map).cast<String, Object?>())
+            .toList(),
+    },
+    maxSeq: (j['max_seq'] as num? ?? 0).toInt(),
+  );
+
+  final Map<String, List<Map<String, Object?>>> rows;
+  final int maxSeq;
 }
 
 /// Complete current state of one group (`get_group_snapshot`).

@@ -7,6 +7,8 @@ import '../../../core/errors/app_failure.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/phone.dart';
 import '../../money_ledger/domain/ledger_calculator.dart';
+import '../../synchronization/data/personal_outbox.dart';
+import '../../synchronization/domain/personal_entity.dart';
 
 @immutable
 class PersonDraft {
@@ -38,11 +40,13 @@ class PersonSummary {
 final _emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
 class PeopleRepository {
-  PeopleRepository(this._db, this._clock, this._ids);
+  PeopleRepository(this._db, this._clock, this._ids, {PersonalOutbox? outbox})
+    : _outbox = outbox ?? PersonalOutbox(_db, _clock, _ids);
 
   final AppDatabase _db;
   final Clock _clock;
   final IdGenerator _ids;
+  final PersonalOutbox _outbox;
 
   Stream<List<PersonRow>> watchAll() => (_db.select(
     _db.persons,
@@ -119,38 +123,43 @@ class PeopleRepository {
       throw const ValidationFailure('email');
     }
     String? clean(String? s) => s == null || s.trim().isEmpty ? null : s.trim();
-    final now = _clock.now();
-    if (d.id == null) {
-      final id = _ids.newId();
-      await _db
-          .into(_db.persons)
-          .insert(
-            PersonsCompanion.insert(
-              id: id,
-              name: name,
-              phone: Value(phone),
-              email: Value(clean(email)),
-              description: Value(clean(d.description)),
-              notes: Value(clean(d.notes)),
-              createdAt: now,
-              updatedAt: now,
-            ),
-          );
+    return _db.transaction(() async {
+      final now = _clock.now();
+      final String id;
+      if (d.id == null) {
+        id = _ids.newId();
+        await _db
+            .into(_db.persons)
+            .insert(
+              PersonsCompanion.insert(
+                id: id,
+                name: name,
+                phone: Value(phone),
+                email: Value(clean(email)),
+                description: Value(clean(d.description)),
+                notes: Value(clean(d.notes)),
+                createdAt: now,
+                updatedAt: now,
+              ),
+            );
+      } else {
+        id = d.id!;
+        final n = await (_db.update(_db.persons)..where((p) => p.id.equals(id)))
+            .write(
+              PersonsCompanion(
+                name: Value(name),
+                phone: Value(phone),
+                email: Value(clean(email)),
+                description: Value(clean(d.description)),
+                notes: Value(clean(d.notes)),
+                updatedAt: Value(now),
+              ),
+            );
+        if (n == 0) throw const NotFoundFailure();
+      }
+      await _outbox.upsert(PersonalEntity.person, id);
       return id;
-    }
-    final n = await (_db.update(_db.persons)..where((p) => p.id.equals(d.id!)))
-        .write(
-          PersonsCompanion(
-            name: Value(name),
-            phone: Value(phone),
-            email: Value(clean(email)),
-            description: Value(clean(d.description)),
-            notes: Value(clean(d.notes)),
-            updatedAt: Value(now),
-          ),
-        );
-    if (n == 0) throw const NotFoundFailure();
-    return d.id!;
+    });
   }
 
   /// Deletes a person and their (fully settled) ledger history. Refused while
@@ -169,6 +178,8 @@ class PeopleRepository {
                 ..where((a) => a.ledgerEntryId.isIn(ledgerIds)))
               .map((a) => a.storedName)
               .get();
+    // One delete for the server: it removes the khata the same way.
+    await _outbox.delete(PersonalEntity.person, id);
     final n = await (_db.delete(
       _db.persons,
     )..where((p) => p.id.equals(id))).go();
@@ -182,6 +193,7 @@ final peopleRepositoryProvider = Provider<PeopleRepository>(
     ref.watch(appDatabaseProvider),
     ref.watch(clockProvider),
     ref.watch(idGeneratorProvider),
+    outbox: ref.watch(personalOutboxProvider),
   ),
 );
 

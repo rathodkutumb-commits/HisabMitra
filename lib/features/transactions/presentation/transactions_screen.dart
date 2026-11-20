@@ -19,6 +19,7 @@ import '../../tour/application/tour_controller.dart';
 import '../domain/transaction_models.dart';
 import 'widgets/transaction_sheet_view.dart';
 import 'widgets/transaction_tile.dart';
+import '../../ai_assistant/presentation/ai_fab.dart';
 
 class _FilterController extends Notifier<TransactionFilter> {
   @override
@@ -150,12 +151,14 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
           ExportMenuButton(filter: filter),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        // Unique: the tab shell keeps several FAB screens alive.
-        heroTag: 'fab-transactions',
-        onPressed: () => showAddTransactionSheet(context),
-        icon: const Icon(Icons.add_rounded),
-        label: Text(l.add),
+      floatingActionButton: AiFabStack(
+        child: FloatingActionButton.extended(
+          // Unique: the tab shell keeps several FAB screens alive.
+          heroTag: 'fab-transactions',
+          onPressed: () => showAddTransactionSheet(context),
+          icon: const Icon(Icons.add_rounded),
+          label: Text(l.add),
+        ),
       ),
       body: Column(
         children: [

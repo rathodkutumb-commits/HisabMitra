@@ -2,7 +2,7 @@
   "aboutTitle": "About HisabMitra",
   "aboutVersion": "Version {version}",
   "@aboutVersion": {"placeholders": {"version": {"type": "String"}}},
-  "aboutDescription": "HisabMitra keeps your daily hisab, personal khata and family group expenses on your phone — private by default, working without internet.",
+  "aboutDescription": "HisabMitra keeps your daily hisab, personal khata and family group expenses in your account, with a copy on your phone so it works without internet.",
   "checkUpdates": "Check for updates",
   "updateUpToDate": "You have the latest version.",
   "updateAvailable": "Version {version} is available",
@@ -11,7 +11,7 @@
   "updateDownloadInstall": "Download & install",
   "updateDownloading": "Downloading… {percent}%",
   "@updateDownloading": {"placeholders": {"percent": {"type": "int"}}},
-  "updateInstallSteps": "The file was verified (checksum, package and signature). Android will now ask you to confirm the installation. Your data stays on the phone.",
+  "updateInstallSteps": "The file was verified (checksum, package and signature). Android will now ask you to confirm the installation. Your hisab stays safe in your account and on this phone.",
   "updateAllowInstall": "Allow HisabMitra to install updates in the next screen, then tap Download & install again.",
   "updateNoChecksum": "This release has no published checksum, so it cannot be installed from inside the app. Open the release page instead.",
   "updateChecksumMismatch": "The downloaded file did not match its published checksum and was deleted.",
@@ -22,9 +22,10 @@
   "releaseNotes": "Release notes",
   "openReleasePage": "GitHub release page",
   "shareApp": "Share HisabMitra",
-  "shareAppText": "I use HisabMitra to manage my family hisab. Download it here: {url}",
-  "@shareAppText": {"placeholders": {"url": {"type": "String"}}},
+  "shareAppText": "📒 *HisabMitra — Smart Hisab, Happy Family*\n\nI keep my family's hisab in HisabMitra:\n✅ Daily income and expenses\n🤝 Money given and taken (khata)\n👨‍👩‍👧 Family and trip expense splitting\n📊 Reports in English and ગુજરાતી",
   "licenses": "Open-source licences",
-  "privacySummary": "Your personal records, people, khata, reminders and attachments are stored only on this phone. Only groups you choose to share are uploaded, and only for their members. Optional online AI receives summary figures only after your consent. No advertising or tracking SDKs are included.",
-  "termsSummary": "HisabMitra is a record-keeping tool. Please check important figures yourself; it does not provide financial, tax or legal advice."
+  "privacySummary": "Your personal records, people, khata, reminders and bills are saved to your HisabMitra account, and only you can see them. Group expenses are shared with that group's members. Your phone keeps a copy so the app works offline; signing out removes it. Optional online AI receives summary figures only after your consent. No advertising or tracking SDKs are included.",
+  "termsSummary": "HisabMitra is a record-keeping tool. Please check important figures yourself; it does not provide financial, tax or legal advice.",
+  "shareAppDownload": "📲 Download free: {url}",
+  "@shareAppDownload": {"placeholders": {"url": {"type": "String"}}}
 }

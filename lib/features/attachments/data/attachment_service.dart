@@ -13,6 +13,10 @@ import '../../../core/database/app_database.dart';
 import '../../../core/errors/app_failure.dart';
 import '../../../core/providers.dart';
 import '../../../core/security/safe_logger.dart';
+import '../../synchronization/application/sync_controller.dart';
+import '../../synchronization/data/cloud_gateway.dart';
+import '../../synchronization/data/personal_outbox.dart';
+import '../../synchronization/domain/personal_entity.dart';
 
 /// A picked file copied into private staging storage, not yet linked.
 @immutable
@@ -43,7 +47,14 @@ class AttachmentService {
     this._clock,
     this._ids, {
     Future<Directory> Function()? baseDir,
-  }) : _baseDir = baseDir ?? getApplicationSupportDirectory;
+    PersonalOutbox? outbox,
+    CloudGateway? cloud,
+  }) : _baseDir = baseDir ?? getApplicationSupportDirectory,
+       _outbox = outbox ?? PersonalOutbox(_db, _clock, _ids),
+       _cloud = cloud ?? const NotConfiguredCloudGateway();
+
+  final PersonalOutbox _outbox;
+  final CloudGateway _cloud;
 
   final AppDatabase _db;
   final Clock _clock;
@@ -122,6 +133,21 @@ class AttachmentService {
     return staged;
   }
 
+  /// Android may close the app while the camera is open (low memory). The
+  /// picker then keeps the photo for the restarted app; this stages it.
+  /// Returns null when there is nothing to recover or on any error.
+  Future<StagedAttachment?> recoverLostPhoto() async {
+    try {
+      final lost = await ImagePicker().retrieveLostData();
+      final file = lost.file;
+      if (lost.isEmpty || file == null) return null;
+      return await stage(File(file.path), originalName: file.name);
+    } catch (e, s) {
+      SafeLogger.error('attachment_recover', e, s);
+      return null;
+    }
+  }
+
   Future<StagedAttachment?> pickPdf() async {
     final picked = await FilePicker.pickFile(
       type: FileType.custom,
@@ -148,28 +174,35 @@ class AttachmentService {
       await File(staged.path).copy(target.path);
       await File(staged.path).delete();
     }
-    await _db
-        .into(_db.attachments)
-        .insert(
-          AttachmentsCompanion.insert(
-            id: id,
-            transactionId: Value(
-              parent == AttachmentParent.transaction ? parentId : null,
+    await _db.transaction(() async {
+      await _db
+          .into(_db.attachments)
+          .insert(
+            AttachmentsCompanion.insert(
+              id: id,
+              transactionId: Value(
+                parent == AttachmentParent.transaction ? parentId : null,
+              ),
+              ledgerEntryId: Value(
+                parent == AttachmentParent.ledgerEntry ? parentId : null,
+              ),
+              groupExpenseId: Value(
+                parent == AttachmentParent.groupExpense ? parentId : null,
+              ),
+              storedName: storedName,
+              originalName: staged.originalName,
+              mimeType: staged.mimeType,
+              sizeBytes: staged.sizeBytes,
+              sha256: staged.sha256,
+              createdAt: _clock.now(),
             ),
-            ledgerEntryId: Value(
-              parent == AttachmentParent.ledgerEntry ? parentId : null,
-            ),
-            groupExpenseId: Value(
-              parent == AttachmentParent.groupExpense ? parentId : null,
-            ),
-            storedName: storedName,
-            originalName: staged.originalName,
-            mimeType: staged.mimeType,
-            sizeBytes: staged.sizeBytes,
-            sha256: staged.sha256,
-            createdAt: _clock.now(),
-          ),
-        );
+          );
+      // Personal bills are saved to the account (the file is uploaded
+      // first, see [uploadPendingFiles]); group bills go to the group.
+      if (parent != AttachmentParent.groupExpense) {
+        await _outbox.upsert(PersonalEntity.attachment, id);
+      }
+    });
     return id;
   }
 
@@ -204,8 +237,118 @@ class AttachmentService {
       _db.attachments,
     )..where((a) => a.id.equals(id))).getSingleOrNull();
     if (row == null) return;
-    await (_db.delete(_db.attachments)..where((a) => a.id.equals(id))).go();
+    await _db.transaction(() async {
+      if (row.groupExpenseId == null) {
+        await _outbox.delete(
+          PersonalEntity.attachment,
+          id,
+          extra: {'storage_name': row.storedName},
+        );
+      }
+      await (_db.delete(_db.attachments)..where((a) => a.id.equals(id))).go();
+    });
     await deleteFiles([row.storedName]);
+  }
+
+  /// Uploads bill files not yet in the account, before their records are
+  /// sent. A file that is gone or refused is marked `remotePath = ''` and
+  /// never retried, so its record still syncs. Stops quietly when offline.
+  Future<void> uploadPendingFiles() async {
+    if (!_cloud.isConfigured || _cloud.currentSession == null) return;
+    final rows = await (_db.select(
+      _db.attachments,
+    )..where((a) => a.remotePath.isNull())).get();
+    for (final a in rows) {
+      final file = await fileFor(a.storedName);
+      try {
+        if (a.groupExpenseId == null) {
+          if (a.storedName.isEmpty || !file.existsSync()) {
+            await _setRemote(a.id, '');
+            continue;
+          }
+          await _cloud.uploadPersonalFile(
+            storageName: a.storedName,
+            bytes: await file.readAsBytes(),
+            mimeType: a.mimeType,
+          );
+          await _setRemote(a.id, a.storedName);
+        } else {
+          final expense = await (_db.select(
+            _db.groupExpensesCache,
+          )..where((e) => e.id.equals(a.groupExpenseId!))).getSingleOrNull();
+          if (expense == null) continue;
+          final group = await (_db.select(
+            _db.groupsCache,
+          )..where((g) => g.id.equals(expense.groupId))).getSingleOrNull();
+          // Phone-only (sample) groups keep their bills; an expense the
+          // server doesn't have yet is retried on the next sync.
+          if (group == null || !group.isShared || expense.revision == 0) {
+            continue;
+          }
+          if (!file.existsSync()) {
+            await _setRemote(a.id, '');
+            continue;
+          }
+          final path = '${group.id}/${expense.id}/${a.storedName}';
+          await _cloud.uploadGroupAttachment(
+            storagePath: path,
+            bytes: await file.readAsBytes(),
+            mimeType: a.mimeType,
+            metadata: {
+              'id': a.id,
+              'group_id': group.id,
+              'expense_id': expense.id,
+              'storage_path': path,
+              'mime_type': a.mimeType,
+              'size_bytes': a.sizeBytes,
+              'sha256': a.sha256,
+            },
+          );
+          await _setRemote(a.id, path);
+        }
+      } on NetworkFailure {
+        return;
+      } on AuthFailure {
+        return;
+      } on AppFailure catch (e, s) {
+        SafeLogger.error('attachment_upload', e, s);
+        await _setRemote(a.id, '');
+      }
+    }
+  }
+
+  Future<void> _setRemote(String id, String path) =>
+      (_db.update(_db.attachments)..where((a) => a.id.equals(id))).write(
+        AttachmentsCompanion(remotePath: Value(path)),
+      );
+
+  /// The bill's file on this phone, downloading it from the account first
+  /// when needed. Null when it cannot be had (offline, gone).
+  Future<File?> ensureLocal(AttachmentRow a) async {
+    if (a.storedName.isNotEmpty) {
+      final local = await fileFor(a.storedName);
+      if (local.existsSync()) return local;
+    }
+    final remote = a.remotePath;
+    if (remote == null || remote.isEmpty) return null;
+    try {
+      final bytes = a.groupExpenseId == null
+          ? await _cloud.downloadPersonalFile(a.storedName)
+          : await _cloud.downloadGroupAttachment(remote);
+      var name = a.storedName;
+      if (name.isEmpty) {
+        // Bills shared by other group members arrive without a local name.
+        name = '${a.id}${p.extension(remote)}';
+        await (_db.update(_db.attachments)..where((x) => x.id.equals(a.id)))
+            .write(AttachmentsCompanion(storedName: Value(name)));
+      }
+      final file = await fileFor(name);
+      await file.writeAsBytes(bytes, flush: true);
+      return file;
+    } catch (e, s) {
+      SafeLogger.error('attachment_download', e, s);
+      return null;
+    }
   }
 
   /// Removes files whose DB rows were already deleted (e.g. by cascade).
@@ -238,8 +381,29 @@ final attachmentServiceProvider = Provider<AttachmentService>(
     ref.watch(appDatabaseProvider),
     ref.watch(clockProvider),
     ref.watch(idGeneratorProvider),
+    outbox: ref.watch(personalOutboxProvider),
+    cloud: ref.watch(cloudGatewayProvider),
   ),
 );
+
+/// A camera photo recovered after Android closed the app; added to the next
+/// new form that has attachments, once.
+class RecoveredPhoto extends Notifier<StagedAttachment?> {
+  @override
+  StagedAttachment? build() => null;
+
+  void set(StagedAttachment photo) => state = photo;
+
+  /// Returns the photo and forgets it.
+  StagedAttachment? take() {
+    final photo = state;
+    state = null;
+    return photo;
+  }
+}
+
+final recoveredPhotoProvider =
+    NotifierProvider<RecoveredPhoto, StagedAttachment?>(RecoveredPhoto.new);
 
 final attachmentsForProvider =
     StreamProvider.family<List<AttachmentRow>, (AttachmentParent, String)>(

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +20,8 @@ import '../../people/data/people_repository.dart';
 import '../../settings/application/settings_controller.dart';
 import '../application/notification_service.dart';
 import '../domain/reminder_schedule.dart';
+import '../../ai_assistant/presentation/ai_fab.dart';
+import '../data/app_details_launcher.dart';
 
 extension ReminderRepeatX on ReminderRepeat {
   String label(AppLocalizations l) => switch (this) {
@@ -231,44 +234,118 @@ class RemindersScreen extends ConsumerWidget {
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          // Unique: the tab shell keeps several FAB screens alive.
-          heroTag: 'fab-reminders',
-          onPressed: () => context.push(Routes.newReminder()),
-          icon: const Icon(Icons.alarm_add_rounded),
-          label: Text(l.addReminder),
+        floatingActionButton: AiFabStack(
+          child: FloatingActionButton.extended(
+            // Unique: the tab shell keeps several FAB screens alive.
+            heroTag: 'fab-reminders',
+            onPressed: () => context.push(Routes.newReminder()),
+            icon: const Icon(Icons.alarm_add_rounded),
+            label: Text(l.addReminder),
+          ),
         ),
-        body: TabBarView(
+        body: Column(
           children: [
-            AsyncValueView(
-              value: ref.watch(pendingRemindersProvider(null)),
-              data: (list) => list.isEmpty
-                  ? EmptyState(
-                      icon: Icons.alarm_rounded,
-                      title: l.noRemindersTitle,
-                      message: l.noRemindersBody,
-                    )
-                  : ListView(
-                      padding: const EdgeInsets.only(bottom: 96),
-                      children: [
-                        const _PaymentsDueCard(),
-                        for (final r in list) ReminderTile(reminder: r),
-                      ],
-                    ),
+            const _BatteryTipCard(),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  AsyncValueView(
+                    value: ref.watch(pendingRemindersProvider(null)),
+                    data: (list) => list.isEmpty
+                        ? EmptyState(
+                            icon: Icons.alarm_rounded,
+                            title: l.noRemindersTitle,
+                            message: l.noRemindersBody,
+                          )
+                        : ListView(
+                            padding: const EdgeInsets.only(bottom: 96),
+                            children: [
+                              const _PaymentsDueCard(),
+                              for (final r in list) ReminderTile(reminder: r),
+                            ],
+                          ),
+                  ),
+                  AsyncValueView(
+                    value: ref.watch(closedRemindersProvider),
+                    data: (list) => list.isEmpty
+                        ? EmptyState(
+                            icon: Icons.history_rounded,
+                            title: l.noRemindersTitle,
+                            compact: true,
+                          )
+                        : ListView(
+                            children: [
+                              for (final r in list) ReminderTile(reminder: r),
+                            ],
+                          ),
+                  ),
+                ],
+              ),
             ),
-            AsyncValueView(
-              value: ref.watch(closedRemindersProvider),
-              data: (list) => list.isEmpty
-                  ? EmptyState(
-                      icon: Icons.history_rounded,
-                      title: l.noRemindersTitle,
-                      compact: true,
-                    )
-                  : ListView(
-                      children: [
-                        for (final r in list) ReminderTile(reminder: r),
-                      ],
-                    ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Some phones stop reminders in battery saving; explains how to allow
+/// HisabMitra to run, until the user taps "Got it".
+class _BatteryTipCard extends ConsumerWidget {
+  const _BatteryTipCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dismissed = ref.watch(
+      settingsControllerProvider.select((p) => p.reminderBatteryTipDismissed),
+    );
+    if (dismissed || defaultTargetPlatform != TargetPlatform.android) {
+      return const SizedBox.shrink();
+    }
+    final l = context.l10n;
+    final theme = Theme.of(context);
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 8, 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.battery_alert_rounded,
+                  color: theme.colorScheme.secondary,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l.reminderBatteryTip,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ),
+              ],
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Wrap(
+                children: [
+                  TextButton(
+                    onPressed: () => ref
+                        .read(settingsControllerProvider.notifier)
+                        .update(
+                          (p) => p.copyWith(reminderBatteryTipDismissed: true),
+                        ),
+                    child: Text(l.reminderBatteryTipDismiss),
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        ref.read(appDetailsLauncherProvider).open(),
+                    child: Text(l.reminderBatteryTipOpen),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -19,7 +19,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutDescription =>
-      'HisabMitra keeps your daily hisab, personal khata and family group expenses on your phone — private by default, working without internet.';
+      'HisabMitra keeps your daily hisab, personal khata and family group expenses in your account, with a copy on your phone so it works without internet.';
 
   @override
   String get checkUpdates => 'Check for updates';
@@ -46,7 +46,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateInstallSteps =>
-      'The file was verified (checksum, package and signature). Android will now ask you to confirm the installation. Your data stays on the phone.';
+      'The file was verified (checksum, package and signature). Android will now ask you to confirm the installation. Your hisab stays safe in your account and on this phone.';
 
   @override
   String get updateAllowInstall =>
@@ -85,20 +85,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareApp => 'Share HisabMitra';
 
   @override
-  String shareAppText(String url) {
-    return 'I use HisabMitra to manage my family hisab. Download it here: $url';
-  }
+  String get shareAppText =>
+      '📒 *HisabMitra — Smart Hisab, Happy Family*\n\nI keep my family\'s hisab in HisabMitra:\n✅ Daily income and expenses\n🤝 Money given and taken (khata)\n👨‍👩‍👧 Family and trip expense splitting\n📊 Reports in English and ગુજરાતી';
 
   @override
   String get licenses => 'Open-source licences';
 
   @override
   String get privacySummary =>
-      'Your personal records, people, khata, reminders and attachments are stored only on this phone. Only groups you choose to share are uploaded, and only for their members. Optional online AI receives summary figures only after your consent. No advertising or tracking SDKs are included.';
+      'Your personal records, people, khata, reminders and bills are saved to your HisabMitra account, and only you can see them. Group expenses are shared with that group\'s members. Your phone keeps a copy so the app works offline; signing out removes it. Optional online AI receives summary figures only after your consent. No advertising or tracking SDKs are included.';
 
   @override
   String get termsSummary =>
       'HisabMitra is a record-keeping tool. Please check important figures yourself; it does not provide financial, tax or legal advice.';
+
+  @override
+  String shareAppDownload(String url) {
+    return '📲 Download free: $url';
+  }
 
   @override
   String get aiTitle => 'HisabMitra assistant';
@@ -324,6 +328,66 @@ class AppLocalizationsEn extends AppLocalizations {
       'The key is stored encrypted on this phone and is used only for online answers. Online usage is billed to your Anthropic account.';
 
   @override
+  String get aiOpenAssistant => 'Ask HisabMitra AI';
+
+  @override
+  String get aiExamplesSpending => 'Spending';
+
+  @override
+  String get aiExamplesIncome => 'Income & savings';
+
+  @override
+  String get aiExamplesKhata => 'Khata';
+
+  @override
+  String get aiExamplesGroups => 'Groups';
+
+  @override
+  String get aiExamplesAdd => 'Add an entry';
+
+  @override
+  String get aiExample7 => 'How much did I spend today?';
+
+  @override
+  String get aiExample8 => 'How much did I spend last month?';
+
+  @override
+  String get aiExample9 => 'What is my income this month?';
+
+  @override
+  String get aiExample10 => 'What was my income last month?';
+
+  @override
+  String get aiExample11 => 'What are my savings this month?';
+
+  @override
+  String get aiExample12 => 'What are my savings this year?';
+
+  @override
+  String get aiExample13 => 'Add 250 for groceries';
+
+  @override
+  String get aiExample14 => 'Add salary 25000';
+
+  @override
+  String get aiExample15 => 'Add 500 for fuel';
+
+  @override
+  String aiExamplePerson(String name) {
+    return 'What is my balance with $name?';
+  }
+
+  @override
+  String aiExampleGroupTotal(String group) {
+    return 'How much did $group cost?';
+  }
+
+  @override
+  String aiExampleGroupOwes(String group) {
+    return 'Who owes whom in $group?';
+  }
+
+  @override
   String get attachments => 'Bills & attachments';
 
   @override
@@ -356,8 +420,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get attachmentViewerTitle => 'Attachment';
 
   @override
-  String get attachmentPrivateNote =>
-      'Stored privately on this phone. Not uploaded anywhere.';
+  String get attachmentPrivateNote => 'Saved to your HisabMitra account.';
 
   @override
   String get attachmentShareToGroup => 'Share with group';
@@ -367,6 +430,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attachmentRemove => 'Remove';
+
+  @override
+  String get photoRecovered =>
+      'We saved the photo you took. Add it to a new expense?';
+
+  @override
+  String get photoRecoveredAction => 'Add expense';
+
+  @override
+  String get attachmentDownloadRetry =>
+      'Couldn\'t load this bill. Check your internet and try again.';
 
   @override
   String get backupTitle => 'Backup & restore';
@@ -446,7 +520,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupWhere =>
-      'Backups are stored privately in HisabMitra\'s app storage on this phone. Uninstalling the app deletes them, so use “Save / share copy” to keep a copy elsewhere (for example Google Drive or a computer).';
+      'Your hisab is saved in your account. A backup is an extra copy, stored privately in HisabMitra\'s app storage on this phone; uninstalling the app deletes it, so use “Save / share copy” to keep it elsewhere (for example Google Drive or a computer).';
 
   @override
   String get backupFileMissing => 'File no longer on this phone';
@@ -477,16 +551,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupNotBackup => 'This file is not a HisabMitra backup.';
 
   @override
-  String get backupAutoInfo =>
-      'Automatic backups run when you open the app and one is due. The newest 7 are kept.';
-
-  @override
-  String backupLastAuto(String date) {
-    return 'Last automatic backup: $date';
+  String shareBackupCaption(String date) {
+    return '🔒 *HisabMitra backup* · $date — keep this file safe; you\'ll need your backup password to restore it.';
   }
 
   @override
-  String get backupNever => 'Never';
+  String shareBackupCaptionPlain(String date) {
+    return '🔒 *HisabMitra backup* · $date — keep this file safe.';
+  }
+
+  @override
+  String get restoreNeedsInternet => 'Connect to the internet to restore.';
+
+  @override
+  String get restoreReplacesAccount =>
+      'This replaces the hisab saved in your account with this backup. Groups are not changed.';
 
   @override
   String get authSendOtp => 'Send verification code';
@@ -516,7 +595,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteAccountConfirm =>
-      'Delete your cloud account? You will leave all shared groups. Everything on this phone is kept.';
+      'Delete your account? Your saved hisab, bills and group memberships are deleted from the account and from this phone. This cannot be undone.';
 
   @override
   String get accountDeleted => 'Cloud account deleted';
@@ -591,9 +670,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get syncSignInNeeded => 'Sign in to sync shared groups.';
 
   @override
-  String get syncDisabled => 'Cloud sync is turned off in Settings.';
-
-  @override
   String get syncDone => 'Sync complete';
 
   @override
@@ -612,19 +688,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get entitySettlement => 'Settlement';
 
   @override
-  String get shareToCloud => 'Share group online';
-
-  @override
-  String get shareToCloudBody =>
-      'Members who use HisabMitra can then join this group and see its members, expenses and settlements. Members\' phone numbers are not uploaded and your personal records are never shared.';
-
-  @override
-  String get shareToCloudDone => 'Group is now shared';
-
-  @override
-  String get shareNeedsSignIn => 'Verify your email to share groups.';
-
-  @override
   String get inviteTitle => 'Invite members';
 
   @override
@@ -638,7 +701,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String inviteShareText(String group, String code, String date) {
-    return 'Join my group \"$group\" on HisabMitra: open hisabmitra://join?code=$code or enter the code $code in the app. The code expires on $date.';
+    return '👋 *Join my group on HisabMitra!*\n\n👥 Group: *$group*\n🔑 Invite code: *$code*\n\nOpen HisabMitra → Groups → Join a group, and enter the code.\n\n⏳ The code is valid till *$date*.';
   }
 
   @override
@@ -663,9 +726,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invitesEmpty => 'No invitations yet';
-
-  @override
-  String get inviteGroupNotShared => 'Share this group online first.';
 
   @override
   String get inviteCodeOnce =>
@@ -760,6 +820,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get verifyEmailAction => 'Verify email';
+
+  @override
+  String inviteShareDownload(String url) {
+    return '📲 Don\'t have the app? Download it free: $url';
+  }
+
+  @override
+  String get entityPerson => 'Person';
+
+  @override
+  String get entityTransaction => 'Income or expense';
+
+  @override
+  String get entityLedgerEntry => 'Khata entry';
+
+  @override
+  String get entityRepayment => 'Repayment';
+
+  @override
+  String get entityReminder => 'Reminder';
+
+  @override
+  String get entityBill => 'Bill';
+
+  @override
+  String get inviteSampleGroup => 'Sample groups cannot be shared.';
+
+  @override
+  String get accountSyncUploadTitle => 'Saving your hisab to your account';
+
+  @override
+  String get accountSyncDownloadTitle => 'Getting your hisab';
+
+  @override
+  String accountSyncProgress(String done, String total) {
+    return '$done of $total';
+  }
+
+  @override
+  String get accountSyncOffline =>
+      'No internet. Your hisab will be saved to your account when you\'re back online.';
+
+  @override
+  String get accountSyncContinue => 'Continue in background';
 
   @override
   String get appName => 'HisabMitra';
@@ -932,7 +1036,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offlineBanner =>
-      'You are offline. Your data is safe on this device.';
+      'You are offline. Your changes are saved on this phone and will reach your account when you are back online.';
 
   @override
   String get pmCash => 'Cash';
@@ -1009,7 +1113,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notConfigured => 'Not configured';
 
   @override
-  String get privateOnDevice => 'Private · stored on this device';
+  String get privateOnDevice => 'Private · saved to your account';
+
+  @override
+  String get exitAppTitle => 'Exit HisabMitra?';
+
+  @override
+  String get exitAppConfirm => 'Exit';
+
+  @override
+  String get exitAppStay => 'Stay';
 
   @override
   String get errorNotFound => 'This record no longer exists.';
@@ -1217,7 +1330,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteTransactionMessage =>
-      'This entry and its attachments will be deleted from this phone.';
+      'This entry and its attachments will be deleted from your account and this phone.';
 
   @override
   String dayNet(String amount) {
@@ -2059,7 +2172,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardBody1 =>
-      'Record income and expenses in seconds. Everything stays on your phone and works without internet.';
+      'Record income and expenses in seconds. Saved to your account, and it works without internet too.';
 
   @override
   String get onboardTitle2 => 'Lend, borrow, settle';
@@ -2083,7 +2196,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSetupSubtitle =>
-      'Name, email and mobile number are required. We verify your email; your personal records still stay on this phone.';
+      'Name, email and mobile number are required. We verify your email; your hisab is saved to this account.';
 
   @override
   String get yourName => 'Your name';
@@ -2093,7 +2206,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPromise =>
-      'Your personal records never leave your phone unless you choose to share them.';
+      'Your hisab is saved to your account, and only you can see it.';
 
   @override
   String get remindersTitle => 'Reminders';
@@ -2298,6 +2411,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get reminderBatteryTip =>
+      'On some phones (Xiaomi, Oppo, Vivo and others) battery saving can stop reminders. Allow HisabMitra to run in the background so they arrive on time.';
+
+  @override
+  String get reminderBatteryTipOpen => 'Open settings';
+
+  @override
+  String get reminderBatteryTipDismiss => 'Got it';
+
+  @override
   String get reportsTitle => 'Reports';
 
   @override
@@ -2413,6 +2536,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settlementSummary => 'Settlement summary';
 
   @override
+  String shareReportCaption(String title, String period) {
+    return '📊 *HisabMitra report* · $title · $period';
+  }
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override
@@ -2519,13 +2647,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsSync => 'Cloud sync';
 
   @override
-  String get settingsCloudSync => 'Sync shared groups';
-
-  @override
-  String get settingsCloudSyncDesc =>
-      'Only groups you share are synced. Personal records always stay on this device.';
-
-  @override
   String get settingsSyncStatus => 'Sync status';
 
   @override
@@ -2535,16 +2656,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsBackupDesc => 'Manual, automatic and encrypted backups';
 
   @override
-  String get settingsAutoBackup => 'Automatic backup';
-
-  @override
   String get autoBackupOff => 'Off';
-
-  @override
-  String get autoBackupDaily => 'Daily';
-
-  @override
-  String get autoBackupWeekly => 'Weekly';
 
   @override
   String get settingsAi => 'AI assistant';
@@ -2615,14 +2727,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsLogoutConfirm =>
-      'Log out? Your records stay on this device; shared groups stop syncing until you sign in again.';
+      'Log out? Your hisab stays saved in your account and is removed from this phone. Categories and settings stay on the phone.';
 
   @override
   String get settingsDeleteAccount => 'Delete cloud account';
 
   @override
   String get settingsDeleteAccountDesc =>
-      'Removes your cloud profile and group memberships. Local data is kept.';
+      'Deletes your account, its saved hisab and bills, and your group memberships.';
 
   @override
   String get settingsAbout => 'About';
@@ -2644,6 +2756,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsTerms => 'Terms & conditions';
+
+  @override
+  String get signOutUnsentTitle => 'Not saved yet';
+
+  @override
+  String signOutUnsentBody(String count) {
+    return '$count changes haven\'t been saved to your account yet. Logging out now loses them.';
+  }
+
+  @override
+  String get signOutWaitSync => 'Wait and sync';
+
+  @override
+  String get signOutAnyway => 'Log out anyway';
 
   @override
   String get tourPromptTitle => 'Take a quick tour?';
