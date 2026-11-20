@@ -20,7 +20,18 @@ Last updated: 2026-11-20.
 
 ## Session log
 
-### 2026-11-20 (Part B: personal data in the account; branch `part-a-fixes`, not released, not applied live)
+### 2026-11-20 (v1.1.0 released)
+
+- Released **v1.1.0** (`1.1.0+3`) with parts A and B. CI green on `main`;
+  the release workflow published `hisabmitra-1.1.0.apk` and its `.sha256`,
+  signed with the same certificate as 1.0.x (`37c8f9fd…f9`), so the in-app
+  updater installs it over 1.0.1.
+- The two Part B migrations were applied to the live Supabase project
+  first and verified (RLS, grants, private bucket, two-account check).
+- Not done: a full device run of B against the live project (the owner is
+  testing on their own phone after updating).
+
+### 2026-11-20 (Part B: personal data in the account)
 
 Design `docs/superpowers/specs/2026-11-20-personal-data-in-supabase-design.md`;
 plan `docs/superpowers/plans/2026-11-20-personal-data-in-supabase.md`.
@@ -48,8 +59,7 @@ automatic backups removed.
 - Found and fixed on the way: a one-off read of open conflicts through a
   watched stream could hang a sync while the Sync screen was open.
 - Results: `flutter analyze` clean; `flutter test` **407 passing**; format
-  clean. **Not yet applied to the live Supabase project** (needs the owner's
-  database password or an access token) and not yet checked on a device.
+  clean. Applied to the live Supabase project the same day (see above).
 
 ### 2026-11-20 (Part A: fixes and small features; branch `part-a-fixes`, not released)
 
