@@ -41,9 +41,9 @@ jobs:
                     assets: [.assets[] | {name, size, digest, browser_download_url}]}]' \
             > site/releases.json
           echo "releases: $(jq length site/releases.json)"
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
