@@ -79,7 +79,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get releaseNotes => 'Release notes';
 
   @override
-  String get openReleasePage => 'GitHub release page';
+  String get openWebsite => 'HisabMitra website';
 
   @override
   String get shareApp => 'Share HisabMitra';

@@ -145,8 +145,13 @@ class _GroupInviteScreenState extends ConsumerState<GroupInviteScreen> {
                                       group: detail.group.name,
                                       code: _created!.code,
                                       date: fmt.date(_created!.expiresAt),
-                                      link: inviteLinkUrl(_created!.code),
-                                      downloadUrl: appDownloadUrl(),
+                                      link: inviteLinkUrl(
+                                        _created!.code,
+                                        languageCode: l.localeName,
+                                      ),
+                                      downloadUrl: appDownloadPageUrl(
+                                        languageCode: l.localeName,
+                                      ),
                                     ),
                                   ),
                                 ),

@@ -12,7 +12,7 @@ expense splitting, reports, bills, reminders and backups. Your hisab is
 saved to your HisabMitra account (only you can see it), with a copy on the
 phone so the app also works without internet.
 
-[**⬇ Download the latest APK**](https://github.com/rathodkutumb-commits/HisabMitra/releases/latest)
+[**⬇ Download HisabMitra**](https://hisab-mitra-web.vercel.app/download) · [Website](https://hisab-mitra-web.vercel.app) · [ગુજરાતી](https://hisab-mitra-web.vercel.app/gu)
 
 ![Release](https://img.shields.io/github/v/release/rathodkutumb-commits/HisabMitra)
 ![CI](https://github.com/rathodkutumb-commits/HisabMitra/actions/workflows/ci.yml/badge.svg)
@@ -119,8 +119,8 @@ Anyone who installs the public APK stores their hisab in that project.
 
 ## Install
 
-1. Download `hisabmitra-<version>.apk` from the
-   [latest release](https://github.com/rathodkutumb-commits/HisabMitra/releases/latest).
+1. Download HisabMitra from the website:
+   [hisab-mitra-web.vercel.app/download](https://hisab-mitra-web.vercel.app/download).
 2. Open it on your Android phone (Android 7.0 or newer) and allow
    "install unknown apps" when asked.
 3. Create your account: name, email and mobile number. Verify the email
@@ -128,11 +128,13 @@ Anyone who installs the public APK stores their hisab in that project.
 
 ## Privacy
 
-- Personal transactions, people, loans, reminders and bills are stored
-  **only on your phone**. They leave it only when you export or back up.
-- The account (name, email, mobile number) identifies you for shared
-  groups. Only groups you choose to share are synced, and only with their
-  members.
+- Personal transactions, people, loans, reminders and bills are saved to
+  **your own account** (only you can see them), with a working copy on the
+  phone for offline use. Categories and settings stay on the phone.
+- The account (name, email, mobile number) identifies you; group members
+  see only your name, and only in groups they share with you.
+- In plain words, in English and Gujarati:
+  [hisab-mitra-web.vercel.app/privacy](https://hisab-mitra-web.vercel.app/privacy).
 - Details: [docs/PRIVACY_AND_SECURITY.md](docs/PRIVACY_AND_SECURITY.md).
 
 ## For developers

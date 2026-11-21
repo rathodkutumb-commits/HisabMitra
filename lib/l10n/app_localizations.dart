@@ -206,11 +206,11 @@ abstract class AppLocalizations {
   /// **'Release notes'**
   String get releaseNotes;
 
-  /// No description provided for @openReleasePage.
+  /// No description provided for @openWebsite.
   ///
   /// In en, this message translates to:
-  /// **'GitHub release page'**
-  String get openReleasePage;
+  /// **'HisabMitra website'**
+  String get openWebsite;
 
   /// No description provided for @shareApp.
   ///

@@ -1,19 +1,34 @@
 import '../../app/config/app_config.dart';
 import '../../l10n/app_localizations.dart';
 
-/// The page where the latest APK can be downloaded, or null when this build
-/// has no GitHub repository configured (then messages leave the line out).
-String? appDownloadUrl() => AppConfig.isUpdateCheckConfigured
-    ? '${AppConfig.githubReleasesPage}/latest'
-    : null;
+/// A page of the HisabMitra website in the app's language (English at the
+/// root, Gujarati under `/gu`), or null when this build has no website
+/// configured (then messages leave the line out).
+String? websitePage(
+  String page, {
+  required String languageCode,
+  String base = AppConfig.websiteUrl,
+}) {
+  if (base.isEmpty) return null;
+  final root = base.endsWith('/') ? base.substring(0, base.length - 1) : base;
+  final prefix = languageCode == 'gu' ? '/gu' : '';
+  return '$root$prefix$page';
+}
 
-/// The invitation page (GitHub Pages of the release repository) that opens
-/// the app on the join screen, or null when this build has no GitHub
-/// repository configured (then the message has no link line).
-String? inviteLinkUrl(String code) => AppConfig.isUpdateCheckConfigured
-    ? 'https://${AppConfig.githubOwner.toLowerCase()}.github.io/'
-          '${AppConfig.githubRepo}/join?code=${Uri.encodeQueryComponent(code)}'
-    : null;
+/// The website's home page: what HisabMitra is, and the download.
+String? appDownloadUrl({required String languageCode}) =>
+    websitePage('', languageCode: languageCode);
+
+/// The website's download page (newest version, install steps).
+String? appDownloadPageUrl({required String languageCode}) =>
+    websitePage('/download', languageCode: languageCode);
+
+/// The invitation page that opens the app on the join screen.
+String? inviteLinkUrl(String code, {required String languageCode}) =>
+    websitePage(
+      '/join?code=${Uri.encodeQueryComponent(code)}',
+      languageCode: languageCode,
+    );
 
 String _withDownload(String body, String? line) =>
     line == null ? body : '$body\n\n$line';

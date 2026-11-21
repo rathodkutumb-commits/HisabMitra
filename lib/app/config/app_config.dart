@@ -18,6 +18,10 @@ abstract final class AppConfig {
   static const githubOwner = String.fromEnvironment('GITHUB_OWNER');
   static const githubRepo = String.fromEnvironment('GITHUB_REPO');
 
+  /// The HisabMitra website (download, guide, invitation links), e.g.
+  /// `https://hisab-mitra-web.vercel.app`. Messages leave links out when empty.
+  static const websiteUrl = String.fromEnvironment('WEBSITE_URL');
+
   /// Optional public pages.
   static const privacyPolicyUrl = String.fromEnvironment('PRIVACY_POLICY_URL');
   static const termsUrl = String.fromEnvironment('TERMS_URL');
@@ -27,7 +31,4 @@ abstract final class AppConfig {
 
   static bool get isUpdateCheckConfigured =>
       githubOwner.isNotEmpty && githubRepo.isNotEmpty;
-
-  static String get githubReleasesPage =>
-      'https://github.com/$githubOwner/$githubRepo/releases';
 }

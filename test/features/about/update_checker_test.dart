@@ -60,6 +60,32 @@ void main() {
       expect(ReleaseInfo.fromGitHub({...json, 'prerelease': true}), isNull);
       expect(ReleaseInfo.fromGitHub({...json, 'assets': <Object>[]}), isNull);
     });
+
+    // Releases from 1.2.1 also carry a fixed-name copy (hisabmitra.apk, for
+    // the website's download link). Whichever APK comes first, the app must
+    // pair it with its own checksum — installed apps rely on this.
+    test('a fixed-name copy keeps each APK with its own checksum', () {
+      Map<String, Object?> asset(String name) => {
+        'name': name,
+        'browser_download_url': 'https://example/$name',
+        'size': 25000000,
+      };
+      for (final first in [
+        ['hisabmitra.apk', 'hisabmitra.apk.sha256'],
+        ['hisabmitra-1.1.0.apk', 'hisabmitra-1.1.0.apk.sha256'],
+      ]) {
+        final rest = first[0] == 'hisabmitra.apk'
+            ? ['hisabmitra-1.1.0.apk', 'hisabmitra-1.1.0.apk.sha256']
+            : ['hisabmitra.apk', 'hisabmitra.apk.sha256'];
+        final r = ReleaseInfo.fromGitHub({
+          ...json,
+          'assets': [
+            for (final n in [...first, ...rest]) asset(n),
+          ],
+        })!;
+        expect(r.checksumUrl, 'https://example/${r.apkName}.sha256');
+      }
+    });
   });
 
   group('checksum file', () {

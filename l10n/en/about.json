@@ -20,7 +20,7 @@
   "updateSignatureMismatch": "The update is not signed with the same key as this app, so Android would refuse it. Install it manually from the release page only if you trust the source.",
   "updateUnreadable": "The downloaded file could not be read.",
   "releaseNotes": "Release notes",
-  "openReleasePage": "GitHub release page",
+  "openWebsite": "HisabMitra website",
   "shareApp": "Share HisabMitra",
   "shareAppText": "📒 *HisabMitra — Smart Hisab, Happy Family*\n\nI keep my family's hisab in HisabMitra:\n✅ Daily income and expenses\n🤝 Money given and taken (khata)\n👨‍👩‍👧 Family and trip expense splitting\n📊 Reports in English and ગુજરાતી",
   "licenses": "Open-source licences",

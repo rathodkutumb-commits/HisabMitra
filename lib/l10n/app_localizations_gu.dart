@@ -78,7 +78,7 @@ class AppLocalizationsGu extends AppLocalizations {
   String get releaseNotes => 'રિલીઝ નોંધ';
 
   @override
-  String get openReleasePage => 'GitHub રિલીઝ પેજ';
+  String get openWebsite => 'હિસાબમિત્ર વેબસાઇટ';
 
   @override
   String get shareApp => 'હિસાબમિત્ર શેર કરો';

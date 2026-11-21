@@ -20,6 +20,28 @@ Last updated: 2026-11-21.
 
 ## Session log
 
+### 2026-11-21 (HisabMitra website)
+
+Design `docs/superpowers/specs/2026-11-21-hisabmitra-website-design.md`;
+plan `docs/superpowers/plans/2026-11-21-hisabmitra-website.md`.
+
+- New website **https://hisab-mitra-web.vercel.app** (English at `/`,
+  Gujarati at `/gu`): every feature, screenshots, colour themes, download
+  page with every release and checksum, guide, privacy, and the invitation
+  page (`/join?code=…`). Repo `rathodkutumb-commits/HisabMitra-Web`
+  (private, Next.js 16 like the Anuvaad site); Vercel project
+  `hisab-mitra-web`. **Published only manually from this PC** with the
+  Vercel CLI, on the owner's go-ahead (no CI/CD; the GitHub and Vercel
+  accounts use different emails).
+- Release data is read from this repo's GitHub Releases (cached 5 min);
+  `/download/latest` always gives the newest APK, falling back to the
+  fixed-name `hisabmitra.apk` that every release now also carries (with its
+  own `.sha256`, so installed apps still pair APK and checksum).
+- The app's links (share the app, invite link, invite download line, About
+  → "HisabMitra website") use `WEBSITE_URL`; GitHub Pages (`site/`) now only
+  redirects to the website, keeping `?code=` for links shared from 1.2.0.
+- README download and privacy text updated.
+
 ### 2026-11-21 (Part C1 and C2: invite link and live updates; v1.2.0)
 
 Design `docs/superpowers/specs/2026-11-20-invite-link-and-live-updates-design.md`;
@@ -214,6 +236,7 @@ Palettes (7, light-only), widget test fixes, live Supabase set-up
 | Privacy policy / terms links | Public URLs |
 | Security | Reset the Supabase database password (shared in chat) |
 | Push notifications (C3) | A Firebase project: `google-services.json` and a service-account key |
+| Website release list (optional) | A read-only GitHub token in Vercel, if GitHub starts rate-limiting the site |
 
 ## Parked
 

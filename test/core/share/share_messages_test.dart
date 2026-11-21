@@ -79,8 +79,8 @@ void main() {
       expect(m, contains('⏳ કોડ *22 નવે 2026* સુધી માન્ય છે.'));
     });
 
-    test('no link line without a repository', () {
-      expect(inviteLinkUrl('HSQPP7G9VD'), isNull);
+    test('no link line without a website', () {
+      expect(inviteLinkUrl('HSQPP7G9VD', languageCode: 'en'), isNull);
       final m = inviteMessage(
         en,
         group: 'Goa Trip',
@@ -91,7 +91,7 @@ void main() {
       expect(m, contains('Open HisabMitra → Groups → Join a group'));
     });
 
-    test('no download line when the build has no repository', () {
+    test('no download line when the build has no website', () {
       final m = inviteMessage(
         en,
         group: 'Goa Trip',
@@ -101,7 +101,47 @@ void main() {
       );
       expect(m, isNot(contains('📲')));
       expect(m.split('\n\n'), hasLength(4));
-      expect(appDownloadUrl(), isNull, reason: 'tests run without a repo');
+      expect(
+        appDownloadUrl(languageCode: 'en'),
+        isNull,
+        reason: 'tests run without WEBSITE_URL',
+      );
+    });
+  });
+
+  group('website links', () {
+    const base = 'https://w.example';
+
+    test('English pages are at the root', () {
+      expect(websitePage('', languageCode: 'en', base: base), base);
+      expect(
+        websitePage('/download', languageCode: 'en', base: base),
+        'https://w.example/download',
+      );
+      expect(
+        websitePage('/join?code=HSQPP7G9VD', languageCode: 'en', base: base),
+        'https://w.example/join?code=HSQPP7G9VD',
+      );
+    });
+
+    test('Gujarati pages are under /gu', () {
+      expect(websitePage('', languageCode: 'gu', base: base), '$base/gu');
+      expect(
+        websitePage('/download', languageCode: 'gu', base: base),
+        'https://w.example/gu/download',
+      );
+    });
+
+    test('a trailing slash in the setting is ignored', () {
+      expect(
+        websitePage('/download', languageCode: 'en', base: '$base/'),
+        'https://w.example/download',
+      );
+    });
+
+    test('no website configured, no link', () {
+      expect(websitePage('/download', languageCode: 'en', base: ''), isNull);
+      expect(appDownloadPageUrl(languageCode: 'gu'), isNull);
     });
   });
 

@@ -91,8 +91,10 @@ jobs:
             --arg repo "${{ github.event.repository.name }}" \
             --arg privacy "$PRIVACY_POLICY_URL" \
             --arg terms "$TERMS_URL" \
+            --arg website "${{ vars.WEBSITE_URL || 'https://hisab-mitra-web.vercel.app' }}" \
             '{SUPABASE_URL:$url, SUPABASE_PUBLISHABLE_KEY:$key, GITHUB_OWNER:$owner,
-              GITHUB_REPO:$repo, PRIVACY_POLICY_URL:$privacy, TERMS_URL:$terms}' \
+              GITHUB_REPO:$repo, PRIVACY_POLICY_URL:$privacy, TERMS_URL:$terms,
+              WEBSITE_URL:$website}' \
             > dart_defines.json
 
       - run: flutter pub get
@@ -118,6 +120,10 @@ jobs:
           NAME="hisabmitra-${GITHUB_REF_NAME#v}.apk"
           cp "$APK" "$NAME"
           sha256sum "$NAME" > "$NAME.sha256"
+          # Fixed-name copy for the website's "download latest" fallback, with its
+          # own checksum: installed apps pair the first .apk with <name>.sha256.
+          cp "$APK" hisabmitra.apk
+          sha256sum hisabmitra.apk > hisabmitra.apk.sha256
           CERT=$(sed -nE 's/.*certificate SHA-256 digest: //p' signing.txt | head -1)
           {
             if [ -f "docs/release-notes/${GITHUB_REF_NAME}.md" ]; then
@@ -126,12 +132,12 @@ jobs:
             fi
             echo "### Install"
             echo
-            echo "Download \`$NAME\` below and open it on your Android phone (Android 7.0 or newer)."
+            echo "Download HisabMitra from **https://hisab-mitra-web.vercel.app/download** and open it on"
+            echo "your Android phone (Android 7.0 or newer). \`$NAME\` below is the same file."
             echo "Already using HisabMitra? Open **More → About → Check for updates**."
             echo
-            echo "Your personal records stay on your phone. Installing the app gives no"
-            echo "access to anyone's data: shared groups need a verified account and an"
-            echo "invitation from the group."
+            echo "Your hisab is saved to your own account; no other user can see it."
+            echo "Group members see only the groups they are invited to."
             echo
             echo "### Verify the download"
             echo
@@ -149,7 +155,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" \
-            "$APK_NAME" "$APK_NAME.sha256" \
+            "$APK_NAME" "$APK_NAME.sha256" hisabmitra.apk hisabmitra.apk.sha256 \
             --title "HisabMitra $GITHUB_REF_NAME" \
             --notes-file release_notes.md \
             --verify-tag

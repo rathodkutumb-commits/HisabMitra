@@ -185,20 +185,25 @@ class _AboutScreenState extends ConsumerState<AboutScreen> {
                   ),
                 ),
             ],
-            ListTile(
-              leading: const Icon(Icons.open_in_new_rounded),
-              title: Text(l.openReleasePage),
-              onTap: () => launchUrl(
-                Uri.parse(AppConfig.githubReleasesPage),
-                mode: LaunchMode.externalApplication,
+            if (appDownloadPageUrl(languageCode: l.localeName)
+                case final website?)
+              ListTile(
+                leading: const Icon(Icons.open_in_new_rounded),
+                title: Text(l.openWebsite),
+                onTap: () => launchUrl(
+                  Uri.parse(website),
+                  mode: LaunchMode.externalApplication,
+                ),
               ),
-            ),
             ListTile(
               leading: const Icon(Icons.share_rounded),
               title: Text(l.shareApp),
               onTap: () => SharePlus.instance.share(
                 ShareParams(
-                  text: appShareMessage(l, downloadUrl: appDownloadUrl()),
+                  text: appShareMessage(
+                    l,
+                    downloadUrl: appDownloadUrl(languageCode: l.localeName),
+                  ),
                 ),
               ),
             ),
