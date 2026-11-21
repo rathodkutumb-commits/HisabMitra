@@ -53,6 +53,13 @@ abstract interface class CloudGateway {
   /// Every live personal record of the user (new or reset phone).
   Future<PersonalSnapshot> fetchPersonalSnapshot();
 
+  /// Live updates: emits when a change the user may see was added to
+  /// either change feed (their groups or their own records), and once each
+  /// time the connection is (re)established. Carries no data — answer it
+  /// with a sync. Every call opens its own connection; cancelling the
+  /// subscription closes it.
+  Stream<void> changeSignals();
+
   /// Bill files in the private `personal-attachments` bucket, stored at
   /// `<user id>/<storageName>`.
   Future<void> uploadPersonalFile({
@@ -136,6 +143,8 @@ class NotConfiguredCloudGateway implements CloudGateway {
   }) async => _fail();
   @override
   Future<PersonalSnapshot> fetchPersonalSnapshot() async => _fail();
+  @override
+  Stream<void> changeSignals() => const Stream.empty();
   @override
   Future<void> uploadPersonalFile({
     required String storageName,

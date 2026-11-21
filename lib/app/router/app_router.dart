@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +23,7 @@ import '../../features/groups/presentation/group_form_screen.dart';
 import '../../features/groups/presentation/group_members_screen.dart';
 import '../../features/groups/presentation/group_settle_screen.dart';
 import '../../features/groups/presentation/group_settlements_screen.dart';
+import '../../features/groups/domain/invite_code.dart';
 import '../../features/groups/presentation/groups_screen.dart';
 import '../../features/money_ledger/presentation/ledger_entry_detail_screen.dart';
 import '../../features/money_ledger/presentation/ledger_entry_form_screen.dart';
@@ -80,12 +83,27 @@ final routerProvider = Provider<GoRouter>((ref) {
           queryParameters: {'authCode': ?code, if (failed) 'linkError': '1'},
         ).toString();
       }
-      // Invitation deep link: hisabmitra://join?code=XXXX
+      // Invitation deep link: hisabmitra://join?code=XXXX (opened by the
+      // https invitation page).
       if (uri.host == 'join' ||
           (uri.path.isEmpty && uri.queryParameters.containsKey('code'))) {
-        return '${Routes.joinGroup}?code=${Uri.encodeQueryComponent(uri.queryParameters['code'] ?? '')}';
+        final code = normalizeInviteCode(uri.queryParameters['code']);
+        if (code == null) return Routes.joinGroup;
+        // Remember it in case the account isn't ready yet (sign-up first);
+        // outside the redirect, which may run while widgets build.
+        scheduleMicrotask(
+          () => ref
+              .read(settingsControllerProvider.notifier)
+              .update((p) => p.copyWith(pendingInviteCode: code)),
+        );
+        return Routes.joinGroupWithCode(code);
       }
       final prefs = ref.read(settingsControllerProvider);
+      // Where the app lands: a pending invitation is joined first.
+      final pendingInvite = prefs.pendingInviteCode;
+      final landing = pendingInvite.isEmpty
+          ? Routes.home
+          : Routes.joinGroupWithCode(pendingInvite);
       final path = uri.path;
       final inWelcome = path.startsWith('/welcome');
       if (path == Routes.splash) return null;
@@ -110,7 +128,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (needsFirstSync) {
         return path == Routes.accountSync ? null : Routes.accountSync;
       }
-      if (inWelcome) return Routes.home;
+      if (inWelcome) return landing;
+      if (path == Routes.home && pendingInvite.isNotEmpty) return landing;
       return null;
     },
     routes: [
@@ -172,6 +191,14 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.groups,
                 builder: (_, _) => const GroupsScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'join',
+                    parentNavigatorKey: _rootKey,
+                    builder: (_, s) =>
+                        JoinGroupScreen(initialCode: q(s, 'code')),
+                  ),
+                ],
               ),
             ],
           ),
@@ -404,11 +431,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (_, _) => const AiSettingsScreen(),
           ),
         ],
-      ),
-      GoRoute(
-        path: Routes.joinGroup,
-        parentNavigatorKey: _rootKey,
-        builder: (_, s) => JoinGroupScreen(initialCode: q(s, 'code')),
       ),
     ],
   );

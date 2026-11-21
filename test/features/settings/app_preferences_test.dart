@@ -82,4 +82,13 @@ void main() {
       expect(AppPreferences.fromMap(off.toMap()).aiEnabled, isFalse);
     });
   });
+
+  test('pending invite survives a save and clears', () {
+    expect(AppPreferences.fromMap(const {}).pendingInviteCode, '');
+    final p = AppPreferences.fromMap(const {'groups.pendingInvite': 'CODE01'});
+    expect(p.pendingInviteCode, 'CODE01');
+    expect(AppPreferences.fromMap(p.toMap()).pendingInviteCode, 'CODE01');
+    expect(p.copyWith(pendingInviteCode: '').pendingInviteCode, '');
+    expect(p.copyWith(tourPending: true).pendingInviteCode, 'CODE01');
+  });
 }

@@ -58,6 +58,7 @@ class AppPreferences {
     required this.sampleDataLoaded,
     required this.reminderBatteryTipDismissed,
     required this.initialSyncDone,
+    this.pendingInviteCode = '',
   });
 
   static const supportedLanguages = ['en', 'gu'];
@@ -110,6 +111,7 @@ class AppPreferences {
       sampleDataLoaded: _bool(m[_kSampleData], false),
       reminderBatteryTipDismissed: _bool(m[_kBatteryTip], false),
       initialSyncDone: _bool(m[_kInitialSync], false),
+      pendingInviteCode: m[_kPendingInvite] ?? '',
     );
   }
 
@@ -131,6 +133,7 @@ class AppPreferences {
   static const _kReminderNotify = 'notifications.reminders';
   static const _kBatteryTip = 'reminders.batteryTipDismissed';
   static const _kInitialSync = 'sync.initialDone';
+  static const _kPendingInvite = 'groups.pendingInvite';
   static const _kHideAmounts = 'notifications.hideAmounts';
   // New key on 2026-11-20 so every install gets the assistant on once: the
   // old 'ai.enabled' was saved with every settings change, so a stored
@@ -168,6 +171,10 @@ class AppPreferences {
   /// The phone and the account have been synced once (first upload of old
   /// phone data / download on a new phone).
   final bool initialSyncDone;
+
+  /// Invitation code from a link that arrived before the account was ready
+  /// (empty when none). The app joins with it once signed in.
+  final String pendingInviteCode;
   final bool groupNotifications;
   final bool reminderNotifications;
   final bool hideAmountsInNotifications;
@@ -205,6 +212,7 @@ class AppPreferences {
     _kSampleData: '$sampleDataLoaded',
     _kBatteryTip: '$reminderBatteryTipDismissed',
     _kInitialSync: '$initialSyncDone',
+    _kPendingInvite: pendingInviteCode,
   };
 
   AppPreferences copyWith({
@@ -229,6 +237,7 @@ class AppPreferences {
     bool? sampleDataLoaded,
     bool? reminderBatteryTipDismissed,
     bool? initialSyncDone,
+    String? pendingInviteCode,
   }) {
     return AppPreferences(
       palette: palette ?? this.palette,
@@ -256,6 +265,7 @@ class AppPreferences {
       reminderBatteryTipDismissed:
           reminderBatteryTipDismissed ?? this.reminderBatteryTipDismissed,
       initialSyncDone: initialSyncDone ?? this.initialSyncDone,
+      pendingInviteCode: pendingInviteCode ?? this.pendingInviteCode,
     );
   }
 

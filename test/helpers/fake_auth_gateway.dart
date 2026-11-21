@@ -73,6 +73,18 @@ class FakeAuthGateway implements CloudGateway {
   Future<PersonalSnapshot> fetchPersonalSnapshot() async =>
       const PersonalSnapshot(rows: {}, maxSeq: 0);
 
+  /// Signs in or out from outside (emits on [sessionChanges]).
+  void setSession(CloudSession? s) {
+    session = s;
+    _changes.add(s);
+  }
+
+  /// Live-update signals; tests check `signals.hasListener`.
+  final signals = StreamController<void>.broadcast();
+
+  @override
+  Stream<void> changeSignals() => signals.stream;
+
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnimplementedError('${invocation.memberName}');

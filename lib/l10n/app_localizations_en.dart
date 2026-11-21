@@ -705,6 +705,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String inviteShareTextLink(
+    String group,
+    String code,
+    String link,
+    String date,
+  ) {
+    return '👋 *Join my group on HisabMitra!*\n\n👥 Group: *$group*\n🔑 Invite code: *$code*\n\n👉 Tap to join: $link\nOr open HisabMitra → Groups → Join a group, and enter the code.\n\n⏳ The code is valid till *$date*.';
+  }
+
+  @override
   String inviteExpires(String date) {
     return 'Expires $date';
   }

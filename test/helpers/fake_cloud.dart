@@ -24,7 +24,12 @@ class FakeCloudServer {
   late final personal = FakePersonalStore(
     processed: processed,
     isMember: isMember,
-  );
+  )..onEvent = (owner) => _changes.add((groupId: null, owner: owner));
+
+  /// Every new feed row, like Supabase Realtime before RLS is applied.
+  final _changes =
+      StreamController<({String? groupId, String? owner})>.broadcast();
+  Stream<({String? groupId, String? owner})> get changes => _changes.stream;
 
   /// Files in `group-attachments`, keyed by storage path.
   final Map<String, List<int>> groupFiles = {};
@@ -54,6 +59,7 @@ class FakeCloudServer {
     int rev,
     Map<String, Object?> payload,
   ) {
+    _changes.add((groupId: groupId, owner: null));
     events.add(
       RemoteEvent(
         seq: ++_seq,
@@ -182,7 +188,7 @@ class FakeCloudServer {
   }
 
   String createInvitation(String groupId, String? memberId) {
-    final code = 'CODE${_codes++}';
+    final code = 'CODE${(_codes++).toString().padLeft(4, '0')}';
     invitations[code] = (groupId: groupId, memberId: memberId, used: false);
     return code;
   }
@@ -305,6 +311,17 @@ class FakeCloudClient implements CloudGateway {
     _net();
     return server.personal.snapshot(userId);
   }
+
+  /// Rows of this user's groups (membership checked on delivery, like RLS)
+  /// and of their own records.
+  @override
+  Stream<void> changeSignals() => server.changes
+      .where(
+        (c) => c.groupId != null
+            ? server.isMember(c.groupId!, userId)
+            : c.owner == userId,
+      )
+      .map((_) {});
 
   /// Names of personal files this device uploaded, in order.
   final uploadedFiles = <String>[];

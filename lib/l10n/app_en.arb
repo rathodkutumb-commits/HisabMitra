@@ -537,6 +537,23 @@
       }
     }
   },
+  "inviteShareTextLink": "👋 *Join my group on HisabMitra!*\n\n👥 Group: *{group}*\n🔑 Invite code: *{code}*\n\n👉 Tap to join: {link}\nOr open HisabMitra → Groups → Join a group, and enter the code.\n\n⏳ The code is valid till *{date}*.",
+  "@inviteShareTextLink": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "inviteExpires": "Expires {date}",
   "@inviteExpires": {
     "placeholders": {

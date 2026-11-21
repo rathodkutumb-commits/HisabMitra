@@ -1223,6 +1223,17 @@ abstract class AppLocalizations {
   /// **'👋 *Join my group on HisabMitra!*\n\n👥 Group: *{group}*\n🔑 Invite code: *{code}*\n\nOpen HisabMitra → Groups → Join a group, and enter the code.\n\n⏳ The code is valid till *{date}*.'**
   String inviteShareText(String group, String code, String date);
 
+  /// No description provided for @inviteShareTextLink.
+  ///
+  /// In en, this message translates to:
+  /// **'👋 *Join my group on HisabMitra!*\n\n👥 Group: *{group}*\n🔑 Invite code: *{code}*\n\n👉 Tap to join: {link}\nOr open HisabMitra → Groups → Join a group, and enter the code.\n\n⏳ The code is valid till *{date}*.'**
+  String inviteShareTextLink(
+    String group,
+    String code,
+    String link,
+    String date,
+  );
+
   /// No description provided for @inviteExpires.
   ///
   /// In en, this message translates to:

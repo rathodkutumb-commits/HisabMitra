@@ -16,6 +16,9 @@ class FakePersonalStore {
   };
   final List<({String owner, RemoteEvent event})> events = [];
 
+  /// Called for every feed row (live updates in the fake cloud).
+  void Function(String owner)? onEvent;
+
   /// Files in `personal-attachments`, keyed `<uid>/<name>`.
   final Map<String, List<int>> files = {};
   var _seq = 0;
@@ -53,6 +56,7 @@ class FakePersonalStore {
     Map<String, Object?> payload,
     String opId,
   ) {
+    onEvent?.call(owner);
     events.add((
       owner: owner,
       event: RemoteEvent(
@@ -170,6 +174,7 @@ class FakePersonalStore {
           }
         }
       }
+      onEvent?.call(uid);
       events.add((
         owner: uid,
         event: RemoteEvent(

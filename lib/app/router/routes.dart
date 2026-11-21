@@ -79,7 +79,11 @@ abstract final class Routes {
   static String groupSettlements(String id) => '/groups/$id/settlements';
   static String groupBalances(String id) => '/groups/$id/balances';
   static String groupInvite(String id) => '/groups/$id/invite';
-  static const joinGroup = '/join';
+  // Under the Groups tab, so back from it (or from the group it opens)
+  // returns to Groups.
+  static const joinGroup = '/groups/join';
+  static String joinGroupWithCode(String code) =>
+      '$joinGroup?code=${Uri.encodeQueryComponent(code)}';
 
   static const calculator = '/calculator';
   static const reports = '/reports';

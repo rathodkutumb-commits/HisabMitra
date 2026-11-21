@@ -14,6 +14,7 @@ import '../../synchronization/application/sync_controller.dart';
 import '../../synchronization/domain/cloud_models.dart';
 import '../../authentication/application/auth_controller.dart';
 import '../data/group_repository.dart';
+import '../domain/invite_code.dart';
 import '../../../core/share/share_messages.dart';
 
 final _invitationsProvider = FutureProvider.autoDispose
@@ -144,6 +145,7 @@ class _GroupInviteScreenState extends ConsumerState<GroupInviteScreen> {
                                       group: detail.group.name,
                                       code: _created!.code,
                                       date: fmt.date(_created!.expiresAt),
+                                      link: inviteLinkUrl(_created!.code),
                                       downloadUrl: appDownloadUrl(),
                                     ),
                                   ),
@@ -227,6 +229,19 @@ class _JoinGroupScreenState extends ConsumerState<JoinGroupScreen> {
   var _busy = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Opened from an invitation link: join without a tap.
+    final code = normalizeInviteCode(widget.initialCode);
+    if (code != null) {
+      _code.text = code;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _join();
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _code.dispose();
     super.dispose();
@@ -240,14 +255,27 @@ class _JoinGroupScreenState extends ConsumerState<JoinGroupScreen> {
       await ref.read(authControllerProvider).markSessionLost();
       return;
     }
-    if (_code.text.trim().length < 6) return;
+    final code = normalizeInviteCode(_code.text);
+    if (code == null) return;
+    final settings = ref.read(settingsControllerProvider.notifier);
     setState(() => _busy = true);
     try {
       final profile = await ref.read(profileRepositoryProvider).get();
-      final accepted = await cloud.acceptInvitation(
-        code: _code.text,
-        displayName: profile?.displayName ?? 'Member',
-      );
+      final AcceptedInvitation accepted;
+      try {
+        accepted = await cloud.acceptInvitation(
+          code: code,
+          displayName: profile?.displayName ?? 'Member',
+        );
+      } finally {
+        // Tried once: a failure is shown here with the code, never retried
+        // by itself. (Not signed in returned above and keeps it.)
+        await settings.update(
+          (p) => p.pendingInviteCode == code
+              ? p.copyWith(pendingInviteCode: '')
+              : p,
+        );
+      }
       await ref.read(syncServiceProvider).joinGroup(accepted.groupId);
       final group = await ref
           .read(groupRepositoryProvider)

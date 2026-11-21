@@ -9,6 +9,7 @@ import '../features/attachments/data/attachment_service.dart';
 import '../features/reminders/application/notification_service.dart';
 import '../features/settings/application/settings_controller.dart';
 import '../features/tour/presentation/tour_overlay.dart';
+import '../features/synchronization/application/live_sync.dart';
 import '../features/synchronization/application/sync_controller.dart';
 import '../l10n/app_localizations.dart';
 import '../main.dart';
@@ -74,14 +75,25 @@ class _HisabMitraAppState extends ConsumerState<HisabMitraApp>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _onForeground();
+    switch (state) {
+      case AppLifecycleState.resumed:
+        _onForeground();
+      case AppLifecycleState.hidden ||
+          AppLifecycleState.paused ||
+          AppLifecycleState.detached:
+        // Live updates only while the app is on screen.
+        ref.read(liveSyncControllerProvider.notifier).setForeground(false);
+      case AppLifecycleState.inactive:
+        break;
+    }
   }
 
   /// Best-effort work whenever the app comes to the foreground: notification
-  /// setup, a due automatic backup and a sync attempt. Never blocks the UI.
+  /// setup, a sync attempt and live updates. Never blocks the UI.
   void _onForeground() {
     unawaited(ref.read(notificationServiceProvider).initialize());
     unawaited(ref.read(syncControllerProvider.notifier).syncNow(silent: true));
+    ref.read(liveSyncControllerProvider.notifier).setForeground(true);
   }
 
   @override

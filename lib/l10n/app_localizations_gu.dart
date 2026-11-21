@@ -702,6 +702,16 @@ class AppLocalizationsGu extends AppLocalizations {
   }
 
   @override
+  String inviteShareTextLink(
+    String group,
+    String code,
+    String link,
+    String date,
+  ) {
+    return '👋 *હિસાબમિત્રમાં મારા ગ્રુપમાં જોડાઓ!*\n\n👥 ગ્રુપ: *$group*\n🔑 આમંત્રણ કોડ: *$code*\n\n👉 જોડાવા માટે ટેપ કરો: $link\nઅથવા હિસાબમિત્ર ખોલો → ગ્રુપ → ગ્રુપમાં જોડાઓ, અને કોડ લખો.\n\n⏳ કોડ *$date* સુધી માન્ય છે.';
+  }
+
+  @override
   String inviteExpires(String date) {
     return '$date સુધી માન્ય';
   }

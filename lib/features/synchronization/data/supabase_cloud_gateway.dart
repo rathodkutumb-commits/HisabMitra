@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -250,6 +250,64 @@ class SupabaseCloudGateway implements CloudGateway {
     final res = await _client.rpc<Object?>('get_personal_snapshot');
     return PersonalSnapshot.fromJson((res! as Map).cast<String, Object?>());
   });
+
+  static var _feedConnections = 0;
+
+  /// Realtime channel name for one live-update connection. Unique per
+  /// connection: after a quick pause/resume the old channel may still be
+  /// leaving, and a shared name would let its leave close the new one.
+  @visibleForTesting
+  static String feedTopic(String uid) => 'feeds:$uid:${++_feedConnections}';
+
+  @override
+  Stream<void> changeSignals() {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) return const Stream.empty();
+    RealtimeChannel? channel;
+    late final StreamController<void> signals;
+    void signal(PostgresChangePayload _) {
+      if (!signals.isClosed) signals.add(null);
+    }
+
+    signals = StreamController<void>(
+      onListen: () {
+        // Realtime applies each feed's RLS: group events only reach members.
+        channel = _client
+            .channel(feedTopic(uid))
+            .onPostgresChanges(
+              event: PostgresChangeEvent.insert,
+              schema: 'public',
+              table: 'sync_events',
+              callback: signal,
+            )
+            .onPostgresChanges(
+              event: PostgresChangeEvent.insert,
+              schema: 'public',
+              table: 'personal_sync_events',
+              filter: PostgresChangeFilter(
+                type: PostgresChangeFilterType.eq,
+                column: 'owner_id',
+                value: uid,
+              ),
+              callback: signal,
+            )
+            .subscribe((status, error) {
+              if (status == RealtimeSubscribeStatus.subscribed) {
+                // Changes made while disconnected: sync once on (re)connect.
+                if (!signals.isClosed) signals.add(null);
+              } else {
+                SafeLogger.info('realtime', {'status': status.name});
+              }
+            });
+      },
+      onCancel: () async {
+        final c = channel;
+        channel = null;
+        if (c != null) await _client.removeChannel(c);
+      },
+    );
+    return signals.stream;
+  }
 
   @override
   Future<GroupSnapshot> fetchGroupSnapshot(String groupId) => _call(() async {

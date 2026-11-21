@@ -41,6 +41,56 @@ void main() {
       expect(m, endsWith('📲 એપ નથી? મફત ડાઉનલોડ કરો: $url'));
     });
 
+    const link = 'https://hemang.github.io/HisabMitra/join?code=HSQPP7G9VD';
+
+    test('English layout with the tap-to-join link', () {
+      final m = inviteMessage(
+        en,
+        group: 'Goa Trip',
+        code: 'HSQPP7G9VD',
+        date: '22 Nov 2026',
+        link: link,
+        downloadUrl: url,
+      );
+      expect(
+        m,
+        contains(
+          '👉 Tap to join: $link\n'
+          'Or open HisabMitra → Groups → Join a group, and enter the code.',
+        ),
+      );
+      expect(m, contains('🔑 Invite code: *HSQPP7G9VD*'));
+      expect(m.split('\n\n'), hasLength(5));
+      expect(m, endsWith("📲 Don't have the app? Download it free: $url"));
+    });
+
+    test('Gujarati layout with the link', () {
+      final m = inviteMessage(
+        gu,
+        group: 'Goa Trip',
+        code: 'HSQPP7G9VD',
+        date: '22 નવે 2026',
+        link: link,
+      );
+      expect(
+        m,
+        contains('👉 જોડાવા માટે ટેપ કરો: $link\nઅથવા હિસાબમિત્ર ખોલો'),
+      );
+      expect(m, contains('⏳ કોડ *22 નવે 2026* સુધી માન્ય છે.'));
+    });
+
+    test('no link line without a repository', () {
+      expect(inviteLinkUrl('HSQPP7G9VD'), isNull);
+      final m = inviteMessage(
+        en,
+        group: 'Goa Trip',
+        code: 'HSQPP7G9VD',
+        date: '22 Nov 2026',
+      );
+      expect(m, isNot(contains('👉')));
+      expect(m, contains('Open HisabMitra → Groups → Join a group'));
+    });
+
     test('no download line when the build has no repository', () {
       final m = inviteMessage(
         en,

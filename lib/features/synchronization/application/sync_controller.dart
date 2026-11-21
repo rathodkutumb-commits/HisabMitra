@@ -105,9 +105,30 @@ class SyncController extends Notifier<SyncStatus> {
     return cloud.isConfigured && cloud.currentSession != null;
   }
 
+  /// A silent sync was asked for while one was running.
+  var _again = false;
+
   /// Runs one push + pull. With [silent] errors are recorded, never thrown.
+  ///
+  /// While a sync runs, a silent request returns null at once and one more
+  /// sync follows the running one (a live update arriving mid-sync may have
+  /// been added after that sync's pull).
   Future<SyncReport?> syncNow({bool silent = false}) async {
-    if (state.running) return null;
+    if (state.running) {
+      if (silent) _again = true;
+      return null;
+    }
+    try {
+      return await _syncOnce(silent: silent);
+    } finally {
+      if (_again && ref.mounted) {
+        _again = false;
+        unawaited(syncNow(silent: true));
+      }
+    }
+  }
+
+  Future<SyncReport?> _syncOnce({required bool silent}) async {
     if (!canSync) {
       if (silent) return null;
       throw ref.read(cloudGatewayProvider).isConfigured
