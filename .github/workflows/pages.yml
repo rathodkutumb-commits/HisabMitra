@@ -1,5 +1,7 @@
-# Publishes site/ (the invitation page behind group invite links) to
-# GitHub Pages: https://<owner>.github.io/<repo>/join?code=…
+# Publishes site/ to GitHub Pages (https://<owner>.github.io/<repo>/): redirects
+# to the HisabMitra website (old invite links keep their ?code=) and
+# releases.json, the release list the website reads. Runs on changes to site/
+# and after every release (the Release workflow starts it).
 # Pages must be switched on once with "Source: GitHub Actions".
 name: Pages
 
@@ -28,6 +30,17 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      # The website (hisab-mitra-web.vercel.app) reads this list instead of the
+      # rate-limited GitHub API. Same shape as GET /repos/{owner}/{repo}/releases.
+      - name: Publish the release list
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${{ github.repository }}/releases?per_page=30" \
+            --jq '[.[] | {tag_name, name, html_url, draft, prerelease, published_at, body,
+                    assets: [.assets[] | {name, size, digest, browser_download_url}]}]' \
+            > site/releases.json
+          echo "releases: $(jq length site/releases.json)"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

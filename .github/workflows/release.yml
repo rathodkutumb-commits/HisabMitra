@@ -23,6 +23,7 @@ on:
 
 permissions:
   contents: write
+  actions: write # start the Pages workflow after publishing (release list for the website)
 
 concurrency:
   group: release-${{ github.ref }}
@@ -159,6 +160,13 @@ jobs:
             --title "HisabMitra $GITHUB_REF_NAME" \
             --notes-file release_notes.md \
             --verify-tag
+
+      # A release made with GITHUB_TOKEN does not trigger other workflows, so ask
+      # Pages to republish releases.json (the website reads it; no API rate limit).
+      - name: Refresh the release list for the website
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main --repo "$GITHUB_REPOSITORY"
 
       - name: Remove keystore
         if: always()
