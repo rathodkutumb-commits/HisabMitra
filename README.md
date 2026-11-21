@@ -39,6 +39,11 @@ phone so the app also works without internet.
     <td align="center"><img src="docs/screenshots/08_dashboard_gujarati.png" width="230" alt="Gujarati dashboard"><br><sub>Fully in Gujarati</sub></td>
     <td align="center"><img src="docs/screenshots/09_tour.png" width="230" alt="Guided tour"><br><sub>First-run guided tour</sub></td>
   </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/10_ai_assistant.png" width="230" alt="HisabMitra assistant"><br><sub>The assistant answers from your hisab</sub></td>
+    <td align="center"><img src="docs/screenshots/11_group_invite.png" width="230" alt="Group invitation"><br><sub>Invite family with a link</sub></td>
+    <td></td>
+  </tr>
 </table>
 
 <sub>Screenshots show the built-in sample data from the guided tour.</sub>

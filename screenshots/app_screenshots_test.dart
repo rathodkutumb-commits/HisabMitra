@@ -15,15 +15,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hisabmitra/app/router/routes.dart';
+import 'package:hisabmitra/core/database/app_database.dart' show GroupType;
+import 'package:hisabmitra/features/groups/data/group_repository.dart';
+import 'package:hisabmitra/features/groups/domain/group_models.dart';
 import 'package:hisabmitra/features/gujarati_input/presentation/gujarati_keypad.dart';
 import 'package:hisabmitra/features/gujarati_input/presentation/gujarati_text_field.dart';
 import 'package:hisabmitra/features/settings/application/settings_controller.dart';
 import 'package:hisabmitra/features/settings/domain/app_preferences.dart';
+import 'package:hisabmitra/features/synchronization/application/sync_controller.dart';
+import 'package:hisabmitra/features/synchronization/domain/cloud_models.dart';
 import 'package:hisabmitra/features/tour/application/tour_controller.dart';
 import 'package:hisabmitra/features/tour/data/sample_data_service.dart';
 import 'package:integration_test/integration_test.dart';
 
 import '../test/helpers/app_harness.dart';
+import '../test/helpers/fake_cloud.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -108,5 +114,65 @@ void main() {
         .read(tourControllerProvider.notifier)
         .finish(removeSample: false);
     await tester.pumpAndSettle();
+
+    // The assistant answering one of its example questions.
+    router().go(Routes.ai);
+    await tester.pumpAndSettle();
+    final example = find.text('What is my biggest expense category?');
+    if (example.evaluate().isNotEmpty) {
+      await tester.ensureVisible(example.first);
+      await tester.tap(example.first);
+    }
+    await pumpFor(tester, const Duration(seconds: 2));
+    await shot('10_ai_assistant');
+
+    // A group invitation. Invitations need a group saved to an account, so
+    // restart the app on the in-memory test cloud (nothing leaves the phone).
+    await tester.pumpWidget(const SizedBox());
+    final server = FakeCloudServer();
+    await pumpHisabMitra(
+      tester,
+      prefs: AppPreferences.fromMap(const {}).copyWith(
+        onboardingComplete: true,
+        accountVerified: true,
+        initialSyncDone: true,
+      ),
+      overrides: [
+        cloudGatewayProvider.overrideWithValue(_ScreenshotCloud(server)),
+      ],
+    );
+    tester.view.reset();
+    await tester.pumpAndSettle();
+    final cloudApp = ProviderScope.containerOf(anyScaffold());
+    final groupId = await cloudApp
+        .read(groupRepositoryProvider)
+        .createGroup(
+          const GroupDraft(name: 'Goa Trip', groupType: GroupType.trip),
+          selfName: 'Hemang',
+          members: const [
+            MemberDraft(name: 'Rahul Patel'),
+            MemberDraft(name: 'Priya Shah'),
+          ],
+        );
+    await cloudApp.read(syncServiceProvider).syncOnce();
+    router().go(Routes.groupInvite(groupId));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Create invitation code'));
+    await shot('11_group_invite');
   });
+}
+
+/// The test cloud, with a realistic invitation code for the picture.
+class _ScreenshotCloud extends FakeCloudClient {
+  _ScreenshotCloud(FakeCloudServer server) : super(server, 'hemang');
+
+  @override
+  Future<CreatedInvitation> createInvitation({
+    required String groupId,
+    String? memberId,
+  }) async => CreatedInvitation(
+    id: 'inv',
+    code: 'HSQPP7G9VD',
+    expiresAt: DateTime.now().add(const Duration(hours: 72)),
+  );
 }
