@@ -20,7 +20,7 @@ Last updated: 2026-11-21.
 
 ## Session log
 
-### 2026-11-21 (HisabMitra website)
+### 2026-11-21 (HisabMitra website; v1.2.1)
 
 Design `docs/superpowers/specs/2026-11-21-hisabmitra-website-design.md`;
 plan `docs/superpowers/plans/2026-11-21-hisabmitra-website.md`.
@@ -41,6 +41,8 @@ plan `docs/superpowers/plans/2026-11-21-hisabmitra-website.md`.
   → "HisabMitra website") use `WEBSITE_URL`; GitHub Pages (`site/`) now only
   redirects to the website, keeping `?code=` for links shared from 1.2.0.
 - README download and privacy text updated.
+- Website published (owner's go-ahead) and **v1.2.1** (`1.2.1+5`) released so
+  phones share website links.
 
 ### 2026-11-21 (Part C1 and C2: invite link and live updates; v1.2.0)
 
