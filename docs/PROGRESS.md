@@ -20,7 +20,7 @@ Last updated: 2026-11-21.
 
 ## Session log
 
-### 2026-11-21 (Part C1 and C2: invite link and live updates; not released)
+### 2026-11-21 (Part C1 and C2: invite link and live updates; v1.2.0)
 
 Design `docs/superpowers/specs/2026-11-20-invite-link-and-live-updates-design.md`;
 plan `docs/superpowers/plans/2026-11-20-invite-link-and-live-updates.md`.
@@ -39,8 +39,11 @@ plan `docs/superpowers/plans/2026-11-20-invite-link-and-live-updates.md`.
   applies). While signed in and in the foreground the app listens
   (`LiveSyncController`) and runs its normal sync 1 s after a change; a sync
   asked for during a sync now runs once more afterwards.
-- Not done yet (needs the owner): the migration on the live project, GitHub
-  Pages switched on, a two-phone check against the live project, a release.
+- With the owner's go-ahead: GitHub Pages switched on (Source: GitHub
+  Actions; `https://rathodkutumb-commits.github.io/HisabMitra/join?code=…`
+  serves the page), the migration applied live (7 migrations recorded;
+  only the two feeds are published), and **v1.2.0** (`1.2.0+4`) released.
+- Not done: a two-phone check of live updates against the live project.
 
 ### 2026-11-20 (v1.1.0 released)
 
@@ -210,8 +213,6 @@ Palettes (7, light-only), widget test fixes, live Supabase set-up
 | Cloud account deletion | Deploy `delete-account` (`supabase functions deploy delete-account`) or provide an access token |
 | Privacy policy / terms links | Public URLs |
 | Security | Reset the Supabase database password (shared in chat) |
-| Invite link page | Switch on GitHub Pages ("Source: GitHub Actions") for the repository |
-| Live updates | Apply `20261120000200_realtime_feeds.sql` to the live project |
 | Push notifications (C3) | A Firebase project: `google-services.json` and a service-account key |
 
 ## Parked
