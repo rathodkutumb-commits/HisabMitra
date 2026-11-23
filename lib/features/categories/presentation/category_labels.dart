@@ -5,7 +5,8 @@ import '../../../core/domain/category_icons.dart';
 import '../../../core/l10n/l10n_x.dart';
 
 extension CategoryRowX on CategoryRow {
-  /// Localised label for built-in categories, user text otherwise.
+  /// Localised label for built-in categories; for custom ones the name in
+  /// the app's language (Gujarati when given, otherwise the one name).
   String label(AppLocalizations l) => switch (systemKey) {
     'food' => l.catFood,
     'groceries' => l.catGroceries,
@@ -32,6 +33,10 @@ extension CategoryRowX on CategoryRow {
     'giftsReceived' => l.catGiftsReceived,
     'refund' => l.catRefund,
     'otherIncome' => l.catOtherIncome,
+    // A custom category: its Gujarati name when the app is in Gujarati and
+    // one was given, otherwise its (only) name.
+    _ when l.localeName == 'gu' && (nameGu?.trim().isNotEmpty ?? false) =>
+      nameGu!,
     _ => name,
   };
 

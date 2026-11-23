@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -206,6 +207,27 @@ void main() {
       expect(a.text, contains('3 entries'));
       expect(a.periodLabel, 'March 2026');
       expect(a.isSuggestion, isFalse);
+    });
+
+    test('an entry can name a custom category in Gujarati', () async {
+      await db
+          .into(db.categories)
+          .insert(
+            CategoriesCompanion.insert(
+              id: 'cat_pooja',
+              name: 'Pooja',
+              nameGu: const Value('પૂજા'),
+              type: TransactionType.expense,
+              iconKey: 'more',
+              colorValue: 0xFF607D8B,
+              createdAt: DateTime(2026),
+              updatedAt: DateTime(2026),
+            ),
+          );
+      final gu = lookupAppLocalizations(const Locale('gu'));
+      final a = await engine.ask('પૂજા 500 ઉમેરો', l: gu, fmt: fmt);
+      expect(a.draft?.categoryId, 'cat_pooja');
+      expect(a.draft?.amountPaise, 50000);
     });
 
     test('top category with share of spending', () async {

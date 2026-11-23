@@ -7,6 +7,7 @@ import '../../../core/l10n/l10n_x.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/form_fields.dart';
+import '../../gujarati_input/presentation/gujarati_text_field.dart';
 import '../data/category_repository.dart';
 import 'category_labels.dart';
 
@@ -27,10 +28,14 @@ class CategoryFormScreen extends ConsumerStatefulWidget {
 class _CategoryFormScreenState extends ConsumerState<CategoryFormScreen> {
   final _form = GlobalKey<FormState>();
   final _name = TextEditingController();
+  final _nameGu = TextEditingController();
   late TransactionType _type = widget.initialType;
   String _icon = 'more';
   int _color = CategoryIcons.palette.first;
-  String? _originalLabel;
+
+  /// A built-in category's translated names as loaded: saving them unchanged
+  /// keeps it built-in (still translated in both languages).
+  (String en, String gu)? _builtInNames;
   var _loaded = false;
   var _saving = false;
 
@@ -53,13 +58,19 @@ class _CategoryFormScreenState extends ConsumerState<CategoryFormScreen> {
       Navigator.of(context).pop();
       return;
     }
-    final label = c.label(context.l10n);
+    final builtIn = c.systemKey == null
+        ? null
+        : (
+            c.label(lookupAppLocalizations(const Locale('en'))),
+            c.label(lookupAppLocalizations(const Locale('gu'))),
+          );
     setState(() {
       _type = c.type;
       _icon = c.iconKey;
       _color = c.colorValue;
-      _name.text = label;
-      _originalLabel = c.systemKey == null ? null : label;
+      _name.text = builtIn?.$1 ?? c.name;
+      _nameGu.text = builtIn?.$2 ?? c.nameGu ?? c.name;
+      _builtInNames = builtIn;
       _loaded = true;
     });
   }
@@ -67,6 +78,7 @@ class _CategoryFormScreenState extends ConsumerState<CategoryFormScreen> {
   @override
   void dispose() {
     _name.dispose();
+    _nameGu.dispose();
     super.dispose();
   }
 
@@ -80,11 +92,14 @@ class _CategoryFormScreenState extends ConsumerState<CategoryFormScreen> {
             CategoryDraft(
               id: widget.categoryId,
               name: _name.text,
+              nameGu: _nameGu.text,
               type: _type,
               iconKey: _icon,
               colorValue: _color,
               keepSystemName:
-                  _originalLabel != null && _name.text.trim() == _originalLabel,
+                  _builtInNames != null &&
+                  _name.text.trim() == _builtInNames!.$1 &&
+                  _nameGu.text.trim() == _builtInNames!.$2,
             ),
           );
       if (mounted) Navigator.of(context).pop();
@@ -139,9 +154,23 @@ class _CategoryFormScreenState extends ConsumerState<CategoryFormScreen> {
                   ],
                   HmTextField(
                     controller: _name,
-                    label: l.categoryName,
+                    label: l.categoryNameEnglish,
                     maxLength: 60,
                     required: true,
+                  ),
+                  const SizedBox(height: 12),
+                  GujaratiTextField(
+                    controller: _nameGu,
+                    maxLength: 60,
+                    decoration: InputDecoration(
+                      labelText: l.categoryNameGujarati,
+                    ),
+                    validator: (text) {
+                      final value = (text ?? '').trim();
+                      if (value.isEmpty) return l.validationRequired;
+                      if (value.length > 60) return l.validationTooLong(60);
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
                   Text(

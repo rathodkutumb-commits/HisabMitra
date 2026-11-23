@@ -11,6 +11,7 @@ import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
+import 'generated/schema_v5.dart' as v5;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -200,4 +201,57 @@ void main() {
       },
     );
   });
+
+  test(
+    'v4 → v5 keeps every category and adds an empty Gujarati name',
+    () async {
+      const builtIn = v4.CategoriesData(
+        createdAt: 0,
+        updatedAt: 0,
+        id: 'cat_groceries',
+        systemKey: 'groceries',
+        name: 'Groceries',
+        type: 'expense',
+        iconKey: 'grocery',
+        colorValue: 1,
+        sortOrder: 0,
+        isArchived: 0,
+      );
+      const custom = v4.CategoriesData(
+        createdAt: 0,
+        updatedAt: 0,
+        id: 'cat_pooja',
+        name: 'Pooja',
+        type: 'expense',
+        iconKey: 'more',
+        colorValue: 2,
+        sortOrder: 9,
+        isArchived: 0,
+      );
+      await verifier.testWithDataIntegrity(
+        oldVersion: 4,
+        newVersion: 5,
+        createOld: v4.DatabaseAtV4.new,
+        createNew: v5.DatabaseAtV5.new,
+        openTestedDatabase: AppDatabase.new,
+        createItems: (batch, oldDb) {
+          batch.insert(oldDb.categories, builtIn);
+          batch.insert(oldDb.categories, custom);
+        },
+        validateItems: (newDb) async {
+          // Built-in categories are re-added on open; check the two we wrote.
+          final rows =
+              await (newDb.select(newDb.categories)
+                    ..where((c) => c.id.isIn(['cat_groceries', 'cat_pooja']))
+                    ..orderBy([(c) => OrderingTerm.asc(c.sortOrder)]))
+                  .get();
+          expect(rows.map((c) => c.id), ['cat_groceries', 'cat_pooja']);
+          expect(rows.map((c) => c.name), ['Groceries', 'Pooja']);
+          expect(rows.map((c) => c.iconKey), ['grocery', 'more']);
+          expect(rows.map((c) => c.colorValue), [1, 2]);
+          expect(rows.map((c) => c.nameGu), [null, null]);
+        },
+      );
+    },
+  );
 }

@@ -227,6 +227,7 @@ void main() {
       final cat = await p1.categories.save(
         const CategoryDraft(
           name: 'Tiffin',
+          nameGu: 'ટિફિન',
           type: TransactionType.expense,
           iconKey: 'food',
           colorValue: 0xFF00AA00,
@@ -243,6 +244,60 @@ void main() {
       expect(made.iconKey, 'food');
       expect(made.colorValue, 0xFF00AA00);
       expect(made.type, TransactionType.expense);
+    },
+  );
+
+  test('a custom category reaches the other phone with both names', () async {
+    final cat = await p1.categories.save(
+      const CategoryDraft(
+        name: 'Pooja',
+        nameGu: 'પૂજા',
+        type: TransactionType.expense,
+        iconKey: 'more',
+        colorValue: 0xFF607D8B,
+      ),
+    );
+    await p1.txns.save(spend(category: cat));
+    await p1.sync.syncOnce();
+    await p2.sync.syncOnce();
+    final made = await (p2.db.select(
+      p2.db.categories,
+    )..where((c) => c.id.equals(cat))).getSingle();
+    expect((made.name, made.nameGu), ('Pooja', 'પૂજા'));
+  });
+
+  test(
+    'an entry from an older app without the Gujarati name still applies',
+    () async {
+      // A category made before 1.3.0 has no Gujarati name, so its entries
+      // travel without one — exactly what an older app sends.
+      final now = DateTime(2026, 11, 23);
+      await p1.db
+          .into(p1.db.categories)
+          .insert(
+            CategoriesCompanion.insert(
+              id: 'cat_old',
+              name: 'Old one',
+              type: TransactionType.expense,
+              iconKey: 'more',
+              colorValue: 0xFF607D8B,
+              createdAt: now,
+              updatedAt: now,
+            ),
+          );
+      final id = await p1.txns.save(spend(category: 'cat_old'));
+      await p1.sync.syncOnce();
+      expect(
+        server.personal.rows['transaction']![id]!.containsKey(
+          'category_name_gu',
+        ),
+        isFalse,
+      );
+      await p2.sync.syncOnce();
+      final made = await (p2.db.select(
+        p2.db.categories,
+      )..where((c) => c.id.equals('cat_old'))).getSingle();
+      expect((made.name, made.nameGu), ('Old one', null));
     },
   );
 

@@ -74,6 +74,8 @@
   "addCategory": "Add category",
   "editCategory": "Edit category",
   "categoryName": "Category name",
+  "categoryNameEnglish": "Name (English)",
+  "categoryNameGujarati": "Name (Gujarati)",
   "categoryIcon": "Icon",
   "categoryColor": "Colour",
   "categoryType": "Type",

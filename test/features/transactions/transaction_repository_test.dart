@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hisabmitra/core/database/app_database.dart';
 import 'package:hisabmitra/core/errors/app_failure.dart';
@@ -145,6 +146,40 @@ void main() {
       expect(result.single.txn.type, TransactionType.income);
     });
 
+    test('searches by the Gujarati name of a custom category', () async {
+      await db
+          .into(db.categories)
+          .insert(
+            CategoriesCompanion.insert(
+              id: 'cat_pooja',
+              name: 'Pooja',
+              nameGu: const Value('પૂજા'),
+              type: TransactionType.expense,
+              iconKey: 'more',
+              colorValue: 0xFF607D8B,
+              createdAt: DateTime(2026),
+              updatedAt: DateTime(2026),
+            ),
+          );
+      await txns.save(
+        TransactionDraft(
+          type: TransactionType.expense,
+          amountPaise: 50000,
+          categoryId: 'cat_pooja',
+          date: DateTime(2026, 3, 4),
+          paymentMethod: PaymentMethod.cash,
+        ),
+      );
+      final gujarati = await txns
+          .watch(const TransactionFilter(query: 'પૂજા'))
+          .first;
+      expect(gujarati.single.txn.categoryId, 'cat_pooja');
+      final english = await txns
+          .watch(const TransactionFilter(query: 'Pooja'))
+          .first;
+      expect(english.single.txn.categoryId, 'cat_pooja');
+    });
+
     test('lists newest first', () async {
       final all = await txns.watch(const TransactionFilter()).first;
       expect(all.last.txn.description, 'Chai');
@@ -224,6 +259,7 @@ void main() {
         final id = await categories.save(
           const CategoryDraft(
             name: 'Tiffin',
+            nameGu: 'ટિફિન',
             type: TransactionType.expense,
             iconKey: 'restaurant',
             colorValue: 0xFF0F5C41,
@@ -236,6 +272,7 @@ void main() {
           const CategoryDraft(
             id: 'cat_food',
             name: 'Bahar nu khavanu',
+            nameGu: 'બહારનું ખાવાનું',
             type: TransactionType.expense,
             iconKey: 'restaurant',
             colorValue: 0xFFE76F3C,

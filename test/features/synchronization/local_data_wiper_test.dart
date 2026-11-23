@@ -98,6 +98,7 @@ void main() {
         .save(
           const CategoryDraft(
             name: 'Tiffin',
+            nameGu: 'ટિફિન',
             type: TransactionType.expense,
             iconKey: 'food',
             colorValue: 1,

@@ -1362,6 +1362,12 @@ class AppLocalizationsGu extends AppLocalizations {
   String get categoryName => 'શ્રેણીનું નામ';
 
   @override
+  String get categoryNameEnglish => 'નામ (અંગ્રેજી)';
+
+  @override
+  String get categoryNameGujarati => 'નામ (ગુજરાતી)';
+
+  @override
   String get categoryIcon => 'ચિહ્ન';
 
   @override

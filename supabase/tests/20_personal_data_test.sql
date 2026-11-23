@@ -183,6 +183,38 @@ select pg_temp.ok(
      '55555555-0000-0000-0000-000000000077', 'delete', 0, '{}') ->> 'status') = 'applied',
   'deleting a record the server never had is harmless');
 
+-- 5b. Category names in English and Gujarati (app 1.3.0) ---------------------------------
+select pg_temp.ok(
+  pg_temp.op('a0000000-0000-0000-0000-000000000020', 'transaction',
+    '55555555-0000-0000-0000-000000000020', 'upsert', 0,
+    jsonb_build_object('type', 'expense', 'amount_paise', 50000, 'category_id', 'cat_pooja',
+      'category_name', 'Pooja', 'category_name_gu', 'પૂજા',
+      'category_icon', 'more', 'category_color', 4283341407,
+      'txn_date', '2026-11-23', 'payment_method', 'cash'))
+  ->> 'status' = 'applied', 'an expense with a Gujarati category name is created');
+select pg_temp.ok((select category_name_gu from public.personal_transactions
+  where id = '55555555-0000-0000-0000-000000000020') = 'પૂજા', 'the Gujarati category name is saved');
+select pg_temp.ok(exists (select 1 from jsonb_array_elements(public.get_personal_snapshot() -> 'transactions') t
+  where t ->> 'id' = '55555555-0000-0000-0000-000000000020' and t ->> 'category_name_gu' = 'પૂજા'),
+  'the snapshot carries the Gujarati category name');
+select pg_temp.ok(
+  pg_temp.op('a0000000-0000-0000-0000-000000000021', 'transaction',
+    '55555555-0000-0000-0000-000000000021', 'upsert', 0,
+    jsonb_build_object('type', 'expense', 'amount_paise', 1000, 'category_id', 'cat_pooja',
+      'category_name', 'Pooja', 'category_icon', 'more', 'category_color', 4283341407,
+      'txn_date', '2026-11-23', 'payment_method', 'cash'))
+  ->> 'status' = 'applied', 'an older app without the Gujarati name still saves');
+select pg_temp.ok((select category_name_gu is null from public.personal_transactions
+  where id = '55555555-0000-0000-0000-000000000021'), 'its Gujarati name stays empty');
+select pg_temp.ok(
+  pg_temp.op('a0000000-0000-0000-0000-000000000022', 'transaction',
+    '55555555-0000-0000-0000-000000000022', 'upsert', 0,
+    jsonb_build_object('type', 'expense', 'amount_paise', 1000, 'category_id', 'cat_pooja',
+      'category_name', 'Pooja', 'category_name_gu', repeat('પ', 61),
+      'category_icon', 'more', 'category_color', 4283341407,
+      'txn_date', '2026-11-23', 'payment_method', 'cash'))
+  ->> 'status' = 'rejected', 'a Gujarati name over 60 characters is refused');
+
 -- 6. Reset and snapshot ------------------------------------------------------------------
 select pg_temp.ok(
   pg_temp.op('a0000000-0000-0000-0000-000000000015', 'all', '', 'reset', 0, '{}')

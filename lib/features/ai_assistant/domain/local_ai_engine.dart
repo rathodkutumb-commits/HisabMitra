@@ -93,6 +93,7 @@ class LocalAiEngine {
             id: c.id,
             names: {
               c.name,
+              if (c.nameGu != null) c.nameGu!,
               c.label(l),
               if (c.systemKey != null) c.systemKey!,
             }.toList(),

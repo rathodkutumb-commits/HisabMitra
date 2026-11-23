@@ -113,6 +113,10 @@ class Categories extends Table with Timestamps {
   /// for user-created categories or once a built-in one is renamed.
   TextColumn get systemKey => text().nullable().unique()();
   TextColumn get name => text().withLength(min: 1, max: 60)();
+
+  /// Gujarati name of a custom category (shown when the app is in Gujarati).
+  /// Null for built-in categories and for custom ones made before 1.3.0.
+  TextColumn get nameGu => text().withLength(min: 1, max: 60).nullable()();
   TextColumn get type => textEnum<TransactionType>()();
   TextColumn get iconKey => text()();
   IntColumn get colorValue => integer()();

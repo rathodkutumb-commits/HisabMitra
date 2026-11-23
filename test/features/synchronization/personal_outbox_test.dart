@@ -250,6 +250,7 @@ void main() {
         .save(
           const CategoryDraft(
             name: 'Tiffin',
+            nameGu: 'ટિફિન',
             type: TransactionType.expense,
             iconKey: 'food',
             colorValue: 0xFF00AA00,
@@ -295,6 +296,7 @@ void main() {
             CategoryDraft(
               id: cat,
               name: 'Dabba',
+              nameGu: 'ડબ્બો',
               type: TransactionType.expense,
               iconKey: 'food',
               colorValue: 0xFF00AA00,

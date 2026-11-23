@@ -1433,6 +1433,19 @@ class $CategoriesTable extends Categories
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _nameGuMeta = const VerificationMeta('nameGu');
+  @override
+  late final GeneratedColumn<String> nameGu = GeneratedColumn<String>(
+    'name_gu',
+    aliasedName,
+    true,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 60,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   late final GeneratedColumnWithTypeConverter<TransactionType, String> type =
       GeneratedColumn<String>(
@@ -1498,6 +1511,7 @@ class $CategoriesTable extends Categories
     id,
     systemKey,
     name,
+    nameGu,
     type,
     iconKey,
     colorValue,
@@ -1550,6 +1564,12 @@ class $CategoriesTable extends Categories
       );
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('name_gu')) {
+      context.handle(
+        _nameGuMeta,
+        nameGu.isAcceptableOrUnknown(data['name_gu']!, _nameGuMeta),
+      );
     }
     if (data.containsKey('icon_key')) {
       context.handle(
@@ -1608,6 +1628,10 @@ class $CategoriesTable extends Categories
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      nameGu: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_gu'],
+      ),
       type: $CategoriesTable.$convertertype.fromSql(
         attachedDatabase.typeMapping.read(
           DriftSqlType.string,
@@ -1651,6 +1675,10 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
   /// for user-created categories or once a built-in one is renamed.
   final String? systemKey;
   final String name;
+
+  /// Gujarati name of a custom category (shown when the app is in Gujarati).
+  /// Null for built-in categories and for custom ones made before 1.3.0.
+  final String? nameGu;
   final TransactionType type;
   final String iconKey;
   final int colorValue;
@@ -1662,6 +1690,7 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
     required this.id,
     this.systemKey,
     required this.name,
+    this.nameGu,
     required this.type,
     required this.iconKey,
     required this.colorValue,
@@ -1678,6 +1707,9 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
       map['system_key'] = Variable<String>(systemKey);
     }
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || nameGu != null) {
+      map['name_gu'] = Variable<String>(nameGu);
+    }
     {
       map['type'] = Variable<String>(
         $CategoriesTable.$convertertype.toSql(type),
@@ -1699,6 +1731,9 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
           ? const Value.absent()
           : Value(systemKey),
       name: Value(name),
+      nameGu: nameGu == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nameGu),
       type: Value(type),
       iconKey: Value(iconKey),
       colorValue: Value(colorValue),
@@ -1718,6 +1753,7 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
       id: serializer.fromJson<String>(json['id']),
       systemKey: serializer.fromJson<String?>(json['systemKey']),
       name: serializer.fromJson<String>(json['name']),
+      nameGu: serializer.fromJson<String?>(json['nameGu']),
       type: $CategoriesTable.$convertertype.fromJson(
         serializer.fromJson<String>(json['type']),
       ),
@@ -1736,6 +1772,7 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
       'id': serializer.toJson<String>(id),
       'systemKey': serializer.toJson<String?>(systemKey),
       'name': serializer.toJson<String>(name),
+      'nameGu': serializer.toJson<String?>(nameGu),
       'type': serializer.toJson<String>(
         $CategoriesTable.$convertertype.toJson(type),
       ),
@@ -1752,6 +1789,7 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
     String? id,
     Value<String?> systemKey = const Value.absent(),
     String? name,
+    Value<String?> nameGu = const Value.absent(),
     TransactionType? type,
     String? iconKey,
     int? colorValue,
@@ -1763,6 +1801,7 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
     id: id ?? this.id,
     systemKey: systemKey.present ? systemKey.value : this.systemKey,
     name: name ?? this.name,
+    nameGu: nameGu.present ? nameGu.value : this.nameGu,
     type: type ?? this.type,
     iconKey: iconKey ?? this.iconKey,
     colorValue: colorValue ?? this.colorValue,
@@ -1776,6 +1815,7 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
       id: data.id.present ? data.id.value : this.id,
       systemKey: data.systemKey.present ? data.systemKey.value : this.systemKey,
       name: data.name.present ? data.name.value : this.name,
+      nameGu: data.nameGu.present ? data.nameGu.value : this.nameGu,
       type: data.type.present ? data.type.value : this.type,
       iconKey: data.iconKey.present ? data.iconKey.value : this.iconKey,
       colorValue: data.colorValue.present
@@ -1796,6 +1836,7 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
           ..write('id: $id, ')
           ..write('systemKey: $systemKey, ')
           ..write('name: $name, ')
+          ..write('nameGu: $nameGu, ')
           ..write('type: $type, ')
           ..write('iconKey: $iconKey, ')
           ..write('colorValue: $colorValue, ')
@@ -1812,6 +1853,7 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
     id,
     systemKey,
     name,
+    nameGu,
     type,
     iconKey,
     colorValue,
@@ -1827,6 +1869,7 @@ class CategoryRow extends DataClass implements Insertable<CategoryRow> {
           other.id == this.id &&
           other.systemKey == this.systemKey &&
           other.name == this.name &&
+          other.nameGu == this.nameGu &&
           other.type == this.type &&
           other.iconKey == this.iconKey &&
           other.colorValue == this.colorValue &&
@@ -1840,6 +1883,7 @@ class CategoriesCompanion extends UpdateCompanion<CategoryRow> {
   final Value<String> id;
   final Value<String?> systemKey;
   final Value<String> name;
+  final Value<String?> nameGu;
   final Value<TransactionType> type;
   final Value<String> iconKey;
   final Value<int> colorValue;
@@ -1852,6 +1896,7 @@ class CategoriesCompanion extends UpdateCompanion<CategoryRow> {
     this.id = const Value.absent(),
     this.systemKey = const Value.absent(),
     this.name = const Value.absent(),
+    this.nameGu = const Value.absent(),
     this.type = const Value.absent(),
     this.iconKey = const Value.absent(),
     this.colorValue = const Value.absent(),
@@ -1865,6 +1910,7 @@ class CategoriesCompanion extends UpdateCompanion<CategoryRow> {
     required String id,
     this.systemKey = const Value.absent(),
     required String name,
+    this.nameGu = const Value.absent(),
     required TransactionType type,
     required String iconKey,
     required int colorValue,
@@ -1884,6 +1930,7 @@ class CategoriesCompanion extends UpdateCompanion<CategoryRow> {
     Expression<String>? id,
     Expression<String>? systemKey,
     Expression<String>? name,
+    Expression<String>? nameGu,
     Expression<String>? type,
     Expression<String>? iconKey,
     Expression<int>? colorValue,
@@ -1897,6 +1944,7 @@ class CategoriesCompanion extends UpdateCompanion<CategoryRow> {
       if (id != null) 'id': id,
       if (systemKey != null) 'system_key': systemKey,
       if (name != null) 'name': name,
+      if (nameGu != null) 'name_gu': nameGu,
       if (type != null) 'type': type,
       if (iconKey != null) 'icon_key': iconKey,
       if (colorValue != null) 'color_value': colorValue,
@@ -1912,6 +1960,7 @@ class CategoriesCompanion extends UpdateCompanion<CategoryRow> {
     Value<String>? id,
     Value<String?>? systemKey,
     Value<String>? name,
+    Value<String?>? nameGu,
     Value<TransactionType>? type,
     Value<String>? iconKey,
     Value<int>? colorValue,
@@ -1925,6 +1974,7 @@ class CategoriesCompanion extends UpdateCompanion<CategoryRow> {
       id: id ?? this.id,
       systemKey: systemKey ?? this.systemKey,
       name: name ?? this.name,
+      nameGu: nameGu ?? this.nameGu,
       type: type ?? this.type,
       iconKey: iconKey ?? this.iconKey,
       colorValue: colorValue ?? this.colorValue,
@@ -1951,6 +2001,9 @@ class CategoriesCompanion extends UpdateCompanion<CategoryRow> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (nameGu.present) {
+      map['name_gu'] = Variable<String>(nameGu.value);
     }
     if (type.present) {
       map['type'] = Variable<String>(
@@ -1983,6 +2036,7 @@ class CategoriesCompanion extends UpdateCompanion<CategoryRow> {
           ..write('id: $id, ')
           ..write('systemKey: $systemKey, ')
           ..write('name: $name, ')
+          ..write('nameGu: $nameGu, ')
           ..write('type: $type, ')
           ..write('iconKey: $iconKey, ')
           ..write('colorValue: $colorValue, ')
@@ -13804,6 +13858,7 @@ typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
   required String id,
   Value<String?> systemKey,
   required String name,
+  Value<String?> nameGu,
   required TransactionType type,
   required String iconKey,
   required int colorValue,
@@ -13817,6 +13872,7 @@ typedef $$CategoriesTableUpdateCompanionBuilder = CategoriesCompanion Function({
   Value<String> id,
   Value<String?> systemKey,
   Value<String> name,
+  Value<String?> nameGu,
   Value<TransactionType> type,
   Value<String> iconKey,
   Value<int> colorValue,
@@ -13897,6 +13953,11 @@ class $$CategoriesTableFilterComposer
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameGu => $composableBuilder(
+    column: $table.nameGu,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -14011,6 +14072,11 @@ class $$CategoriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get nameGu => $composableBuilder(
+    column: $table.nameGu,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get type => $composableBuilder(
     column: $table.type,
     builder: (column) => ColumnOrderings(column),
@@ -14060,6 +14126,9 @@ class $$CategoriesTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get nameGu =>
+      $composableBuilder(column: $table.nameGu, builder: (column) => column);
 
   GeneratedColumnWithTypeConverter<TransactionType, String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
@@ -14164,6 +14233,7 @@ class $$CategoriesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String?> systemKey = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<String?> nameGu = const Value.absent(),
                 Value<TransactionType> type = const Value.absent(),
                 Value<String> iconKey = const Value.absent(),
                 Value<int> colorValue = const Value.absent(),
@@ -14176,6 +14246,7 @@ class $$CategoriesTableTableManager
                 id: id,
                 systemKey: systemKey,
                 name: name,
+                nameGu: nameGu,
                 type: type,
                 iconKey: iconKey,
                 colorValue: colorValue,
@@ -14190,6 +14261,7 @@ class $$CategoriesTableTableManager
                 required String id,
                 Value<String?> systemKey = const Value.absent(),
                 required String name,
+                Value<String?> nameGu = const Value.absent(),
                 required TransactionType type,
                 required String iconKey,
                 required int colorValue,
@@ -14202,6 +14274,7 @@ class $$CategoriesTableTableManager
                 id: id,
                 systemKey: systemKey,
                 name: name,
+                nameGu: nameGu,
                 type: type,
                 iconKey: iconKey,
                 colorValue: colorValue,

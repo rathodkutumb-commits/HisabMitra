@@ -2398,6 +2398,18 @@ abstract class AppLocalizations {
   /// **'Category name'**
   String get categoryName;
 
+  /// No description provided for @categoryNameEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'Name (English)'**
+  String get categoryNameEnglish;
+
+  /// No description provided for @categoryNameGujarati.
+  ///
+  /// In en, this message translates to:
+  /// **'Name (Gujarati)'**
+  String get categoryNameGujarati;
+
   /// No description provided for @categoryIcon.
   ///
   /// In en, this message translates to:

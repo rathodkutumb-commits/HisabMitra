@@ -70,6 +70,7 @@ class TransactionRepository {
         m(t.description) |
             m(t.notes) |
             m(_db.categories.name) |
+            m(_db.categories.nameGu) |
             m(_db.persons.name),
       );
     }

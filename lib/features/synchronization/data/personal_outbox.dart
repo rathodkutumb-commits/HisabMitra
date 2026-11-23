@@ -223,6 +223,7 @@ Future<Map<String, Object?>> _categorySnapshot(
   return {
     'category_id': c.id,
     'category_name': c.name,
+    if (c.nameGu != null) 'category_name_gu': c.nameGu,
     'category_system_key': c.systemKey,
     'category_icon': c.iconKey,
     'category_color': c.colorValue,

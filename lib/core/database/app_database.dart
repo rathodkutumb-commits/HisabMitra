@@ -41,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Current schema version. Bump together with a new step in [migration]
   /// and a `dart run drift_dev make-migrations` schema dump.
-  static const int currentSchemaVersion = 4;
+  static const int currentSchemaVersion = 5;
 
   static const String fileName = 'hisabmitra.sqlite';
 
@@ -101,6 +101,10 @@ class AppDatabase extends _$AppDatabase {
           ),
         );
         await m.addColumn(schema.syncConflicts, schema.syncConflicts.scope);
+      },
+      from4To5: (m, schema) async {
+        // v5: custom categories can have a Gujarati name too.
+        await m.addColumn(schema.categories, schema.categories.nameGu);
       },
     ),
     beforeOpen: (details) async {

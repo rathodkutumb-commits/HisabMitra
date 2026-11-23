@@ -13,8 +13,8 @@ void main() {
   setUp(() => db = newTestDatabase());
   tearDown(() => db.close());
 
-  test('schema version is 4 (v4: personal records saved to the account)', () {
-    expect(db.schemaVersion, 4);
+  test('schema version is 5 (v5: custom categories have a Gujarati name)', () {
+    expect(db.schemaVersion, 5);
   });
 
   test('seeds all default categories exactly once', () async {

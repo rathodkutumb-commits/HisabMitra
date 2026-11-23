@@ -13,6 +13,7 @@ class CategoryDraft {
   const CategoryDraft({
     this.id,
     required this.name,
+    required this.nameGu,
     required this.type,
     required this.iconKey,
     required this.colorValue,
@@ -20,7 +21,12 @@ class CategoryDraft {
   });
 
   final String? id;
+
+  /// English name (also shown in Gujarati when no Gujarati name was given).
   final String name;
+
+  /// Gujarati name, shown when the app is in Gujarati.
+  final String nameGu;
   final TransactionType type;
   final String iconKey;
   final int colorValue;
@@ -66,7 +72,11 @@ class CategoryRepository {
 
   Future<String> save(CategoryDraft d) async {
     final name = d.name.trim();
+    final nameGu = d.nameGu.trim();
     if (name.isEmpty) throw const ValidationFailure('required');
+    if (nameGu.isEmpty && !d.keepSystemName) {
+      throw const ValidationFailure('required');
+    }
     final now = _clock.now();
     if (d.id == null) {
       final id = _ids.newId();
@@ -80,6 +90,7 @@ class CategoryRepository {
             CategoriesCompanion.insert(
               id: id,
               name: name,
+              nameGu: Value(nameGu),
               type: d.type,
               iconKey: d.iconKey,
               colorValue: d.colorValue,
@@ -98,6 +109,7 @@ class CategoryRepository {
       )..where((c) => c.id.equals(d.id!))).write(
         CategoriesCompanion(
           name: d.keepSystemName ? const Value.absent() : Value(name),
+          nameGu: d.keepSystemName ? const Value.absent() : Value(nameGu),
           systemKey: d.keepSystemName
               ? const Value.absent()
               : const Value(null),

@@ -331,6 +331,7 @@ class PersonalRowApplier {
     )..addColumns([maxOrder])).getSingle();
     final now = _clock.now();
     final name = (r['category_name'] as String?)?.trim();
+    final nameGu = (r['category_name_gu'] as String?)?.trim();
     await _db
         .into(_db.categories)
         .insert(
@@ -338,6 +339,7 @@ class PersonalRowApplier {
             id: id,
             systemKey: Value(keyTaken ? null : key),
             name: name == null || name.isEmpty ? 'Category' : name,
+            nameGu: Value(nameGu == null || nameGu.isEmpty ? null : nameGu),
             type: type,
             iconKey: r['category_icon'] as String? ?? 'more',
             colorValue: _int(r['category_color']) ?? 0xFF607D8B,

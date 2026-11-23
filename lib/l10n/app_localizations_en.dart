@@ -1366,6 +1366,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoryName => 'Category name';
 
   @override
+  String get categoryNameEnglish => 'Name (English)';
+
+  @override
+  String get categoryNameGujarati => 'Name (Gujarati)';
+
+  @override
   String get categoryIcon => 'Icon';
 
   @override
