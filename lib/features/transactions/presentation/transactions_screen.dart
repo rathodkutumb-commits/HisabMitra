@@ -108,6 +108,12 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
               )
             : Text(l.transactionsTitle),
         actions: [
+          if (!_searching)
+            TextButton.icon(
+              onPressed: () => context.push(Routes.family),
+              icon: const Icon(Icons.family_restroom_rounded),
+              label: Text(l.familyButton),
+            ),
           IconButton(
             tooltip: _searching ? l.close : l.search,
             icon: Icon(_searching ? Icons.close_rounded : Icons.search_rounded),

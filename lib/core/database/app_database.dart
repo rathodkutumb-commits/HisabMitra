@@ -29,6 +29,9 @@ part 'app_database.g.dart';
     GroupExpensesCache,
     GroupExpenseSplitsCache,
     GroupSettlementsCache,
+    FamilyHisabsCache,
+    FamilyMembersCache,
+    FamilyEntriesCache,
     Attachments,
     Reminders,
     SyncOutbox,
@@ -41,7 +44,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Current schema version. Bump together with a new step in [migration]
   /// and a `dart run drift_dev make-migrations` schema dump.
-  static const int currentSchemaVersion = 5;
+  static const int currentSchemaVersion = 6;
 
   static const String fileName = 'hisabmitra.sqlite';
 
@@ -105,6 +108,14 @@ class AppDatabase extends _$AppDatabase {
       from4To5: (m, schema) async {
         // v5: custom categories can have a Gujarati name too.
         await m.addColumn(schema.categories, schema.categories.nameGu);
+      },
+      from5To6: (m, schema) async {
+        // v6: Family hisab (shared home purse) — three new tables.
+        await m.createTable(schema.familyHisabsCache);
+        await m.createTable(schema.familyMembersCache);
+        await m.createTable(schema.familyEntriesCache);
+        await m.createIndex(schema.idxFamilyMembersFamily);
+        await m.createIndex(schema.idxFamilyEntriesFamily);
       },
     ),
     beforeOpen: (details) async {

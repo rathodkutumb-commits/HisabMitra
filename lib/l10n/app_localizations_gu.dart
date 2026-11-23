@@ -1184,6 +1184,201 @@ class AppLocalizationsGu extends AppLocalizations {
       'કુલ હપ્તા, ચૂકવેલા હપ્તા કરતાં વધુ હોવા જોઈએ.';
 
   @override
+  String familyPersonRemoved(String name) {
+    return '$name (દૂર કરેલ)';
+  }
+
+  @override
+  String get entityFamily => 'પરિવારના હિસાબની વિગતો';
+
+  @override
+  String get entityFamilyPerson => 'પરિવારના હિસાબમાં વ્યક્તિ';
+
+  @override
+  String get entityFamilyEntry => 'પરિવારના હિસાબની એન્ટ્રી';
+
+  @override
+  String get familyHisab => 'પરિવારનો હિસાબ';
+
+  @override
+  String get familyHisabs => 'પરિવારના હિસાબ';
+
+  @override
+  String get familyButton => 'પરિવાર';
+
+  @override
+  String get familyMoreSubtitle => 'ઘરના પૈસા સાથે: પગાર, ફાળો અને ખર્ચ';
+
+  @override
+  String get familyCreate => 'પરિવારનો હિસાબ બનાવો';
+
+  @override
+  String get familyEdit => 'પરિવારનો હિસાબ બદલો';
+
+  @override
+  String get familyNew => 'નવો પરિવારનો હિસાબ';
+
+  @override
+  String get familyDelete => 'પરિવારનો હિસાબ કાઢી નાખો';
+
+  @override
+  String get familyDeleteMessage =>
+      'તેની વ્યક્તિઓ અને બધી એન્ટ્રીઓ એકાઉન્ટમાંથી કાઢી નાખવામાં આવશે.';
+
+  @override
+  String get familyEmptyTitle => 'ઘરનો હિસાબ સાથે રાખો';
+
+  @override
+  String get familyEmptyMessage =>
+      'દરેકનો પગાર અને ફાળો ઉમેરો, ઘરનો દરેક ખર્ચ લખો અને દર મહિને પાસબુક જેવું સ્ટેટમેન્ટ મેળવો.';
+
+  @override
+  String get familyName => 'નામ';
+
+  @override
+  String get familyNameHint => 'દા.ત. ઘર';
+
+  @override
+  String get familyStartingBalance => 'શરૂઆતની રકમ (વૈકલ્પિક)';
+
+  @override
+  String get familyStartingBalanceHelp => 'આજે ઘરમાં પહેલેથી રહેલી રકમ';
+
+  @override
+  String get familyPeople => 'વ્યક્તિઓ';
+
+  @override
+  String get familyPersonName => 'વ્યક્તિનું નામ';
+
+  @override
+  String get familyAddPerson => 'વ્યક્તિ ઉમેરો';
+
+  @override
+  String get familyEditPerson => 'વ્યક્તિ બદલો';
+
+  @override
+  String get familyDeletePerson => 'વ્યક્તિ કાઢી નાખો';
+
+  @override
+  String familyDeletePersonMessage(String name) {
+    return 'તેમની એન્ટ્રીઓ હિસાબમાં રહેશે અને \"$name (દૂર કરેલ)\" તરીકે દેખાશે.';
+  }
+
+  @override
+  String get familyHasApp => 'એપ છે';
+
+  @override
+  String get familyNotJoined => 'જોડાયા નથી';
+
+  @override
+  String familyShowRemoved(int count) {
+    return 'દૂર કરેલ બતાવો ($count)';
+  }
+
+  @override
+  String get familyHideRemoved => 'દૂર કરેલ છુપાવો';
+
+  @override
+  String get familySaved => 'પરિવારનો હિસાબ સાચવ્યો';
+
+  @override
+  String get familyPersonSaved => 'વ્યક્તિ સાચવી';
+
+  @override
+  String get familyPersonDeleted => 'વ્યક્તિ કાઢી નાખી. તેમની એન્ટ્રીઓ રહેશે.';
+
+  @override
+  String get familyNoEntriesYet => 'આ મહિને હજી કોઈ એન્ટ્રી નથી';
+
+  @override
+  String get familyOpening => 'ઉઘડતી સિલક';
+
+  @override
+  String get familyClosing => 'બંધ સિલક';
+
+  @override
+  String get familyMoneyIn => 'જમા';
+
+  @override
+  String get familyMoneyOut => 'ખર્ચ';
+
+  @override
+  String get familyAddMoneyIn => 'જમા ઉમેરો';
+
+  @override
+  String get familyAddMoneyOut => 'ખર્ચ ઉમેરો';
+
+  @override
+  String get familyEditMoneyIn => 'જમા બદલો';
+
+  @override
+  String get familyEditMoneyOut => 'ખર્ચ બદલો';
+
+  @override
+  String get familyKindSalary => 'પગાર';
+
+  @override
+  String get familyKindExtraIncome => 'વધારાની આવક';
+
+  @override
+  String get familyKindContribution => 'ફાળો';
+
+  @override
+  String get familyPerson => 'વ્યક્તિ';
+
+  @override
+  String get familyKind => 'પ્રકાર';
+
+  @override
+  String get familyDoubleCountNote =>
+      'અહીંના પૈસા તમારી હોમ સ્ક્રીન પર ગણાઈ જાય છે — તમારો પગાર ફરીથી હિસાબમાં ઉમેરશો નહીં.';
+
+  @override
+  String get familyEntrySaved => 'એન્ટ્રી સાચવી';
+
+  @override
+  String get familyEntryDeleted => 'એન્ટ્રી કાઢી નાખી';
+
+  @override
+  String get familyPreviousMonth => 'પાછલો મહિનો';
+
+  @override
+  String get familyNextMonth => 'આગલો મહિનો';
+
+  @override
+  String get familyStatement => 'સ્ટેટમેન્ટ';
+
+  @override
+  String get familyStatementTitle => 'પરિવારના હિસાબનું સ્ટેટમેન્ટ';
+
+  @override
+  String get familyByPerson => 'વ્યક્તિ મુજબ';
+
+  @override
+  String get familyPaidForHome => 'ઘર માટે ચૂકવ્યા';
+
+  @override
+  String familyPersonLine(String name, String moneyIn, String paid) {
+    return '$name — જમા $moneyIn · ખર્ચ $paid';
+  }
+
+  @override
+  String familySendWhatsApp(String name) {
+    return '$nameને WhatsApp પર મોકલો';
+  }
+
+  @override
+  String get familyMoneyInCredit => 'જમા (આવક)';
+
+  @override
+  String get familyMoneyOutDebit => 'ખર્ચ (ઉધાર)';
+
+  @override
+  String familyIncludesLine(String moneyIn, String moneyOut) {
+    return 'પરિવારનો હિસાબ સામેલ: જમા $moneyIn · ખર્ચ $moneyOut';
+  }
+
+  @override
   String greeting(String name) {
     return 'નમસ્તે, $name';
   }

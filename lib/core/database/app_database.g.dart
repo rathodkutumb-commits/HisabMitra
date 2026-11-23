@@ -8661,6 +8661,2371 @@ class GroupSettlementsCacheCompanion
   }
 }
 
+class $FamilyHisabsCacheTable extends FamilyHisabsCache
+    with TableInfo<$FamilyHisabsCacheTable, FamilyRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FamilyHisabsCacheTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('localOnly'),
+      ).withConverter<SyncState>($FamilyHisabsCacheTable.$convertersyncState);
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 80,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _openingBalancePaiseMeta =
+      const VerificationMeta('openingBalancePaise');
+  @override
+  late final GeneratedColumn<int> openingBalancePaise = GeneratedColumn<int>(
+    'opening_balance_paise',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _ownerUserIdMeta = const VerificationMeta(
+    'ownerUserId',
+  );
+  @override
+  late final GeneratedColumn<String> ownerUserId = GeneratedColumn<String>(
+    'owner_user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    revision,
+    syncState,
+    deletedAt,
+    id,
+    name,
+    openingBalancePaise,
+    ownerUserId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'family_hisabs_cache';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FamilyRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('opening_balance_paise')) {
+      context.handle(
+        _openingBalancePaiseMeta,
+        openingBalancePaise.isAcceptableOrUnknown(
+          data['opening_balance_paise']!,
+          _openingBalancePaiseMeta,
+        ),
+      );
+    }
+    if (data.containsKey('owner_user_id')) {
+      context.handle(
+        _ownerUserIdMeta,
+        ownerUserId.isAcceptableOrUnknown(
+          data['owner_user_id']!,
+          _ownerUserIdMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FamilyRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FamilyRow(
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      syncState: $FamilyHisabsCacheTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      openingBalancePaise: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}opening_balance_paise'],
+      )!,
+      ownerUserId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owner_user_id'],
+      ),
+    );
+  }
+
+  @override
+  $FamilyHisabsCacheTable createAlias(String alias) {
+    return $FamilyHisabsCacheTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
+}
+
+class FamilyRow extends DataClass implements Insertable<FamilyRow> {
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  /// Server revision this local row is based on (0 = never synced).
+  final int revision;
+  final SyncState syncState;
+  final DateTime? deletedAt;
+  final String id;
+  final String name;
+
+  /// Money in the home when the Family hisab was started (paise).
+  final int openingBalancePaise;
+
+  /// Supabase user id of the creator (null until known).
+  final String? ownerUserId;
+  const FamilyRow({
+    required this.createdAt,
+    required this.updatedAt,
+    required this.revision,
+    required this.syncState,
+    this.deletedAt,
+    required this.id,
+    required this.name,
+    required this.openingBalancePaise,
+    this.ownerUserId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['revision'] = Variable<int>(revision);
+    {
+      map['sync_state'] = Variable<String>(
+        $FamilyHisabsCacheTable.$convertersyncState.toSql(syncState),
+      );
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['opening_balance_paise'] = Variable<int>(openingBalancePaise);
+    if (!nullToAbsent || ownerUserId != null) {
+      map['owner_user_id'] = Variable<String>(ownerUserId);
+    }
+    return map;
+  }
+
+  FamilyHisabsCacheCompanion toCompanion(bool nullToAbsent) {
+    return FamilyHisabsCacheCompanion(
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      revision: Value(revision),
+      syncState: Value(syncState),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      id: Value(id),
+      name: Value(name),
+      openingBalancePaise: Value(openingBalancePaise),
+      ownerUserId: ownerUserId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(ownerUserId),
+    );
+  }
+
+  factory FamilyRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FamilyRow(
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      revision: serializer.fromJson<int>(json['revision']),
+      syncState: $FamilyHisabsCacheTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      openingBalancePaise: serializer.fromJson<int>(
+        json['openingBalancePaise'],
+      ),
+      ownerUserId: serializer.fromJson<String?>(json['ownerUserId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'revision': serializer.toJson<int>(revision),
+      'syncState': serializer.toJson<String>(
+        $FamilyHisabsCacheTable.$convertersyncState.toJson(syncState),
+      ),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'openingBalancePaise': serializer.toJson<int>(openingBalancePaise),
+      'ownerUserId': serializer.toJson<String?>(ownerUserId),
+    };
+  }
+
+  FamilyRow copyWith({
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    int? revision,
+    SyncState? syncState,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? id,
+    String? name,
+    int? openingBalancePaise,
+    Value<String?> ownerUserId = const Value.absent(),
+  }) => FamilyRow(
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    revision: revision ?? this.revision,
+    syncState: syncState ?? this.syncState,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    id: id ?? this.id,
+    name: name ?? this.name,
+    openingBalancePaise: openingBalancePaise ?? this.openingBalancePaise,
+    ownerUserId: ownerUserId.present ? ownerUserId.value : this.ownerUserId,
+  );
+  FamilyRow copyWithCompanion(FamilyHisabsCacheCompanion data) {
+    return FamilyRow(
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      openingBalancePaise: data.openingBalancePaise.present
+          ? data.openingBalancePaise.value
+          : this.openingBalancePaise,
+      ownerUserId: data.ownerUserId.present
+          ? data.ownerUserId.value
+          : this.ownerUserId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyRow(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('openingBalancePaise: $openingBalancePaise, ')
+          ..write('ownerUserId: $ownerUserId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    revision,
+    syncState,
+    deletedAt,
+    id,
+    name,
+    openingBalancePaise,
+    ownerUserId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FamilyRow &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.revision == this.revision &&
+          other.syncState == this.syncState &&
+          other.deletedAt == this.deletedAt &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.openingBalancePaise == this.openingBalancePaise &&
+          other.ownerUserId == this.ownerUserId);
+}
+
+class FamilyHisabsCacheCompanion extends UpdateCompanion<FamilyRow> {
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> revision;
+  final Value<SyncState> syncState;
+  final Value<DateTime?> deletedAt;
+  final Value<String> id;
+  final Value<String> name;
+  final Value<int> openingBalancePaise;
+  final Value<String?> ownerUserId;
+  final Value<int> rowid;
+  const FamilyHisabsCacheCompanion({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.openingBalancePaise = const Value.absent(),
+    this.ownerUserId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FamilyHisabsCacheCompanion.insert({
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    required String id,
+    required String name,
+    this.openingBalancePaise = const Value.absent(),
+    this.ownerUserId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       id = Value(id),
+       name = Value(name);
+  static Insertable<FamilyRow> custom({
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? revision,
+    Expression<String>? syncState,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<int>? openingBalancePaise,
+    Expression<String>? ownerUserId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (revision != null) 'revision': revision,
+      if (syncState != null) 'sync_state': syncState,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (openingBalancePaise != null)
+        'opening_balance_paise': openingBalancePaise,
+      if (ownerUserId != null) 'owner_user_id': ownerUserId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FamilyHisabsCacheCompanion copyWith({
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? revision,
+    Value<SyncState>? syncState,
+    Value<DateTime?>? deletedAt,
+    Value<String>? id,
+    Value<String>? name,
+    Value<int>? openingBalancePaise,
+    Value<String?>? ownerUserId,
+    Value<int>? rowid,
+  }) {
+    return FamilyHisabsCacheCompanion(
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      revision: revision ?? this.revision,
+      syncState: syncState ?? this.syncState,
+      deletedAt: deletedAt ?? this.deletedAt,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      openingBalancePaise: openingBalancePaise ?? this.openingBalancePaise,
+      ownerUserId: ownerUserId ?? this.ownerUserId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $FamilyHisabsCacheTable.$convertersyncState.toSql(syncState.value),
+      );
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (openingBalancePaise.present) {
+      map['opening_balance_paise'] = Variable<int>(openingBalancePaise.value);
+    }
+    if (ownerUserId.present) {
+      map['owner_user_id'] = Variable<String>(ownerUserId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyHisabsCacheCompanion(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('openingBalancePaise: $openingBalancePaise, ')
+          ..write('ownerUserId: $ownerUserId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FamilyMembersCacheTable extends FamilyMembersCache
+    with TableInfo<$FamilyMembersCacheTable, FamilyMemberRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FamilyMembersCacheTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('localOnly'),
+      ).withConverter<SyncState>($FamilyMembersCacheTable.$convertersyncState);
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _familyIdMeta = const VerificationMeta(
+    'familyId',
+  );
+  @override
+  late final GeneratedColumn<String> familyId = GeneratedColumn<String>(
+    'family_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 80,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  @override
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+    'phone',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+    'role',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('member'),
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('active'),
+  );
+  static const VerificationMeta _isSelfMeta = const VerificationMeta('isSelf');
+  @override
+  late final GeneratedColumn<bool> isSelf = GeneratedColumn<bool>(
+    'is_self',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_self" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    revision,
+    syncState,
+    deletedAt,
+    id,
+    familyId,
+    userId,
+    name,
+    phone,
+    role,
+    status,
+    isSelf,
+    sortOrder,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'family_members_cache';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FamilyMemberRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('family_id')) {
+      context.handle(
+        _familyIdMeta,
+        familyId.isAcceptableOrUnknown(data['family_id']!, _familyIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_familyIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('phone')) {
+      context.handle(
+        _phoneMeta,
+        phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta),
+      );
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+        _roleMeta,
+        role.isAcceptableOrUnknown(data['role']!, _roleMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('is_self')) {
+      context.handle(
+        _isSelfMeta,
+        isSelf.isAcceptableOrUnknown(data['is_self']!, _isSelfMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FamilyMemberRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FamilyMemberRow(
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      syncState: $FamilyMembersCacheTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      familyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      phone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone'],
+      ),
+      role: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      isSelf: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_self'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+    );
+  }
+
+  @override
+  $FamilyMembersCacheTable createAlias(String alias) {
+    return $FamilyMembersCacheTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
+}
+
+class FamilyMemberRow extends DataClass implements Insertable<FamilyMemberRow> {
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  /// Server revision this local row is based on (0 = never synced).
+  final int revision;
+  final SyncState syncState;
+  final DateTime? deletedAt;
+  final String id;
+  final String familyId;
+  final String? userId;
+  final String name;
+  final String? phone;
+
+  /// `owner`, `admin` or `member`.
+  final String role;
+
+  /// `active` or `removed`.
+  final String status;
+
+  /// This phone's user.
+  final bool isSelf;
+  final int sortOrder;
+  const FamilyMemberRow({
+    required this.createdAt,
+    required this.updatedAt,
+    required this.revision,
+    required this.syncState,
+    this.deletedAt,
+    required this.id,
+    required this.familyId,
+    this.userId,
+    required this.name,
+    this.phone,
+    required this.role,
+    required this.status,
+    required this.isSelf,
+    required this.sortOrder,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['revision'] = Variable<int>(revision);
+    {
+      map['sync_state'] = Variable<String>(
+        $FamilyMembersCacheTable.$convertersyncState.toSql(syncState),
+      );
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['id'] = Variable<String>(id);
+    map['family_id'] = Variable<String>(familyId);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || phone != null) {
+      map['phone'] = Variable<String>(phone);
+    }
+    map['role'] = Variable<String>(role);
+    map['status'] = Variable<String>(status);
+    map['is_self'] = Variable<bool>(isSelf);
+    map['sort_order'] = Variable<int>(sortOrder);
+    return map;
+  }
+
+  FamilyMembersCacheCompanion toCompanion(bool nullToAbsent) {
+    return FamilyMembersCacheCompanion(
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      revision: Value(revision),
+      syncState: Value(syncState),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      id: Value(id),
+      familyId: Value(familyId),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
+      name: Value(name),
+      phone: phone == null && nullToAbsent
+          ? const Value.absent()
+          : Value(phone),
+      role: Value(role),
+      status: Value(status),
+      isSelf: Value(isSelf),
+      sortOrder: Value(sortOrder),
+    );
+  }
+
+  factory FamilyMemberRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FamilyMemberRow(
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      revision: serializer.fromJson<int>(json['revision']),
+      syncState: $FamilyMembersCacheTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      familyId: serializer.fromJson<String>(json['familyId']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      name: serializer.fromJson<String>(json['name']),
+      phone: serializer.fromJson<String?>(json['phone']),
+      role: serializer.fromJson<String>(json['role']),
+      status: serializer.fromJson<String>(json['status']),
+      isSelf: serializer.fromJson<bool>(json['isSelf']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'revision': serializer.toJson<int>(revision),
+      'syncState': serializer.toJson<String>(
+        $FamilyMembersCacheTable.$convertersyncState.toJson(syncState),
+      ),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'id': serializer.toJson<String>(id),
+      'familyId': serializer.toJson<String>(familyId),
+      'userId': serializer.toJson<String?>(userId),
+      'name': serializer.toJson<String>(name),
+      'phone': serializer.toJson<String?>(phone),
+      'role': serializer.toJson<String>(role),
+      'status': serializer.toJson<String>(status),
+      'isSelf': serializer.toJson<bool>(isSelf),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+    };
+  }
+
+  FamilyMemberRow copyWith({
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    int? revision,
+    SyncState? syncState,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? id,
+    String? familyId,
+    Value<String?> userId = const Value.absent(),
+    String? name,
+    Value<String?> phone = const Value.absent(),
+    String? role,
+    String? status,
+    bool? isSelf,
+    int? sortOrder,
+  }) => FamilyMemberRow(
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    revision: revision ?? this.revision,
+    syncState: syncState ?? this.syncState,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    id: id ?? this.id,
+    familyId: familyId ?? this.familyId,
+    userId: userId.present ? userId.value : this.userId,
+    name: name ?? this.name,
+    phone: phone.present ? phone.value : this.phone,
+    role: role ?? this.role,
+    status: status ?? this.status,
+    isSelf: isSelf ?? this.isSelf,
+    sortOrder: sortOrder ?? this.sortOrder,
+  );
+  FamilyMemberRow copyWithCompanion(FamilyMembersCacheCompanion data) {
+    return FamilyMemberRow(
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      id: data.id.present ? data.id.value : this.id,
+      familyId: data.familyId.present ? data.familyId.value : this.familyId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      name: data.name.present ? data.name.value : this.name,
+      phone: data.phone.present ? data.phone.value : this.phone,
+      role: data.role.present ? data.role.value : this.role,
+      status: data.status.present ? data.status.value : this.status,
+      isSelf: data.isSelf.present ? data.isSelf.value : this.isSelf,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyMemberRow(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('id: $id, ')
+          ..write('familyId: $familyId, ')
+          ..write('userId: $userId, ')
+          ..write('name: $name, ')
+          ..write('phone: $phone, ')
+          ..write('role: $role, ')
+          ..write('status: $status, ')
+          ..write('isSelf: $isSelf, ')
+          ..write('sortOrder: $sortOrder')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    revision,
+    syncState,
+    deletedAt,
+    id,
+    familyId,
+    userId,
+    name,
+    phone,
+    role,
+    status,
+    isSelf,
+    sortOrder,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FamilyMemberRow &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.revision == this.revision &&
+          other.syncState == this.syncState &&
+          other.deletedAt == this.deletedAt &&
+          other.id == this.id &&
+          other.familyId == this.familyId &&
+          other.userId == this.userId &&
+          other.name == this.name &&
+          other.phone == this.phone &&
+          other.role == this.role &&
+          other.status == this.status &&
+          other.isSelf == this.isSelf &&
+          other.sortOrder == this.sortOrder);
+}
+
+class FamilyMembersCacheCompanion extends UpdateCompanion<FamilyMemberRow> {
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> revision;
+  final Value<SyncState> syncState;
+  final Value<DateTime?> deletedAt;
+  final Value<String> id;
+  final Value<String> familyId;
+  final Value<String?> userId;
+  final Value<String> name;
+  final Value<String?> phone;
+  final Value<String> role;
+  final Value<String> status;
+  final Value<bool> isSelf;
+  final Value<int> sortOrder;
+  final Value<int> rowid;
+  const FamilyMembersCacheCompanion({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.familyId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.role = const Value.absent(),
+    this.status = const Value.absent(),
+    this.isSelf = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FamilyMembersCacheCompanion.insert({
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    required String id,
+    required String familyId,
+    this.userId = const Value.absent(),
+    required String name,
+    this.phone = const Value.absent(),
+    this.role = const Value.absent(),
+    this.status = const Value.absent(),
+    this.isSelf = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       id = Value(id),
+       familyId = Value(familyId),
+       name = Value(name);
+  static Insertable<FamilyMemberRow> custom({
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? revision,
+    Expression<String>? syncState,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? id,
+    Expression<String>? familyId,
+    Expression<String>? userId,
+    Expression<String>? name,
+    Expression<String>? phone,
+    Expression<String>? role,
+    Expression<String>? status,
+    Expression<bool>? isSelf,
+    Expression<int>? sortOrder,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (revision != null) 'revision': revision,
+      if (syncState != null) 'sync_state': syncState,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (id != null) 'id': id,
+      if (familyId != null) 'family_id': familyId,
+      if (userId != null) 'user_id': userId,
+      if (name != null) 'name': name,
+      if (phone != null) 'phone': phone,
+      if (role != null) 'role': role,
+      if (status != null) 'status': status,
+      if (isSelf != null) 'is_self': isSelf,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FamilyMembersCacheCompanion copyWith({
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? revision,
+    Value<SyncState>? syncState,
+    Value<DateTime?>? deletedAt,
+    Value<String>? id,
+    Value<String>? familyId,
+    Value<String?>? userId,
+    Value<String>? name,
+    Value<String?>? phone,
+    Value<String>? role,
+    Value<String>? status,
+    Value<bool>? isSelf,
+    Value<int>? sortOrder,
+    Value<int>? rowid,
+  }) {
+    return FamilyMembersCacheCompanion(
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      revision: revision ?? this.revision,
+      syncState: syncState ?? this.syncState,
+      deletedAt: deletedAt ?? this.deletedAt,
+      id: id ?? this.id,
+      familyId: familyId ?? this.familyId,
+      userId: userId ?? this.userId,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      role: role ?? this.role,
+      status: status ?? this.status,
+      isSelf: isSelf ?? this.isSelf,
+      sortOrder: sortOrder ?? this.sortOrder,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $FamilyMembersCacheTable.$convertersyncState.toSql(syncState.value),
+      );
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (familyId.present) {
+      map['family_id'] = Variable<String>(familyId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (isSelf.present) {
+      map['is_self'] = Variable<bool>(isSelf.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyMembersCacheCompanion(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('id: $id, ')
+          ..write('familyId: $familyId, ')
+          ..write('userId: $userId, ')
+          ..write('name: $name, ')
+          ..write('phone: $phone, ')
+          ..write('role: $role, ')
+          ..write('status: $status, ')
+          ..write('isSelf: $isSelf, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FamilyEntriesCacheTable extends FamilyEntriesCache
+    with TableInfo<$FamilyEntriesCacheTable, FamilyEntryRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FamilyEntriesCacheTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _revisionMeta = const VerificationMeta(
+    'revision',
+  );
+  @override
+  late final GeneratedColumn<int> revision = GeneratedColumn<int>(
+    'revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('localOnly'),
+      ).withConverter<SyncState>($FamilyEntriesCacheTable.$convertersyncState);
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _familyIdMeta = const VerificationMeta(
+    'familyId',
+  );
+  @override
+  late final GeneratedColumn<String> familyId = GeneratedColumn<String>(
+    'family_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountPaiseMeta = const VerificationMeta(
+    'amountPaise',
+  );
+  @override
+  late final GeneratedColumn<int> amountPaise = GeneratedColumn<int>(
+    'amount_paise',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entryDateMeta = const VerificationMeta(
+    'entryDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> entryDate = GeneratedColumn<DateTime>(
+    'entry_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryIdMeta = const VerificationMeta(
+    'categoryId',
+  );
+  @override
+  late final GeneratedColumn<String> categoryId = GeneratedColumn<String>(
+    'category_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryNameMeta = const VerificationMeta(
+    'categoryName',
+  );
+  @override
+  late final GeneratedColumn<String> categoryName = GeneratedColumn<String>(
+    'category_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryNameGuMeta = const VerificationMeta(
+    'categoryNameGu',
+  );
+  @override
+  late final GeneratedColumn<String> categoryNameGu = GeneratedColumn<String>(
+    'category_name_gu',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryIconMeta = const VerificationMeta(
+    'categoryIcon',
+  );
+  @override
+  late final GeneratedColumn<String> categoryIcon = GeneratedColumn<String>(
+    'category_icon',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryColorMeta = const VerificationMeta(
+    'categoryColor',
+  );
+  @override
+  late final GeneratedColumn<int> categoryColor = GeneratedColumn<int>(
+    'category_color',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    revision,
+    syncState,
+    deletedAt,
+    id,
+    familyId,
+    memberId,
+    kind,
+    amountPaise,
+    entryDate,
+    categoryId,
+    categoryName,
+    categoryNameGu,
+    categoryIcon,
+    categoryColor,
+    note,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'family_entries_cache';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FamilyEntryRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('revision')) {
+      context.handle(
+        _revisionMeta,
+        revision.isAcceptableOrUnknown(data['revision']!, _revisionMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('family_id')) {
+      context.handle(
+        _familyIdMeta,
+        familyId.isAcceptableOrUnknown(data['family_id']!, _familyIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_familyIdMeta);
+    }
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memberIdMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('amount_paise')) {
+      context.handle(
+        _amountPaiseMeta,
+        amountPaise.isAcceptableOrUnknown(
+          data['amount_paise']!,
+          _amountPaiseMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountPaiseMeta);
+    }
+    if (data.containsKey('entry_date')) {
+      context.handle(
+        _entryDateMeta,
+        entryDate.isAcceptableOrUnknown(data['entry_date']!, _entryDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entryDateMeta);
+    }
+    if (data.containsKey('category_id')) {
+      context.handle(
+        _categoryIdMeta,
+        categoryId.isAcceptableOrUnknown(data['category_id']!, _categoryIdMeta),
+      );
+    }
+    if (data.containsKey('category_name')) {
+      context.handle(
+        _categoryNameMeta,
+        categoryName.isAcceptableOrUnknown(
+          data['category_name']!,
+          _categoryNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('category_name_gu')) {
+      context.handle(
+        _categoryNameGuMeta,
+        categoryNameGu.isAcceptableOrUnknown(
+          data['category_name_gu']!,
+          _categoryNameGuMeta,
+        ),
+      );
+    }
+    if (data.containsKey('category_icon')) {
+      context.handle(
+        _categoryIconMeta,
+        categoryIcon.isAcceptableOrUnknown(
+          data['category_icon']!,
+          _categoryIconMeta,
+        ),
+      );
+    }
+    if (data.containsKey('category_color')) {
+      context.handle(
+        _categoryColorMeta,
+        categoryColor.isAcceptableOrUnknown(
+          data['category_color']!,
+          _categoryColorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FamilyEntryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FamilyEntryRow(
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      revision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}revision'],
+      )!,
+      syncState: $FamilyEntriesCacheTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      familyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_id'],
+      )!,
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      amountPaise: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_paise'],
+      )!,
+      entryDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}entry_date'],
+      )!,
+      categoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_id'],
+      ),
+      categoryName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_name'],
+      ),
+      categoryNameGu: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_name_gu'],
+      ),
+      categoryIcon: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_icon'],
+      ),
+      categoryColor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}category_color'],
+      ),
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+    );
+  }
+
+  @override
+  $FamilyEntriesCacheTable createAlias(String alias) {
+    return $FamilyEntriesCacheTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
+}
+
+class FamilyEntryRow extends DataClass implements Insertable<FamilyEntryRow> {
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  /// Server revision this local row is based on (0 = never synced).
+  final int revision;
+  final SyncState syncState;
+  final DateTime? deletedAt;
+  final String id;
+  final String familyId;
+  final String memberId;
+  final String kind;
+  final int amountPaise;
+  final DateTime entryDate;
+  final String? categoryId;
+  final String? categoryName;
+  final String? categoryNameGu;
+  final String? categoryIcon;
+  final int? categoryColor;
+  final String? note;
+  const FamilyEntryRow({
+    required this.createdAt,
+    required this.updatedAt,
+    required this.revision,
+    required this.syncState,
+    this.deletedAt,
+    required this.id,
+    required this.familyId,
+    required this.memberId,
+    required this.kind,
+    required this.amountPaise,
+    required this.entryDate,
+    this.categoryId,
+    this.categoryName,
+    this.categoryNameGu,
+    this.categoryIcon,
+    this.categoryColor,
+    this.note,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['revision'] = Variable<int>(revision);
+    {
+      map['sync_state'] = Variable<String>(
+        $FamilyEntriesCacheTable.$convertersyncState.toSql(syncState),
+      );
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['id'] = Variable<String>(id);
+    map['family_id'] = Variable<String>(familyId);
+    map['member_id'] = Variable<String>(memberId);
+    map['kind'] = Variable<String>(kind);
+    map['amount_paise'] = Variable<int>(amountPaise);
+    map['entry_date'] = Variable<DateTime>(entryDate);
+    if (!nullToAbsent || categoryId != null) {
+      map['category_id'] = Variable<String>(categoryId);
+    }
+    if (!nullToAbsent || categoryName != null) {
+      map['category_name'] = Variable<String>(categoryName);
+    }
+    if (!nullToAbsent || categoryNameGu != null) {
+      map['category_name_gu'] = Variable<String>(categoryNameGu);
+    }
+    if (!nullToAbsent || categoryIcon != null) {
+      map['category_icon'] = Variable<String>(categoryIcon);
+    }
+    if (!nullToAbsent || categoryColor != null) {
+      map['category_color'] = Variable<int>(categoryColor);
+    }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    return map;
+  }
+
+  FamilyEntriesCacheCompanion toCompanion(bool nullToAbsent) {
+    return FamilyEntriesCacheCompanion(
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      revision: Value(revision),
+      syncState: Value(syncState),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      id: Value(id),
+      familyId: Value(familyId),
+      memberId: Value(memberId),
+      kind: Value(kind),
+      amountPaise: Value(amountPaise),
+      entryDate: Value(entryDate),
+      categoryId: categoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryId),
+      categoryName: categoryName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryName),
+      categoryNameGu: categoryNameGu == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryNameGu),
+      categoryIcon: categoryIcon == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryIcon),
+      categoryColor: categoryColor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryColor),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+    );
+  }
+
+  factory FamilyEntryRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FamilyEntryRow(
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      revision: serializer.fromJson<int>(json['revision']),
+      syncState: $FamilyEntriesCacheTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      familyId: serializer.fromJson<String>(json['familyId']),
+      memberId: serializer.fromJson<String>(json['memberId']),
+      kind: serializer.fromJson<String>(json['kind']),
+      amountPaise: serializer.fromJson<int>(json['amountPaise']),
+      entryDate: serializer.fromJson<DateTime>(json['entryDate']),
+      categoryId: serializer.fromJson<String?>(json['categoryId']),
+      categoryName: serializer.fromJson<String?>(json['categoryName']),
+      categoryNameGu: serializer.fromJson<String?>(json['categoryNameGu']),
+      categoryIcon: serializer.fromJson<String?>(json['categoryIcon']),
+      categoryColor: serializer.fromJson<int?>(json['categoryColor']),
+      note: serializer.fromJson<String?>(json['note']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'revision': serializer.toJson<int>(revision),
+      'syncState': serializer.toJson<String>(
+        $FamilyEntriesCacheTable.$convertersyncState.toJson(syncState),
+      ),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'id': serializer.toJson<String>(id),
+      'familyId': serializer.toJson<String>(familyId),
+      'memberId': serializer.toJson<String>(memberId),
+      'kind': serializer.toJson<String>(kind),
+      'amountPaise': serializer.toJson<int>(amountPaise),
+      'entryDate': serializer.toJson<DateTime>(entryDate),
+      'categoryId': serializer.toJson<String?>(categoryId),
+      'categoryName': serializer.toJson<String?>(categoryName),
+      'categoryNameGu': serializer.toJson<String?>(categoryNameGu),
+      'categoryIcon': serializer.toJson<String?>(categoryIcon),
+      'categoryColor': serializer.toJson<int?>(categoryColor),
+      'note': serializer.toJson<String?>(note),
+    };
+  }
+
+  FamilyEntryRow copyWith({
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    int? revision,
+    SyncState? syncState,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? id,
+    String? familyId,
+    String? memberId,
+    String? kind,
+    int? amountPaise,
+    DateTime? entryDate,
+    Value<String?> categoryId = const Value.absent(),
+    Value<String?> categoryName = const Value.absent(),
+    Value<String?> categoryNameGu = const Value.absent(),
+    Value<String?> categoryIcon = const Value.absent(),
+    Value<int?> categoryColor = const Value.absent(),
+    Value<String?> note = const Value.absent(),
+  }) => FamilyEntryRow(
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    revision: revision ?? this.revision,
+    syncState: syncState ?? this.syncState,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    id: id ?? this.id,
+    familyId: familyId ?? this.familyId,
+    memberId: memberId ?? this.memberId,
+    kind: kind ?? this.kind,
+    amountPaise: amountPaise ?? this.amountPaise,
+    entryDate: entryDate ?? this.entryDate,
+    categoryId: categoryId.present ? categoryId.value : this.categoryId,
+    categoryName: categoryName.present ? categoryName.value : this.categoryName,
+    categoryNameGu: categoryNameGu.present
+        ? categoryNameGu.value
+        : this.categoryNameGu,
+    categoryIcon: categoryIcon.present ? categoryIcon.value : this.categoryIcon,
+    categoryColor: categoryColor.present
+        ? categoryColor.value
+        : this.categoryColor,
+    note: note.present ? note.value : this.note,
+  );
+  FamilyEntryRow copyWithCompanion(FamilyEntriesCacheCompanion data) {
+    return FamilyEntryRow(
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      revision: data.revision.present ? data.revision.value : this.revision,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      id: data.id.present ? data.id.value : this.id,
+      familyId: data.familyId.present ? data.familyId.value : this.familyId,
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      amountPaise: data.amountPaise.present
+          ? data.amountPaise.value
+          : this.amountPaise,
+      entryDate: data.entryDate.present ? data.entryDate.value : this.entryDate,
+      categoryId: data.categoryId.present
+          ? data.categoryId.value
+          : this.categoryId,
+      categoryName: data.categoryName.present
+          ? data.categoryName.value
+          : this.categoryName,
+      categoryNameGu: data.categoryNameGu.present
+          ? data.categoryNameGu.value
+          : this.categoryNameGu,
+      categoryIcon: data.categoryIcon.present
+          ? data.categoryIcon.value
+          : this.categoryIcon,
+      categoryColor: data.categoryColor.present
+          ? data.categoryColor.value
+          : this.categoryColor,
+      note: data.note.present ? data.note.value : this.note,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyEntryRow(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('id: $id, ')
+          ..write('familyId: $familyId, ')
+          ..write('memberId: $memberId, ')
+          ..write('kind: $kind, ')
+          ..write('amountPaise: $amountPaise, ')
+          ..write('entryDate: $entryDate, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('categoryName: $categoryName, ')
+          ..write('categoryNameGu: $categoryNameGu, ')
+          ..write('categoryIcon: $categoryIcon, ')
+          ..write('categoryColor: $categoryColor, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    revision,
+    syncState,
+    deletedAt,
+    id,
+    familyId,
+    memberId,
+    kind,
+    amountPaise,
+    entryDate,
+    categoryId,
+    categoryName,
+    categoryNameGu,
+    categoryIcon,
+    categoryColor,
+    note,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FamilyEntryRow &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.revision == this.revision &&
+          other.syncState == this.syncState &&
+          other.deletedAt == this.deletedAt &&
+          other.id == this.id &&
+          other.familyId == this.familyId &&
+          other.memberId == this.memberId &&
+          other.kind == this.kind &&
+          other.amountPaise == this.amountPaise &&
+          other.entryDate == this.entryDate &&
+          other.categoryId == this.categoryId &&
+          other.categoryName == this.categoryName &&
+          other.categoryNameGu == this.categoryNameGu &&
+          other.categoryIcon == this.categoryIcon &&
+          other.categoryColor == this.categoryColor &&
+          other.note == this.note);
+}
+
+class FamilyEntriesCacheCompanion extends UpdateCompanion<FamilyEntryRow> {
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> revision;
+  final Value<SyncState> syncState;
+  final Value<DateTime?> deletedAt;
+  final Value<String> id;
+  final Value<String> familyId;
+  final Value<String> memberId;
+  final Value<String> kind;
+  final Value<int> amountPaise;
+  final Value<DateTime> entryDate;
+  final Value<String?> categoryId;
+  final Value<String?> categoryName;
+  final Value<String?> categoryNameGu;
+  final Value<String?> categoryIcon;
+  final Value<int?> categoryColor;
+  final Value<String?> note;
+  final Value<int> rowid;
+  const FamilyEntriesCacheCompanion({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.familyId = const Value.absent(),
+    this.memberId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.amountPaise = const Value.absent(),
+    this.entryDate = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.categoryName = const Value.absent(),
+    this.categoryNameGu = const Value.absent(),
+    this.categoryIcon = const Value.absent(),
+    this.categoryColor = const Value.absent(),
+    this.note = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FamilyEntriesCacheCompanion.insert({
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.revision = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    required String id,
+    required String familyId,
+    required String memberId,
+    required String kind,
+    required int amountPaise,
+    required DateTime entryDate,
+    this.categoryId = const Value.absent(),
+    this.categoryName = const Value.absent(),
+    this.categoryNameGu = const Value.absent(),
+    this.categoryIcon = const Value.absent(),
+    this.categoryColor = const Value.absent(),
+    this.note = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt),
+       id = Value(id),
+       familyId = Value(familyId),
+       memberId = Value(memberId),
+       kind = Value(kind),
+       amountPaise = Value(amountPaise),
+       entryDate = Value(entryDate);
+  static Insertable<FamilyEntryRow> custom({
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? revision,
+    Expression<String>? syncState,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? id,
+    Expression<String>? familyId,
+    Expression<String>? memberId,
+    Expression<String>? kind,
+    Expression<int>? amountPaise,
+    Expression<DateTime>? entryDate,
+    Expression<String>? categoryId,
+    Expression<String>? categoryName,
+    Expression<String>? categoryNameGu,
+    Expression<String>? categoryIcon,
+    Expression<int>? categoryColor,
+    Expression<String>? note,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (revision != null) 'revision': revision,
+      if (syncState != null) 'sync_state': syncState,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (id != null) 'id': id,
+      if (familyId != null) 'family_id': familyId,
+      if (memberId != null) 'member_id': memberId,
+      if (kind != null) 'kind': kind,
+      if (amountPaise != null) 'amount_paise': amountPaise,
+      if (entryDate != null) 'entry_date': entryDate,
+      if (categoryId != null) 'category_id': categoryId,
+      if (categoryName != null) 'category_name': categoryName,
+      if (categoryNameGu != null) 'category_name_gu': categoryNameGu,
+      if (categoryIcon != null) 'category_icon': categoryIcon,
+      if (categoryColor != null) 'category_color': categoryColor,
+      if (note != null) 'note': note,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FamilyEntriesCacheCompanion copyWith({
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? revision,
+    Value<SyncState>? syncState,
+    Value<DateTime?>? deletedAt,
+    Value<String>? id,
+    Value<String>? familyId,
+    Value<String>? memberId,
+    Value<String>? kind,
+    Value<int>? amountPaise,
+    Value<DateTime>? entryDate,
+    Value<String?>? categoryId,
+    Value<String?>? categoryName,
+    Value<String?>? categoryNameGu,
+    Value<String?>? categoryIcon,
+    Value<int?>? categoryColor,
+    Value<String?>? note,
+    Value<int>? rowid,
+  }) {
+    return FamilyEntriesCacheCompanion(
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      revision: revision ?? this.revision,
+      syncState: syncState ?? this.syncState,
+      deletedAt: deletedAt ?? this.deletedAt,
+      id: id ?? this.id,
+      familyId: familyId ?? this.familyId,
+      memberId: memberId ?? this.memberId,
+      kind: kind ?? this.kind,
+      amountPaise: amountPaise ?? this.amountPaise,
+      entryDate: entryDate ?? this.entryDate,
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
+      categoryNameGu: categoryNameGu ?? this.categoryNameGu,
+      categoryIcon: categoryIcon ?? this.categoryIcon,
+      categoryColor: categoryColor ?? this.categoryColor,
+      note: note ?? this.note,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (revision.present) {
+      map['revision'] = Variable<int>(revision.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $FamilyEntriesCacheTable.$convertersyncState.toSql(syncState.value),
+      );
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (familyId.present) {
+      map['family_id'] = Variable<String>(familyId.value);
+    }
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (amountPaise.present) {
+      map['amount_paise'] = Variable<int>(amountPaise.value);
+    }
+    if (entryDate.present) {
+      map['entry_date'] = Variable<DateTime>(entryDate.value);
+    }
+    if (categoryId.present) {
+      map['category_id'] = Variable<String>(categoryId.value);
+    }
+    if (categoryName.present) {
+      map['category_name'] = Variable<String>(categoryName.value);
+    }
+    if (categoryNameGu.present) {
+      map['category_name_gu'] = Variable<String>(categoryNameGu.value);
+    }
+    if (categoryIcon.present) {
+      map['category_icon'] = Variable<String>(categoryIcon.value);
+    }
+    if (categoryColor.present) {
+      map['category_color'] = Variable<int>(categoryColor.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FamilyEntriesCacheCompanion(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('revision: $revision, ')
+          ..write('syncState: $syncState, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('id: $id, ')
+          ..write('familyId: $familyId, ')
+          ..write('memberId: $memberId, ')
+          ..write('kind: $kind, ')
+          ..write('amountPaise: $amountPaise, ')
+          ..write('entryDate: $entryDate, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('categoryName: $categoryName, ')
+          ..write('categoryNameGu: $categoryNameGu, ')
+          ..write('categoryIcon: $categoryIcon, ')
+          ..write('categoryColor: $categoryColor, ')
+          ..write('note: $note, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $AttachmentsTable extends Attachments
     with TableInfo<$AttachmentsTable, AttachmentRow> {
   @override
@@ -12869,6 +15234,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $GroupExpenseSplitsCacheTable(this);
   late final $GroupSettlementsCacheTable groupSettlementsCache =
       $GroupSettlementsCacheTable(this);
+  late final $FamilyHisabsCacheTable familyHisabsCache =
+      $FamilyHisabsCacheTable(this);
+  late final $FamilyMembersCacheTable familyMembersCache =
+      $FamilyMembersCacheTable(this);
+  late final $FamilyEntriesCacheTable familyEntriesCache =
+      $FamilyEntriesCacheTable(this);
   late final $AttachmentsTable attachments = $AttachmentsTable(this);
   late final $RemindersTable reminders = $RemindersTable(this);
   late final $SyncOutboxTable syncOutbox = $SyncOutboxTable(this);
@@ -12926,6 +15297,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_gsettle_group',
     'CREATE INDEX idx_gsettle_group ON group_settlements_cache (group_id, settled_on)',
   );
+  late final Index idxFamilyMembersFamily = Index(
+    'idx_family_members_family',
+    'CREATE INDEX idx_family_members_family ON family_members_cache (family_id)',
+  );
+  late final Index idxFamilyEntriesFamily = Index(
+    'idx_family_entries_family',
+    'CREATE INDEX idx_family_entries_family ON family_entries_cache (family_id)',
+  );
   late final Index idxAttTxn = Index(
     'idx_att_txn',
     'CREATE INDEX idx_att_txn ON attachments (transaction_id)',
@@ -12968,6 +15347,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     groupExpensesCache,
     groupExpenseSplitsCache,
     groupSettlementsCache,
+    familyHisabsCache,
+    familyMembersCache,
+    familyEntriesCache,
     attachments,
     reminders,
     syncOutbox,
@@ -12986,6 +15368,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxGexpGroupDate,
     idxGsplitExpense,
     idxGsettleGroup,
+    idxFamilyMembersFamily,
+    idxFamilyEntriesFamily,
     idxAttTxn,
     idxAttLedger,
     idxAttGexp,
@@ -20640,6 +23024,1154 @@ typedef $$GroupSettlementsCacheTableProcessedTableManager =
       GroupSettlementRow,
       PrefetchHooks Function({bool groupId, bool fromMemberId, bool toMemberId})
     >;
+typedef $$FamilyHisabsCacheTableCreateCompanionBuilder =
+    FamilyHisabsCacheCompanion Function({
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
+      Value<DateTime?> deletedAt,
+      required String id,
+      required String name,
+      Value<int> openingBalancePaise,
+      Value<String?> ownerUserId,
+      Value<int> rowid,
+    });
+typedef $$FamilyHisabsCacheTableUpdateCompanionBuilder =
+    FamilyHisabsCacheCompanion Function({
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
+      Value<DateTime?> deletedAt,
+      Value<String> id,
+      Value<String> name,
+      Value<int> openingBalancePaise,
+      Value<String?> ownerUserId,
+      Value<int> rowid,
+    });
+
+class $$FamilyHisabsCacheTableFilterComposer
+    extends Composer<_$AppDatabase, $FamilyHisabsCacheTable> {
+  $$FamilyHisabsCacheTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get openingBalancePaise => $composableBuilder(
+    column: $table.openingBalancePaise,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ownerUserId => $composableBuilder(
+    column: $table.ownerUserId,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FamilyHisabsCacheTableOrderingComposer
+    extends Composer<_$AppDatabase, $FamilyHisabsCacheTable> {
+  $$FamilyHisabsCacheTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get openingBalancePaise => $composableBuilder(
+    column: $table.openingBalancePaise,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ownerUserId => $composableBuilder(
+    column: $table.ownerUserId,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FamilyHisabsCacheTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FamilyHisabsCacheTable> {
+  $$FamilyHisabsCacheTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get openingBalancePaise => $composableBuilder(
+    column: $table.openingBalancePaise,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get ownerUserId => $composableBuilder(
+    column: $table.ownerUserId,
+    builder: (column) => column,
+  );
+}
+
+class $$FamilyHisabsCacheTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FamilyHisabsCacheTable,
+          FamilyRow,
+          $$FamilyHisabsCacheTableFilterComposer,
+          $$FamilyHisabsCacheTableOrderingComposer,
+          $$FamilyHisabsCacheTableAnnotationComposer,
+          $$FamilyHisabsCacheTableCreateCompanionBuilder,
+          $$FamilyHisabsCacheTableUpdateCompanionBuilder,
+          (
+            FamilyRow,
+            BaseReferences<_$AppDatabase, $FamilyHisabsCacheTable, FamilyRow>,
+          ),
+          FamilyRow,
+          PrefetchHooks Function()
+        > {
+  $$FamilyHisabsCacheTableTableManager(
+    _$AppDatabase db,
+    $FamilyHisabsCacheTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FamilyHisabsCacheTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FamilyHisabsCacheTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FamilyHisabsCacheTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> openingBalancePaise = const Value.absent(),
+                Value<String?> ownerUserId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyHisabsCacheCompanion(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
+                deletedAt: deletedAt,
+                id: id,
+                name: name,
+                openingBalancePaise: openingBalancePaise,
+                ownerUserId: ownerUserId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String id,
+                required String name,
+                Value<int> openingBalancePaise = const Value.absent(),
+                Value<String?> ownerUserId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyHisabsCacheCompanion.insert(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
+                deletedAt: deletedAt,
+                id: id,
+                name: name,
+                openingBalancePaise: openingBalancePaise,
+                ownerUserId: ownerUserId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FamilyHisabsCacheTable, FamilyRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $FamilyHisabsCacheTable,
+                    FamilyRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FamilyHisabsCacheTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FamilyHisabsCacheTable,
+      FamilyRow,
+      $$FamilyHisabsCacheTableFilterComposer,
+      $$FamilyHisabsCacheTableOrderingComposer,
+      $$FamilyHisabsCacheTableAnnotationComposer,
+      $$FamilyHisabsCacheTableCreateCompanionBuilder,
+      $$FamilyHisabsCacheTableUpdateCompanionBuilder,
+      (
+        FamilyRow,
+        BaseReferences<_$AppDatabase, $FamilyHisabsCacheTable, FamilyRow>,
+      ),
+      FamilyRow,
+      PrefetchHooks Function()
+    >;
+typedef $$FamilyMembersCacheTableCreateCompanionBuilder =
+    FamilyMembersCacheCompanion Function({
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
+      Value<DateTime?> deletedAt,
+      required String id,
+      required String familyId,
+      Value<String?> userId,
+      required String name,
+      Value<String?> phone,
+      Value<String> role,
+      Value<String> status,
+      Value<bool> isSelf,
+      Value<int> sortOrder,
+      Value<int> rowid,
+    });
+typedef $$FamilyMembersCacheTableUpdateCompanionBuilder =
+    FamilyMembersCacheCompanion Function({
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
+      Value<DateTime?> deletedAt,
+      Value<String> id,
+      Value<String> familyId,
+      Value<String?> userId,
+      Value<String> name,
+      Value<String?> phone,
+      Value<String> role,
+      Value<String> status,
+      Value<bool> isSelf,
+      Value<int> sortOrder,
+      Value<int> rowid,
+    });
+
+class $$FamilyMembersCacheTableFilterComposer
+    extends Composer<_$AppDatabase, $FamilyMembersCacheTable> {
+  $$FamilyMembersCacheTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get familyId => $composableBuilder(
+    column: $table.familyId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSelf => $composableBuilder(
+    column: $table.isSelf,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FamilyMembersCacheTableOrderingComposer
+    extends Composer<_$AppDatabase, $FamilyMembersCacheTable> {
+  $$FamilyMembersCacheTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get familyId => $composableBuilder(
+    column: $table.familyId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSelf => $composableBuilder(
+    column: $table.isSelf,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FamilyMembersCacheTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FamilyMembersCacheTable> {
+  $$FamilyMembersCacheTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get familyId =>
+      $composableBuilder(column: $table.familyId, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get phone =>
+      $composableBuilder(column: $table.phone, builder: (column) => column);
+
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSelf =>
+      $composableBuilder(column: $table.isSelf, builder: (column) => column);
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+}
+
+class $$FamilyMembersCacheTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FamilyMembersCacheTable,
+          FamilyMemberRow,
+          $$FamilyMembersCacheTableFilterComposer,
+          $$FamilyMembersCacheTableOrderingComposer,
+          $$FamilyMembersCacheTableAnnotationComposer,
+          $$FamilyMembersCacheTableCreateCompanionBuilder,
+          $$FamilyMembersCacheTableUpdateCompanionBuilder,
+          (
+            FamilyMemberRow,
+            BaseReferences<
+              _$AppDatabase,
+              $FamilyMembersCacheTable,
+              FamilyMemberRow
+            >,
+          ),
+          FamilyMemberRow,
+          PrefetchHooks Function()
+        > {
+  $$FamilyMembersCacheTableTableManager(
+    _$AppDatabase db,
+    $FamilyMembersCacheTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FamilyMembersCacheTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FamilyMembersCacheTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FamilyMembersCacheTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> familyId = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> phone = const Value.absent(),
+                Value<String> role = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<bool> isSelf = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyMembersCacheCompanion(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
+                deletedAt: deletedAt,
+                id: id,
+                familyId: familyId,
+                userId: userId,
+                name: name,
+                phone: phone,
+                role: role,
+                status: status,
+                isSelf: isSelf,
+                sortOrder: sortOrder,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String id,
+                required String familyId,
+                Value<String?> userId = const Value.absent(),
+                required String name,
+                Value<String?> phone = const Value.absent(),
+                Value<String> role = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<bool> isSelf = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyMembersCacheCompanion.insert(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
+                deletedAt: deletedAt,
+                id: id,
+                familyId: familyId,
+                userId: userId,
+                name: name,
+                phone: phone,
+                role: role,
+                status: status,
+                isSelf: isSelf,
+                sortOrder: sortOrder,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FamilyMembersCacheTable, FamilyMemberRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $FamilyMembersCacheTable,
+                    FamilyMemberRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FamilyMembersCacheTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FamilyMembersCacheTable,
+      FamilyMemberRow,
+      $$FamilyMembersCacheTableFilterComposer,
+      $$FamilyMembersCacheTableOrderingComposer,
+      $$FamilyMembersCacheTableAnnotationComposer,
+      $$FamilyMembersCacheTableCreateCompanionBuilder,
+      $$FamilyMembersCacheTableUpdateCompanionBuilder,
+      (
+        FamilyMemberRow,
+        BaseReferences<
+          _$AppDatabase,
+          $FamilyMembersCacheTable,
+          FamilyMemberRow
+        >,
+      ),
+      FamilyMemberRow,
+      PrefetchHooks Function()
+    >;
+typedef $$FamilyEntriesCacheTableCreateCompanionBuilder =
+    FamilyEntriesCacheCompanion Function({
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
+      Value<DateTime?> deletedAt,
+      required String id,
+      required String familyId,
+      required String memberId,
+      required String kind,
+      required int amountPaise,
+      required DateTime entryDate,
+      Value<String?> categoryId,
+      Value<String?> categoryName,
+      Value<String?> categoryNameGu,
+      Value<String?> categoryIcon,
+      Value<int?> categoryColor,
+      Value<String?> note,
+      Value<int> rowid,
+    });
+typedef $$FamilyEntriesCacheTableUpdateCompanionBuilder =
+    FamilyEntriesCacheCompanion Function({
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> revision,
+      Value<SyncState> syncState,
+      Value<DateTime?> deletedAt,
+      Value<String> id,
+      Value<String> familyId,
+      Value<String> memberId,
+      Value<String> kind,
+      Value<int> amountPaise,
+      Value<DateTime> entryDate,
+      Value<String?> categoryId,
+      Value<String?> categoryName,
+      Value<String?> categoryNameGu,
+      Value<String?> categoryIcon,
+      Value<int?> categoryColor,
+      Value<String?> note,
+      Value<int> rowid,
+    });
+
+class $$FamilyEntriesCacheTableFilterComposer
+    extends Composer<_$AppDatabase, $FamilyEntriesCacheTable> {
+  $$FamilyEntriesCacheTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get familyId => $composableBuilder(
+    column: $table.familyId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountPaise => $composableBuilder(
+    column: $table.amountPaise,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get entryDate => $composableBuilder(
+    column: $table.entryDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get categoryId => $composableBuilder(
+    column: $table.categoryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get categoryName => $composableBuilder(
+    column: $table.categoryName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get categoryNameGu => $composableBuilder(
+    column: $table.categoryNameGu,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get categoryIcon => $composableBuilder(
+    column: $table.categoryIcon,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get categoryColor => $composableBuilder(
+    column: $table.categoryColor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FamilyEntriesCacheTableOrderingComposer
+    extends Composer<_$AppDatabase, $FamilyEntriesCacheTable> {
+  $$FamilyEntriesCacheTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get revision => $composableBuilder(
+    column: $table.revision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get familyId => $composableBuilder(
+    column: $table.familyId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountPaise => $composableBuilder(
+    column: $table.amountPaise,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get entryDate => $composableBuilder(
+    column: $table.entryDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get categoryId => $composableBuilder(
+    column: $table.categoryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get categoryName => $composableBuilder(
+    column: $table.categoryName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get categoryNameGu => $composableBuilder(
+    column: $table.categoryNameGu,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get categoryIcon => $composableBuilder(
+    column: $table.categoryIcon,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get categoryColor => $composableBuilder(
+    column: $table.categoryColor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FamilyEntriesCacheTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FamilyEntriesCacheTable> {
+  $$FamilyEntriesCacheTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get revision =>
+      $composableBuilder(column: $table.revision, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get familyId =>
+      $composableBuilder(column: $table.familyId, builder: (column) => column);
+
+  GeneratedColumn<String> get memberId =>
+      $composableBuilder(column: $table.memberId, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<int> get amountPaise => $composableBuilder(
+    column: $table.amountPaise,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get entryDate =>
+      $composableBuilder(column: $table.entryDate, builder: (column) => column);
+
+  GeneratedColumn<String> get categoryId => $composableBuilder(
+    column: $table.categoryId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get categoryName => $composableBuilder(
+    column: $table.categoryName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get categoryNameGu => $composableBuilder(
+    column: $table.categoryNameGu,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get categoryIcon => $composableBuilder(
+    column: $table.categoryIcon,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get categoryColor => $composableBuilder(
+    column: $table.categoryColor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+}
+
+class $$FamilyEntriesCacheTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FamilyEntriesCacheTable,
+          FamilyEntryRow,
+          $$FamilyEntriesCacheTableFilterComposer,
+          $$FamilyEntriesCacheTableOrderingComposer,
+          $$FamilyEntriesCacheTableAnnotationComposer,
+          $$FamilyEntriesCacheTableCreateCompanionBuilder,
+          $$FamilyEntriesCacheTableUpdateCompanionBuilder,
+          (
+            FamilyEntryRow,
+            BaseReferences<
+              _$AppDatabase,
+              $FamilyEntriesCacheTable,
+              FamilyEntryRow
+            >,
+          ),
+          FamilyEntryRow,
+          PrefetchHooks Function()
+        > {
+  $$FamilyEntriesCacheTableTableManager(
+    _$AppDatabase db,
+    $FamilyEntriesCacheTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FamilyEntriesCacheTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FamilyEntriesCacheTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FamilyEntriesCacheTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> familyId = const Value.absent(),
+                Value<String> memberId = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<int> amountPaise = const Value.absent(),
+                Value<DateTime> entryDate = const Value.absent(),
+                Value<String?> categoryId = const Value.absent(),
+                Value<String?> categoryName = const Value.absent(),
+                Value<String?> categoryNameGu = const Value.absent(),
+                Value<String?> categoryIcon = const Value.absent(),
+                Value<int?> categoryColor = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyEntriesCacheCompanion(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
+                deletedAt: deletedAt,
+                id: id,
+                familyId: familyId,
+                memberId: memberId,
+                kind: kind,
+                amountPaise: amountPaise,
+                entryDate: entryDate,
+                categoryId: categoryId,
+                categoryName: categoryName,
+                categoryNameGu: categoryNameGu,
+                categoryIcon: categoryIcon,
+                categoryColor: categoryColor,
+                note: note,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> revision = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required String id,
+                required String familyId,
+                required String memberId,
+                required String kind,
+                required int amountPaise,
+                required DateTime entryDate,
+                Value<String?> categoryId = const Value.absent(),
+                Value<String?> categoryName = const Value.absent(),
+                Value<String?> categoryNameGu = const Value.absent(),
+                Value<String?> categoryIcon = const Value.absent(),
+                Value<int?> categoryColor = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FamilyEntriesCacheCompanion.insert(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                revision: revision,
+                syncState: syncState,
+                deletedAt: deletedAt,
+                id: id,
+                familyId: familyId,
+                memberId: memberId,
+                kind: kind,
+                amountPaise: amountPaise,
+                entryDate: entryDate,
+                categoryId: categoryId,
+                categoryName: categoryName,
+                categoryNameGu: categoryNameGu,
+                categoryIcon: categoryIcon,
+                categoryColor: categoryColor,
+                note: note,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FamilyEntriesCacheTable, FamilyEntryRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $FamilyEntriesCacheTable,
+                    FamilyEntryRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FamilyEntriesCacheTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FamilyEntriesCacheTable,
+      FamilyEntryRow,
+      $$FamilyEntriesCacheTableFilterComposer,
+      $$FamilyEntriesCacheTableOrderingComposer,
+      $$FamilyEntriesCacheTableAnnotationComposer,
+      $$FamilyEntriesCacheTableCreateCompanionBuilder,
+      $$FamilyEntriesCacheTableUpdateCompanionBuilder,
+      (
+        FamilyEntryRow,
+        BaseReferences<_$AppDatabase, $FamilyEntriesCacheTable, FamilyEntryRow>,
+      ),
+      FamilyEntryRow,
+      PrefetchHooks Function()
+    >;
 typedef $$AttachmentsTableCreateCompanionBuilder =
     AttachmentsCompanion Function({
       Value<int> revision,
@@ -23270,6 +26802,12 @@ class $AppDatabaseManager {
       );
   $$GroupSettlementsCacheTableTableManager get groupSettlementsCache =>
       $$GroupSettlementsCacheTableTableManager(_db, _db.groupSettlementsCache);
+  $$FamilyHisabsCacheTableTableManager get familyHisabsCache =>
+      $$FamilyHisabsCacheTableTableManager(_db, _db.familyHisabsCache);
+  $$FamilyMembersCacheTableTableManager get familyMembersCache =>
+      $$FamilyMembersCacheTableTableManager(_db, _db.familyMembersCache);
+  $$FamilyEntriesCacheTableTableManager get familyEntriesCache =>
+      $$FamilyEntriesCacheTableTableManager(_db, _db.familyEntriesCache);
   $$AttachmentsTableTableManager get attachments =>
       $$AttachmentsTableTableManager(_db, _db.attachments);
   $$RemindersTableTableManager get reminders =>

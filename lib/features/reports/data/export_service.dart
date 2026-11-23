@@ -71,6 +71,10 @@ class ExportService {
           palette: fmt.prefs.palette,
         );
 
+  /// Renders [doc] in the app's language and palette into a PDF file.
+  Future<File> pdf(String baseName, ReportDocument doc, Formatters fmt) async =>
+      _write(baseName, 'pdf', await _renderer(fmt).render(doc));
+
   List<String> _txnHeaders(AppLocalizations l) => [
     l.date,
     l.colType,

@@ -12,6 +12,7 @@ import '../../../core/utils/stream_combine.dart';
 import '../../reminders/data/reminder_repository.dart';
 import '../domain/cloud_models.dart';
 import '../domain/personal_entity.dart';
+import 'family_rows.dart';
 import 'personal_rows.dart';
 import 'cloud_gateway.dart';
 
@@ -93,8 +94,16 @@ class SyncService {
   /// Writes personal records from the server into the phone's copy.
   late final personal = PersonalRowApplier(_db, _clock, scheduler: _scheduler);
 
+  /// Writes Family hisab rows from the server into the phone's copy.
+  late final familyRows = FamilyRowApplier(
+    _db,
+    _clock,
+    myUserId: () => _myUserId,
+  );
+
   static const cursorKey = 'sync.cursor';
   static const personalCursorKey = 'sync.personalCursor';
+  static const familyCursorKey = 'sync.familyCursor';
   static const lastSuccessKey = 'sync.lastSuccess';
   static const _pageSize = 500;
 
@@ -328,6 +337,19 @@ class SyncService {
           );
           return;
         }
+        if (op.scope == 'family') {
+          await familyRows.setState(
+            op.entityType,
+            op.entityId,
+            revision: revision,
+            state: remaining.isEmpty ? SyncState.synced : SyncState.pending,
+          );
+          if (op.entityType == 'family' && op.baseRevision == 0) {
+            // The server created "You" with the Family hisab.
+            await familyRows.markOwnerSynced(op.groupId);
+          }
+          return;
+        }
         await _setEntityState(
           op.entityType,
           op.entityId,
@@ -404,6 +426,14 @@ class SyncService {
       await personal.setState(type, op.entityId, state: SyncState.conflict);
       return;
     }
+    if (op.scope == 'family') {
+      await familyRows.setState(
+        op.entityType,
+        op.entityId,
+        state: SyncState.conflict,
+      );
+      return;
+    }
     await _setEntityState(
       op.entityType,
       op.entityId,
@@ -478,7 +508,8 @@ class SyncService {
       if (events.length < _pageSize) break;
     }
     final groups = await _applyInbox();
-    return groups + await pullPersonal();
+    final personalRows = await pullPersonal();
+    return groups + personalRows + await pullFamily();
   }
 
   // ------------------------------------------------------- personal pull
@@ -637,6 +668,161 @@ class SyncService {
       }
     }
     return applied;
+  }
+
+  // --------------------------------------------------------- family pull
+
+  /// Downloads changes of the user's Family hisabs after the stored cursor.
+  /// A Family hisab the phone doesn't have yet is loaded whole (snapshot).
+  Future<int> pullFamily() async {
+    var after = int.tryParse(await _readSetting(familyCursorKey) ?? '') ?? 0;
+    while (true) {
+      final events = await _cloud.pullFamilyEvents(
+        afterSeq: after,
+        limit: _pageSize,
+      );
+      if (events.isEmpty) break;
+      await _db.batch((b) {
+        for (final e in events) {
+          b.insert(
+            _db.syncInbox,
+            SyncInboxCompanion.insert(
+              seq: e.seq,
+              scope: const Value('family'),
+              groupId: e.groupId,
+              entityType: e.entityType,
+              entityId: e.entityId,
+              opType: e.opType,
+              payload: jsonEncode(e.payload),
+              remoteRevision: e.revision,
+              opId: Value(e.opId),
+              receivedAt: _clock.now(),
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
+        }
+      });
+      after = events.last.seq;
+      await _writeSetting(familyCursorKey, '$after');
+      if (events.length < _pageSize) break;
+    }
+    return _applyFamilyInbox();
+  }
+
+  Future<int> _applyFamilyInbox() async {
+    final pending =
+        await (_db.select(_db.syncInbox)
+              ..where((i) => i.appliedAt.isNull() & i.scope.equals('family'))
+              ..orderBy([(i) => OrderingTerm.asc(i.seq)]))
+            .get();
+    if (pending.isEmpty) return 0;
+    final conflicted = {for (final c in await _openConflictRows()) c.entityId};
+    final queued = {
+      for (final o in await (_db.select(
+        _db.syncOutbox,
+      )..where((o) => o.scope.equals('family'))).get())
+        o.entityId,
+    };
+    // Deleted before this phone ever had it: nothing to show.
+    final deletedFamilies = {
+      for (final e in pending)
+        if (e.entityType == 'family' && e.opType == 'delete') e.groupId,
+    };
+    final loadedUpTo = <String, int>{};
+    var applied = 0;
+    for (final e in pending) {
+      Future<void> done({String? error}) =>
+          (_db.update(_db.syncInbox)
+                ..where((i) => i.scope.equals('family') & i.seq.equals(e.seq)))
+              .write(
+                error == null
+                    ? SyncInboxCompanion(
+                        appliedAt: Value(_clock.now()),
+                        error: const Value(null),
+                      )
+                    : SyncInboxCompanion(error: Value(error)),
+              );
+      final known =
+          loadedUpTo.containsKey(e.groupId) ||
+          await (_db.select(
+                _db.familyHisabsCache,
+              )..where((f) => f.id.equals(e.groupId))).getSingleOrNull() !=
+              null;
+      if (!known) {
+        if (deletedFamilies.contains(e.groupId)) {
+          await done();
+          continue;
+        }
+        try {
+          loadedUpTo[e.groupId] = await loadFamilySnapshot(e.groupId);
+          applied++;
+        } on AppFailure catch (err, s) {
+          SafeLogger.error('sync_family_snapshot', err, s);
+          continue;
+        }
+      }
+      // Already part of the snapshot (marked applied there).
+      if (e.seq <= (loadedUpTo[e.groupId] ?? 0)) continue;
+      if (conflicted.contains(e.entityId) || queued.contains(e.entityId)) {
+        continue;
+      }
+      try {
+        final payload = (jsonDecode(e.payload) as Map).cast<String, Object?>();
+        final changed = await familyRows.apply(
+          e.entityType,
+          payload,
+          e.remoteRevision,
+          deleted: e.opType == 'delete',
+        );
+        if (changed) applied++;
+        await done();
+      } catch (err, s) {
+        SafeLogger.error('sync_apply_family', err, s);
+        await done(error: err.runtimeType.toString());
+      }
+    }
+    return applied;
+  }
+
+  /// Loads the full current state of a Family hisab the user can see (a
+  /// new phone, after joining, after a restore). Rows with unsent changes on
+  /// this phone are left as they are. Returns the feed position it covers.
+  Future<int> loadFamilySnapshot(String familyId) async {
+    final snapshot = await _cloud.fetchFamilySnapshot(familyId);
+    await _db.transaction(() async {
+      final keep = {
+        for (final o in await (_db.select(
+          _db.syncOutbox,
+        )..where((o) => o.scope.equals('family'))).get())
+          o.entityId,
+        for (final c in await _openConflictRows()) c.entityId,
+      };
+      Future<void> put(String type, Map<String, Object?> row) async {
+        if (keep.contains(row['id'])) return;
+        await familyRows.apply(
+          type,
+          row,
+          (row['revision'] as num).toInt(),
+          force: true,
+        );
+      }
+
+      await put('family', snapshot.family);
+      for (final m in snapshot.members) {
+        await put('member', m);
+      }
+      for (final x in snapshot.entries) {
+        await put('entry', x);
+      }
+      await (_db.update(_db.syncInbox)..where(
+            (i) =>
+                i.scope.equals('family') &
+                i.groupId.equals(familyId) &
+                i.seq.isSmallerOrEqualValue(snapshot.maxSeq),
+          ))
+          .write(SyncInboxCompanion(appliedAt: Value(_clock.now())));
+    });
+    return snapshot.maxSeq;
   }
 
   Future<int> _applyInbox() async {
@@ -988,6 +1174,8 @@ class SyncService {
           : null;
       if (personalType != null) {
         await _resolvePersonal(c, personalType, local, keepLocal: keepLocal);
+      } else if (c.scope == 'family') {
+        await _resolveFamily(c, local, keepLocal: keepLocal);
       } else if (keepLocal) {
         await _db
             .into(_db.syncOutbox)
@@ -1031,6 +1219,52 @@ class SyncService {
     });
     await _applyInbox();
     await _applyPersonalInbox();
+    await _applyFamilyInbox();
+  }
+
+  Future<void> _resolveFamily(
+    ConflictRow c,
+    Map<String, Object?> local, {
+    required bool keepLocal,
+  }) async {
+    if (keepLocal) {
+      await _db
+          .into(_db.syncOutbox)
+          .insert(
+            SyncOutboxCompanion.insert(
+              opId: _ids.newId(),
+              groupId: c.groupId,
+              scope: const Value('family'),
+              entityType: c.entityType,
+              entityId: c.entityId,
+              opType: local['op_type']! as String,
+              payload: jsonEncode(local['payload']),
+              baseRevision: c.remoteRevision,
+              createdAt: _clock.now(),
+            ),
+          );
+      await familyRows.setState(
+        c.entityType,
+        c.entityId,
+        revision: c.remoteRevision,
+        state: SyncState.pending,
+      );
+    } else if (c.remotePayload != null) {
+      final remote = (jsonDecode(c.remotePayload!) as Map)
+          .cast<String, Object?>();
+      await familyRows.apply(
+        c.entityType,
+        remote,
+        c.remoteRevision,
+        force: true,
+      );
+    } else {
+      await familyRows.setState(
+        c.entityType,
+        c.entityId,
+        state: SyncState.synced,
+      );
+    }
   }
 
   Future<void> _resolvePersonal(

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hisabmitra/core/database/app_database.dart';
 import 'package:hisabmitra/core/providers.dart';
 import 'package:hisabmitra/features/categories/data/category_repository.dart';
+import 'package:hisabmitra/features/family/data/family_repository.dart';
 import 'package:hisabmitra/features/groups/data/group_repository.dart';
 import 'package:hisabmitra/features/groups/domain/group_models.dart';
 import 'package:hisabmitra/features/money_ledger/data/ledger_repository.dart';
@@ -137,6 +138,36 @@ void main() {
     )..where((s) => s.key.equals('sync.personalCursor'))).getSingleOrNull();
     expect(cursor, isNull);
     expect(c.read(settingsControllerProvider).languageCode, 'gu');
+  });
+
+  test('signing out removes Family hisab from the phone', () async {
+    await c
+        .read(familyRepositoryProvider)
+        .createFamily(
+          const FamilyDraft(name: 'Home', startingBalancePaise: 100),
+          selfName: 'Hemang',
+          people: const [FamilyPersonDraft(name: 'Rahul Patel')],
+        );
+    await db
+        .into(db.appSettings)
+        .insertOnConflictUpdate(
+          AppSettingsCompanion.insert(
+            key: 'sync.familyCursor',
+            value: '7',
+            updatedAt: DateTime(2026),
+          ),
+        );
+    expect(await count(db.familyHisabsCache), 1);
+
+    await c.read(localDataWiperProvider).wipeAccountData();
+
+    expect(await count(db.familyHisabsCache), 0);
+    expect(await count(db.familyMembersCache), 0);
+    expect(await count(db.familyEntriesCache), 0);
+    final cursor = await (db.select(
+      db.appSettings,
+    )..where((s) => s.key.equals('sync.familyCursor'))).getSingleOrNull();
+    expect(cursor, isNull);
   });
 
   test('canSync follows the sign-in, there is no switch any more', () {

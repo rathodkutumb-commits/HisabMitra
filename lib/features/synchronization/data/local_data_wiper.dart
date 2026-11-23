@@ -8,7 +8,7 @@ import '../../reminders/application/notification_service.dart';
 import '../../reminders/data/reminder_repository.dart';
 
 /// Removes the phone's copy of the account's data (sign-out, account
-/// deletion): personal records, groups, bills and sync state. Categories
+/// deletion): personal records, groups, Family hisabs, bills and sync state. Categories
 /// and app settings belong to the phone and stay.
 class LocalDataWiper {
   LocalDataWiper(this._db, {this.scheduler, this.deleteFiles});
@@ -21,6 +21,7 @@ class LocalDataWiper {
   static const accountSettingKeys = [
     'sync.cursor',
     'sync.personalCursor',
+    'sync.familyCursor',
     'sync.lastSuccess',
     'sync.ownResetOpId',
     'tour.sampleIds',
@@ -50,6 +51,9 @@ class LocalDataWiper {
       await _db.delete(_db.groupSettlementsCache).go();
       await _db.delete(_db.groupMembersCache).go();
       await _db.delete(_db.groupsCache).go();
+      await _db.delete(_db.familyEntriesCache).go();
+      await _db.delete(_db.familyMembersCache).go();
+      await _db.delete(_db.familyHisabsCache).go();
       await _db.delete(_db.syncOutbox).go();
       await _db.delete(_db.syncInbox).go();
       await _db.delete(_db.syncConflicts).go();

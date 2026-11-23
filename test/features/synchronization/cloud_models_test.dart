@@ -67,4 +67,50 @@ void main() {
     expect(s.rows['reminders'], isEmpty);
     expect(s.maxSeq, 42);
   });
+
+  test('a Family hisab op carries its family id, not a group id', () {
+    const op = OutboundOp(
+      opId: 'o1',
+      groupId: 'f1',
+      scope: 'family',
+      entityType: 'entry',
+      entityId: 'e1',
+      opType: 'upsert',
+      baseRevision: 0,
+      payload: {'kind': 'salary'},
+    );
+    final json = op.toJson();
+    expect(json['family_id'], 'f1');
+    expect(json.containsKey('group_id'), isFalse);
+    expect(json['entity_type'], 'entry');
+  });
+
+  test('a Family hisab event carries its family id', () {
+    final e = RemoteEvent.fromJson(const {
+      'seq': 3,
+      'family_id': 'f1',
+      'entity_type': 'entry',
+      'entity_id': 'e1',
+      'op_type': 'upsert',
+      'revision': 1,
+      'payload': <String, Object?>{'kind': 'salary'},
+    }, scope: 'family');
+    expect(e.groupId, 'f1');
+    expect(e.scope, 'family');
+  });
+
+  test('the Family hisab snapshot keeps its rows and the feed position', () {
+    final s = FamilySnapshot.fromJson(const {
+      'family': {'id': 'f1', 'name': 'Home'},
+      'members': [
+        {'id': 'm1', 'name': 'Hemang'},
+      ],
+      'entries': <Object?>[],
+      'max_seq': 9,
+    });
+    expect(s.family['name'], 'Home');
+    expect(s.members.single['name'], 'Hemang');
+    expect(s.entries, isEmpty);
+    expect(s.maxSeq, 9);
+  });
 }

@@ -73,6 +73,12 @@ class FakeAuthGateway implements CloudGateway {
   Future<PersonalSnapshot> fetchPersonalSnapshot() async =>
       const PersonalSnapshot(rows: {}, maxSeq: 0);
 
+  @override
+  Future<List<RemoteEvent>> pullFamilyEvents({
+    required int afterSeq,
+    int limit = 500,
+  }) async => const [];
+
   /// Signs in or out from outside (emits on [sessionChanges]).
   void setSession(CloudSession? s) {
     session = s;

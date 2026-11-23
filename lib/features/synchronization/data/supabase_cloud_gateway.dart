@@ -207,7 +207,11 @@ class SupabaseCloudGateway implements CloudGateway {
   @override
   Future<OpResult> applyOp(OutboundOp op) => _call(() async {
     final res = await _client.rpc<Object?>(
-      op.isPersonal ? 'apply_personal_op' : 'apply_group_op',
+      op.isPersonal
+          ? 'apply_personal_op'
+          : op.isFamily
+          ? 'apply_family_op'
+          : 'apply_group_op',
       params: {'p_op': op.toJson()},
     );
     return OpResult.fromJson((res! as Map).cast<String, Object?>());
@@ -244,6 +248,32 @@ class SupabaseCloudGateway implements CloudGateway {
         .limit(limit);
     return [for (final r in rows) RemoteEvent.fromJson(r, scope: 'personal')];
   });
+
+  @override
+  Future<List<RemoteEvent>> pullFamilyEvents({
+    required int afterSeq,
+    int limit = 500,
+  }) => _call(() async {
+    final rows = await _client
+        .from('family_sync_events')
+        .select(
+          'seq, family_id, entity_type, entity_id, op_type, revision, payload, op_id',
+        )
+        .gt('seq', afterSeq)
+        .order('seq', ascending: true)
+        .limit(limit);
+    return [for (final r in rows) RemoteEvent.fromJson(r, scope: 'family')];
+  });
+
+  @override
+  Future<FamilySnapshot> fetchFamilySnapshot(String familyId) =>
+      _call(() async {
+        final res = await _client.rpc<Object?>(
+          'get_family_snapshot',
+          params: {'p_family_id': familyId},
+        );
+        return FamilySnapshot.fromJson((res! as Map).cast<String, Object?>());
+      });
 
   @override
   Future<PersonalSnapshot> fetchPersonalSnapshot() => _call(() async {

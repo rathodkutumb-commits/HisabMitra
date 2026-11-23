@@ -26,7 +26,9 @@ class MoreScreen extends ConsumerWidget {
       String title,
       String route, {
       String? subtitle,
+      Key? key,
     }) => ListTile(
+      key: key,
       leading: IconBadge(icon: icon, color: color),
       title: Text(title),
       subtitle: subtitle == null ? null : Text(subtitle),
@@ -57,6 +59,15 @@ class MoreScreen extends ConsumerWidget {
                 onTap: () => context.push(Routes.profile),
               ),
             ),
+          ),
+          const SizedBox(height: 8),
+          tile(
+            Icons.family_restroom_rounded,
+            scheme.primary,
+            l.familyHisab,
+            Routes.family,
+            subtitle: l.familyMoreSubtitle,
+            key: const Key('more-family'),
           ),
           SectionHeader(title: l.quickActions),
           tile(

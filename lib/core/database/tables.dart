@@ -359,6 +359,82 @@ class GroupSettlementsCache extends Table with Timestamps, SyncColumns {
   ];
 }
 
+// ----------------------------------------------------------- family hisab
+
+/// A Family hisab (shared home purse). Phone copy of `family_hisabs`.
+@DataClassName('FamilyRow')
+class FamilyHisabsCache extends Table with Timestamps, SyncColumns {
+  @override
+  String get tableName => 'family_hisabs_cache';
+
+  TextColumn get id => text()();
+  TextColumn get name => text().withLength(min: 1, max: 80)();
+
+  /// Money in the home when the Family hisab was started (paise).
+  IntColumn get openingBalancePaise =>
+      integer().withDefault(const Constant(0))();
+
+  /// Supabase user id of the creator (null until known).
+  TextColumn get ownerUserId => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// A person in a Family hisab — added by name and number, with or without
+/// an account. Removed people stay (status `removed`) so their entries keep
+/// their names.
+@DataClassName('FamilyMemberRow')
+@TableIndex(name: 'idx_family_members_family', columns: {#familyId})
+class FamilyMembersCache extends Table with Timestamps, SyncColumns {
+  @override
+  String get tableName => 'family_members_cache';
+
+  TextColumn get id => text()();
+  TextColumn get familyId => text()();
+  TextColumn get userId => text().nullable()();
+  TextColumn get name => text().withLength(min: 1, max: 80)();
+  TextColumn get phone => text().nullable()();
+
+  /// `owner`, `admin` or `member`.
+  TextColumn get role => text().withDefault(const Constant('member'))();
+
+  /// `active` or `removed`.
+  TextColumn get status => text().withDefault(const Constant('active'))();
+
+  /// This phone's user.
+  BoolColumn get isSelf => boolean().withDefault(const Constant(false))();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Money in (`salary`, `extra_income`, `contribution`) or out (`expense`).
+/// Expenses keep a copy of their category (both names, icon, colour).
+@DataClassName('FamilyEntryRow')
+@TableIndex(name: 'idx_family_entries_family', columns: {#familyId})
+class FamilyEntriesCache extends Table with Timestamps, SyncColumns {
+  @override
+  String get tableName => 'family_entries_cache';
+
+  TextColumn get id => text()();
+  TextColumn get familyId => text()();
+  TextColumn get memberId => text()();
+  TextColumn get kind => text()();
+  IntColumn get amountPaise => integer()();
+  DateTimeColumn get entryDate => dateTime()();
+  TextColumn get categoryId => text().nullable()();
+  TextColumn get categoryName => text().nullable()();
+  TextColumn get categoryNameGu => text().nullable()();
+  TextColumn get categoryIcon => text().nullable()();
+  IntColumn get categoryColor => integer().nullable()();
+  TextColumn get note => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 // ------------------------------------------------------------- attachments
 
 /// Files stored in app-private storage. Exactly one parent column is set.

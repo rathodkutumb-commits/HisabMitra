@@ -6,7 +6,6 @@ import '../../../app/router/routes.dart';
 import '../../../app/theme/hm_colors.dart';
 import '../../../core/l10n/l10n_x.dart';
 import '../../../core/providers.dart';
-import '../../../core/utils/date_range.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../tour/application/tour_controller.dart';
 import '../../tour/presentation/tour_widgets.dart';
@@ -18,19 +17,14 @@ import '../../money_ledger/domain/ledger_models.dart';
 import '../../money_ledger/presentation/widgets/ledger_entry_tile.dart';
 import '../../profile/data/profile_repository.dart';
 import '../../reminders/presentation/reminders_screens.dart';
+import '../../settings/application/settings_controller.dart';
 import '../../transactions/data/transaction_repository.dart';
 import '../../transactions/domain/transaction_models.dart';
 import '../../transactions/presentation/widgets/transaction_tile.dart';
+import '../application/combined_totals.dart';
 import '../application/period_controller.dart';
 import 'income_expense_chart.dart';
 import '../../ai_assistant/presentation/ai_fab.dart';
-
-final _monthlyProvider = StreamProvider<List<MonthTotals>>((ref) {
-  final now = ref.watch(clockProvider).now();
-  return ref
-      .watch(transactionRepositoryProvider)
-      .watchMonthly(DateRange.lastMonths(now, 6));
-});
 
 final _dueSoonProvider = StreamProvider<List<LedgerEntryView>>((ref) {
   final now = ref.watch(clockProvider).now();
@@ -49,7 +43,8 @@ class DashboardScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final profile = ref.watch(profileProvider).value;
     final period = ref.watch(periodControllerProvider);
-    final summary = ref.watch(periodSummaryProvider(period.range));
+    // Family hisab is a kind of account: its money counts here too.
+    final summary = ref.watch(combinedSummaryProvider(period.range)).value;
     final recent = ref.watch(transactionsProvider(_recentFilter));
     final isNewUser = recent.value?.isEmpty ?? false;
 
@@ -95,7 +90,10 @@ class DashboardScreen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: KeyedSubtree(
               key: TourTargets.hero,
-              child: _SummaryHero(summary: summary.value ?? PeriodSummary.zero),
+              child: _SummaryHero(
+                summary: summary?.$1 ?? PeriodSummary.zero,
+                family: summary?.$2 ?? PeriodSummary.zero,
+              ),
             ),
           ),
           Padding(
@@ -134,7 +132,7 @@ class DashboardScreen extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 16, 16, 12),
                 child: AsyncValueView(
-                  value: ref.watch(_monthlyProvider),
+                  value: ref.watch(combinedMonthlyProvider),
                   data: (months) => IncomeExpenseChart(months: months),
                 ),
               ),
@@ -170,13 +168,17 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-class _SummaryHero extends StatelessWidget {
-  const _SummaryHero({required this.summary});
+class _SummaryHero extends ConsumerWidget {
+  const _SummaryHero({required this.summary, required this.family});
 
+  /// Personal and Family hisab together.
   final PeriodSummary summary;
 
+  /// The Family hisab part, so the totals can be checked.
+  final PeriodSummary family;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final theme = Theme.of(context);
     final hm = HmColors.of(context);
@@ -222,6 +224,18 @@ class _SummaryHero extends StatelessWidget {
               ),
             ],
           ),
+          if (family.incomePaise != 0 || family.expensePaise != 0) ...[
+            const SizedBox(height: 12),
+            Text(
+              l.familyIncludesLine(
+                ref.fmt.money(family.incomePaise),
+                ref.fmt.money(family.expensePaise),
+              ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: onHero.withValues(alpha: 0.85),
+              ),
+            ),
+          ],
           const SizedBox(height: 6),
         ],
       ),
@@ -342,6 +356,12 @@ class _QuickActions extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     final hm = HmColors.of(context);
     final actions = <(IconData, String, Color, VoidCallback)>[
+      (
+        Icons.family_restroom_rounded,
+        l.familyHisab,
+        scheme.primary,
+        () => context.push(Routes.family),
+      ),
       (
         Icons.add_card_rounded,
         l.actionAddIncome,

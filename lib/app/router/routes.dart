@@ -85,6 +85,22 @@ abstract final class Routes {
   static String joinGroupWithCode(String code) =>
       '$joinGroup?code=${Uri.encodeQueryComponent(code)}';
 
+  // Family hisab: one list, then one screen per Family hisab.
+  static const family = '/family';
+  static const newFamily = '/family/new';
+  static String familyHome(String id) => '/family/$id';
+  static String editFamily(String id) => '/family/$id/edit';
+  static String familyPeople(String id) => '/family/$id/people';
+  static String newFamilyEntry(String id, {required String kind}) =>
+      '/family/$id/entries/new?kind=$kind';
+  static String editFamilyEntry(String id, String entryId) =>
+      '/family/$id/entries/$entryId/edit';
+  static String familyStatement(
+    String id, {
+    required int year,
+    required int month,
+  }) => '/family/$id/statement?year=$year&month=$month';
+
   static const calculator = '/calculator';
   static const reports = '/reports';
   static String report(String kind) => '/reports/$kind';

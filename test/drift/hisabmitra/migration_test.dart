@@ -12,6 +12,7 @@ import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
 import 'generated/schema_v5.dart' as v5;
+import 'generated/schema_v6.dart' as v6;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -254,4 +255,38 @@ void main() {
       );
     },
   );
+
+  test('v5 → v6 adds the Family hisab tables and keeps everything', () async {
+    const txn = v5.TransactionsData(
+      createdAt: 0,
+      updatedAt: 0,
+      id: 't1',
+      ownerId: 'self',
+      type: 'expense',
+      amountPaise: 25000,
+      categoryId: 'cat_groceries',
+      txnDate: 0,
+      paymentMethod: 'upi',
+      description: 'Vegetables',
+      revision: 0,
+      syncState: 'localOnly',
+    );
+    await verifier.testWithDataIntegrity(
+      oldVersion: 5,
+      newVersion: 6,
+      createOld: v5.DatabaseAtV5.new,
+      createNew: v6.DatabaseAtV6.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) {
+        batch.insert(oldDb.transactions, txn);
+      },
+      validateItems: (newDb) async {
+        final t = await newDb.select(newDb.transactions).getSingle();
+        expect(t.amountPaise, 25000);
+        expect(await newDb.select(newDb.familyHisabsCache).get(), isEmpty);
+        expect(await newDb.select(newDb.familyMembersCache).get(), isEmpty);
+        expect(await newDb.select(newDb.familyEntriesCache).get(), isEmpty);
+      },
+    );
+  });
 }

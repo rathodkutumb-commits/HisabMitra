@@ -15,6 +15,12 @@ import '../../features/calculator/presentation/calculator_panel.dart';
 import '../../features/categories/presentation/categories_screen.dart';
 import '../../features/categories/presentation/category_form_screen.dart';
 import '../../features/dashboard/presentation/dashboard_screen.dart';
+import '../../features/family/presentation/family_entry_form_screen.dart';
+import '../../features/family/presentation/family_form_screen.dart';
+import '../../features/family/presentation/family_home_screen.dart';
+import '../../features/family/presentation/family_list_screen.dart';
+import '../../features/family/presentation/family_people_screen.dart';
+import '../../features/family/presentation/family_statement_screen.dart';
 import '../../features/groups/presentation/group_cloud_screens.dart';
 import '../../features/groups/presentation/group_detail_screen.dart';
 import '../../features/groups/presentation/group_expense_detail_screen.dart';
@@ -376,6 +382,67 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (_, s) => GroupExpenseFormScreen(
                   groupId: s.pathParameters['id']!,
                   expenseId: s.pathParameters['eid'],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      // -------------------------------------------------------- Family hisab
+      GoRoute(
+        path: Routes.family,
+        parentNavigatorKey: _rootKey,
+        builder: (_, _) => const FamilyListScreen(),
+        routes: [
+          GoRoute(
+            path: 'new',
+            parentNavigatorKey: _rootKey,
+            builder: (_, _) => const FamilyFormScreen(),
+          ),
+          GoRoute(
+            path: ':id',
+            parentNavigatorKey: _rootKey,
+            builder: (_, s) =>
+                FamilyHomeScreen(familyId: s.pathParameters['id']!),
+            routes: [
+              GoRoute(
+                path: 'edit',
+                parentNavigatorKey: _rootKey,
+                builder: (_, s) =>
+                    FamilyFormScreen(familyId: s.pathParameters['id']),
+              ),
+              GoRoute(
+                path: 'people',
+                parentNavigatorKey: _rootKey,
+                builder: (_, s) =>
+                    FamilyPeopleScreen(familyId: s.pathParameters['id']!),
+              ),
+              GoRoute(
+                path: 'statement',
+                parentNavigatorKey: _rootKey,
+                builder: (_, s) {
+                  final now = DateTime.now();
+                  return FamilyStatementScreen(
+                    familyId: s.pathParameters['id']!,
+                    year: int.tryParse(q(s, 'year') ?? '') ?? now.year,
+                    month: int.tryParse(q(s, 'month') ?? '') ?? now.month,
+                  );
+                },
+              ),
+              GoRoute(
+                path: 'entries/new',
+                parentNavigatorKey: _rootKey,
+                builder: (_, s) => FamilyEntryFormScreen(
+                  familyId: s.pathParameters['id']!,
+                  moneyIn: q(s, 'kind') != 'out',
+                ),
+              ),
+              GoRoute(
+                path: 'entries/:eid/edit',
+                parentNavigatorKey: _rootKey,
+                builder: (_, s) => FamilyEntryFormScreen(
+                  familyId: s.pathParameters['id']!,
+                  entryId: s.pathParameters['eid'],
                 ),
               ),
             ],

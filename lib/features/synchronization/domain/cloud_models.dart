@@ -40,9 +40,13 @@ class OutboundOp {
 
   bool get isPersonal => scope == 'personal';
 
+  /// A Family hisab change (`apply_family_op`); [groupId] holds the family id.
+  bool get isFamily => scope == 'family';
+
   Map<String, Object?> toJson() => {
     'op_id': opId,
-    if (!isPersonal) 'group_id': groupId,
+    if (scope == 'group') 'group_id': groupId,
+    if (isFamily) 'family_id': groupId,
     'entity_type': entityType,
     'entity_id': entityId,
     'op_type': opType,
@@ -103,7 +107,8 @@ class RemoteEvent {
     String scope = 'group',
   }) => RemoteEvent(
     seq: (j['seq'] as num).toInt(),
-    groupId: j['group_id'] as String? ?? '',
+    // Family hisab events carry `family_id`; it fills the same field.
+    groupId: j['group_id'] as String? ?? j['family_id'] as String? ?? '',
     scope: scope,
     entityType: j['entity_type']! as String,
     // The personal reset event has no entity.
@@ -226,4 +231,31 @@ class AcceptedInvitation {
 
   final String groupId;
   final String memberId;
+}
+
+/// Full current state of one Family hisab (`get_family_snapshot`).
+class FamilySnapshot {
+  const FamilySnapshot({
+    required this.family,
+    required this.members,
+    required this.entries,
+    required this.maxSeq,
+  });
+
+  factory FamilySnapshot.fromJson(Map<String, Object?> j) {
+    List<Map<String, Object?>> rows(Object? v) => ((v as List?) ?? const [])
+        .map((e) => (e as Map).cast<String, Object?>())
+        .toList();
+    return FamilySnapshot(
+      family: ((j['family'] as Map?) ?? const {}).cast<String, Object?>(),
+      members: rows(j['members']),
+      entries: rows(j['entries']),
+      maxSeq: (j['max_seq'] as num? ?? 0).toInt(),
+    );
+  }
+
+  final Map<String, Object?> family;
+  final List<Map<String, Object?>> members;
+  final List<Map<String, Object?>> entries;
+  final int maxSeq;
 }

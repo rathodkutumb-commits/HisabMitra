@@ -774,6 +774,117 @@
   "authSessionExpired": "Your session has expired. Please sign in again.",
   "authGenericError": "Could not sign in right now. Please try again.",
   "errorPaymentCount": "The number of payments must be more than those already paid.",
+  "familyPersonRemoved": "{name} (removed)",
+  "@familyPersonRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "entityFamily": "Family hisab details",
+  "entityFamilyPerson": "Person in Family hisab",
+  "entityFamilyEntry": "Family hisab entry",
+  "familyHisab": "Family hisab",
+  "familyHisabs": "Family hisabs",
+  "familyButton": "Family",
+  "familyMoreSubtitle": "Home money together: salaries, contributions and expenses",
+  "familyCreate": "Create Family hisab",
+  "familyEdit": "Edit Family hisab",
+  "familyNew": "New Family hisab",
+  "familyDelete": "Delete Family hisab",
+  "familyDeleteMessage": "Its people and every entry are deleted from the account.",
+  "familyEmptyTitle": "Keep the home's hisab together",
+  "familyEmptyMessage": "Add everyone's salary and contributions, write down every home expense and get a passbook statement every month.",
+  "familyName": "Name",
+  "familyNameHint": "e.g. Home",
+  "familyStartingBalance": "Starting balance (optional)",
+  "familyStartingBalanceHelp": "Money already in the home today",
+  "familyPeople": "People",
+  "familyPersonName": "Person's name",
+  "familyAddPerson": "Add person",
+  "familyEditPerson": "Edit person",
+  "familyDeletePerson": "Delete person",
+  "familyDeletePersonMessage": "Their entries stay in the hisab and show as \"{name} (removed)\".",
+  "@familyDeletePersonMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "familyHasApp": "Has the app",
+  "familyNotJoined": "Not joined",
+  "familyShowRemoved": "Show removed ({count})",
+  "@familyShowRemoved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "familyHideRemoved": "Hide removed",
+  "familySaved": "Family hisab saved",
+  "familyPersonSaved": "Person saved",
+  "familyPersonDeleted": "Person deleted. Their entries stay.",
+  "familyNoEntriesYet": "No entries this month yet",
+  "familyOpening": "Opening balance",
+  "familyClosing": "Closing balance",
+  "familyMoneyIn": "Money in",
+  "familyMoneyOut": "Money out",
+  "familyAddMoneyIn": "Add money in",
+  "familyAddMoneyOut": "Add money out",
+  "familyEditMoneyIn": "Edit money in",
+  "familyEditMoneyOut": "Edit money out",
+  "familyKindSalary": "Salary",
+  "familyKindExtraIncome": "Extra income",
+  "familyKindContribution": "Contribution",
+  "familyPerson": "Person",
+  "familyKind": "Type",
+  "familyDoubleCountNote": "Money here already counts on your Home screen — don't add your salary again in Hisab.",
+  "familyEntrySaved": "Entry saved",
+  "familyEntryDeleted": "Entry deleted",
+  "familyPreviousMonth": "Previous month",
+  "familyNextMonth": "Next month",
+  "familyStatement": "Statement",
+  "familyStatementTitle": "Family hisab statement",
+  "familyByPerson": "By person",
+  "familyPaidForHome": "Paid for home",
+  "familyPersonLine": "{name} — in {moneyIn} · paid {paid}",
+  "@familyPersonLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "moneyIn": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      }
+    }
+  },
+  "familySendWhatsApp": "Send on WhatsApp to {name}",
+  "@familySendWhatsApp": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "familyMoneyInCredit": "Money in (credit)",
+  "familyMoneyOutDebit": "Money out (debit)",
+  "familyIncludesLine": "Includes Family hisab: in {moneyIn} · out {moneyOut}",
+  "@familyIncludesLine": {
+    "placeholders": {
+      "moneyIn": {
+        "type": "String"
+      },
+      "moneyOut": {
+        "type": "String"
+      }
+    }
+  },
   "greeting": "Namaste, {name}",
   "@greeting": {
     "placeholders": {

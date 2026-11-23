@@ -4,6 +4,7 @@ import 'package:hisabmitra/core/errors/app_failure.dart';
 import 'package:hisabmitra/features/synchronization/data/cloud_gateway.dart';
 import 'package:hisabmitra/features/synchronization/domain/cloud_models.dart';
 
+import 'fake_family_cloud.dart';
 import 'fake_personal_cloud.dart';
 
 /// In-memory server mirroring `apply_group_op` / `sync_events` semantics
@@ -21,15 +22,23 @@ class FakeCloudServer {
   var _codes = 0;
 
   /// Personal records of every user (`apply_personal_op` and its feed).
-  late final personal = FakePersonalStore(
-    processed: processed,
-    isMember: isMember,
-  )..onEvent = (owner) => _changes.add((groupId: null, owner: owner));
+  late final personal =
+      FakePersonalStore(processed: processed, isMember: isMember)
+        ..onEvent = (owner) =>
+            _changes.add((groupId: null, owner: owner, familyId: null));
+
+  /// Family hisab records of every user (`apply_family_op` and its feed).
+  late final family = FakeFamilyStore(processed: processed)
+    ..onEvent = (familyId) =>
+        _changes.add((groupId: null, owner: null, familyId: familyId));
 
   /// Every new feed row, like Supabase Realtime before RLS is applied.
   final _changes =
-      StreamController<({String? groupId, String? owner})>.broadcast();
-  Stream<({String? groupId, String? owner})> get changes => _changes.stream;
+      StreamController<
+        ({String? groupId, String? owner, String? familyId})
+      >.broadcast();
+  Stream<({String? groupId, String? owner, String? familyId})> get changes =>
+      _changes.stream;
 
   /// Files in `group-attachments`, keyed by storage path.
   final Map<String, List<int>> groupFiles = {};
@@ -59,7 +68,7 @@ class FakeCloudServer {
     int rev,
     Map<String, Object?> payload,
   ) {
-    _changes.add((groupId: groupId, owner: null));
+    _changes.add((groupId: groupId, owner: null, familyId: null));
     events.add(
       RemoteEvent(
         seq: ++_seq,
@@ -270,6 +279,8 @@ class FakeCloudClient implements CloudGateway {
     _net();
     final r = op.isPersonal
         ? server.personal.apply(op, userId)
+        : op.isFamily
+        ? server.family.apply(op, userId)
         : server.apply(op, userId);
     applied.add(op.opId);
     if (server.dropNextResponse) {
@@ -312,6 +323,21 @@ class FakeCloudClient implements CloudGateway {
     return server.personal.snapshot(userId);
   }
 
+  @override
+  Future<List<RemoteEvent>> pullFamilyEvents({
+    required int afterSeq,
+    int limit = 500,
+  }) async {
+    _net();
+    return server.family.pull(userId, afterSeq, limit);
+  }
+
+  @override
+  Future<FamilySnapshot> fetchFamilySnapshot(String familyId) async {
+    _net();
+    return server.family.snapshot(familyId, userId);
+  }
+
   /// Rows of this user's groups (membership checked on delivery, like RLS)
   /// and of their own records.
   @override
@@ -319,6 +345,8 @@ class FakeCloudClient implements CloudGateway {
       .where(
         (c) => c.groupId != null
             ? server.isMember(c.groupId!, userId)
+            : c.familyId != null
+            ? server.family.isMember(c.familyId!, userId)
             : c.owner == userId,
       )
       .map((_) {});

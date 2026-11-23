@@ -2074,6 +2074,366 @@ abstract class AppLocalizations {
   /// **'The number of payments must be more than those already paid.'**
   String get errorPaymentCount;
 
+  /// No description provided for @familyPersonRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} (removed)'**
+  String familyPersonRemoved(String name);
+
+  /// No description provided for @entityFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Family hisab details'**
+  String get entityFamily;
+
+  /// No description provided for @entityFamilyPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Person in Family hisab'**
+  String get entityFamilyPerson;
+
+  /// No description provided for @entityFamilyEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Family hisab entry'**
+  String get entityFamilyEntry;
+
+  /// No description provided for @familyHisab.
+  ///
+  /// In en, this message translates to:
+  /// **'Family hisab'**
+  String get familyHisab;
+
+  /// No description provided for @familyHisabs.
+  ///
+  /// In en, this message translates to:
+  /// **'Family hisabs'**
+  String get familyHisabs;
+
+  /// No description provided for @familyButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Family'**
+  String get familyButton;
+
+  /// No description provided for @familyMoreSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home money together: salaries, contributions and expenses'**
+  String get familyMoreSubtitle;
+
+  /// No description provided for @familyCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Family hisab'**
+  String get familyCreate;
+
+  /// No description provided for @familyEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Family hisab'**
+  String get familyEdit;
+
+  /// No description provided for @familyNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New Family hisab'**
+  String get familyNew;
+
+  /// No description provided for @familyDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Family hisab'**
+  String get familyDelete;
+
+  /// No description provided for @familyDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Its people and every entry are deleted from the account.'**
+  String get familyDeleteMessage;
+
+  /// No description provided for @familyEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the home\'s hisab together'**
+  String get familyEmptyTitle;
+
+  /// No description provided for @familyEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add everyone\'s salary and contributions, write down every home expense and get a passbook statement every month.'**
+  String get familyEmptyMessage;
+
+  /// No description provided for @familyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get familyName;
+
+  /// No description provided for @familyNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Home'**
+  String get familyNameHint;
+
+  /// No description provided for @familyStartingBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting balance (optional)'**
+  String get familyStartingBalance;
+
+  /// No description provided for @familyStartingBalanceHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Money already in the home today'**
+  String get familyStartingBalanceHelp;
+
+  /// No description provided for @familyPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get familyPeople;
+
+  /// No description provided for @familyPersonName.
+  ///
+  /// In en, this message translates to:
+  /// **'Person\'s name'**
+  String get familyPersonName;
+
+  /// No description provided for @familyAddPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Add person'**
+  String get familyAddPerson;
+
+  /// No description provided for @familyEditPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit person'**
+  String get familyEditPerson;
+
+  /// No description provided for @familyDeletePerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete person'**
+  String get familyDeletePerson;
+
+  /// No description provided for @familyDeletePersonMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Their entries stay in the hisab and show as \"{name} (removed)\".'**
+  String familyDeletePersonMessage(String name);
+
+  /// No description provided for @familyHasApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Has the app'**
+  String get familyHasApp;
+
+  /// No description provided for @familyNotJoined.
+  ///
+  /// In en, this message translates to:
+  /// **'Not joined'**
+  String get familyNotJoined;
+
+  /// No description provided for @familyShowRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Show removed ({count})'**
+  String familyShowRemoved(int count);
+
+  /// No description provided for @familyHideRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide removed'**
+  String get familyHideRemoved;
+
+  /// No description provided for @familySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Family hisab saved'**
+  String get familySaved;
+
+  /// No description provided for @familyPersonSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Person saved'**
+  String get familyPersonSaved;
+
+  /// No description provided for @familyPersonDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Person deleted. Their entries stay.'**
+  String get familyPersonDeleted;
+
+  /// No description provided for @familyNoEntriesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries this month yet'**
+  String get familyNoEntriesYet;
+
+  /// No description provided for @familyOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening balance'**
+  String get familyOpening;
+
+  /// No description provided for @familyClosing.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing balance'**
+  String get familyClosing;
+
+  /// No description provided for @familyMoneyIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Money in'**
+  String get familyMoneyIn;
+
+  /// No description provided for @familyMoneyOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Money out'**
+  String get familyMoneyOut;
+
+  /// No description provided for @familyAddMoneyIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Add money in'**
+  String get familyAddMoneyIn;
+
+  /// No description provided for @familyAddMoneyOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Add money out'**
+  String get familyAddMoneyOut;
+
+  /// No description provided for @familyEditMoneyIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit money in'**
+  String get familyEditMoneyIn;
+
+  /// No description provided for @familyEditMoneyOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit money out'**
+  String get familyEditMoneyOut;
+
+  /// No description provided for @familyKindSalary.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary'**
+  String get familyKindSalary;
+
+  /// No description provided for @familyKindExtraIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra income'**
+  String get familyKindExtraIncome;
+
+  /// No description provided for @familyKindContribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Contribution'**
+  String get familyKindContribution;
+
+  /// No description provided for @familyPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Person'**
+  String get familyPerson;
+
+  /// No description provided for @familyKind.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get familyKind;
+
+  /// No description provided for @familyDoubleCountNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Money here already counts on your Home screen — don\'t add your salary again in Hisab.'**
+  String get familyDoubleCountNote;
+
+  /// No description provided for @familyEntrySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry saved'**
+  String get familyEntrySaved;
+
+  /// No description provided for @familyEntryDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry deleted'**
+  String get familyEntryDeleted;
+
+  /// No description provided for @familyPreviousMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get familyPreviousMonth;
+
+  /// No description provided for @familyNextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get familyNextMonth;
+
+  /// No description provided for @familyStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Statement'**
+  String get familyStatement;
+
+  /// No description provided for @familyStatementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Family hisab statement'**
+  String get familyStatementTitle;
+
+  /// No description provided for @familyByPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'By person'**
+  String get familyByPerson;
+
+  /// No description provided for @familyPaidForHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid for home'**
+  String get familyPaidForHome;
+
+  /// No description provided for @familyPersonLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} — in {moneyIn} · paid {paid}'**
+  String familyPersonLine(String name, String moneyIn, String paid);
+
+  /// No description provided for @familySendWhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Send on WhatsApp to {name}'**
+  String familySendWhatsApp(String name);
+
+  /// No description provided for @familyMoneyInCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'Money in (credit)'**
+  String get familyMoneyInCredit;
+
+  /// No description provided for @familyMoneyOutDebit.
+  ///
+  /// In en, this message translates to:
+  /// **'Money out (debit)'**
+  String get familyMoneyOutDebit;
+
+  /// No description provided for @familyIncludesLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes Family hisab: in {moneyIn} · out {moneyOut}'**
+  String familyIncludesLine(String moneyIn, String moneyOut);
+
   /// No description provided for @greeting.
   ///
   /// In en, this message translates to:

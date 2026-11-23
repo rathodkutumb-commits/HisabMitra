@@ -35,8 +35,8 @@ abstract interface class CloudGateway {
     required String appVersion,
   });
 
-  /// Sends one queued change: `apply_group_op`, or `apply_personal_op` when
-  /// [OutboundOp.isPersonal].
+  /// Sends one queued change: `apply_group_op`, `apply_personal_op` when
+  /// [OutboundOp.isPersonal], or `apply_family_op` when [OutboundOp.isFamily].
   Future<OpResult> applyOp(OutboundOp op);
   Future<List<RemoteEvent>> pullEvents({
     required int afterSeq,
@@ -52,6 +52,16 @@ abstract interface class CloudGateway {
 
   /// Every live personal record of the user (new or reset phone).
   Future<PersonalSnapshot> fetchPersonalSnapshot();
+
+  /// Family hisab change feed after [afterSeq] (every Family hisab the user
+  /// is a member of; scope `family`).
+  Future<List<RemoteEvent>> pullFamilyEvents({
+    required int afterSeq,
+    int limit = 500,
+  });
+
+  /// Every live row of one Family hisab (a new phone, or after joining).
+  Future<FamilySnapshot> fetchFamilySnapshot(String familyId);
 
   /// Live updates: emits when a change the user may see was added to
   /// either change feed (their groups or their own records), and once each
@@ -143,6 +153,13 @@ class NotConfiguredCloudGateway implements CloudGateway {
   }) async => _fail();
   @override
   Future<PersonalSnapshot> fetchPersonalSnapshot() async => _fail();
+  @override
+  Future<List<RemoteEvent>> pullFamilyEvents({
+    required int afterSeq,
+    int limit = 500,
+  }) async => _fail();
+  @override
+  Future<FamilySnapshot> fetchFamilySnapshot(String familyId) async => _fail();
   @override
   Stream<void> changeSignals() => const Stream.empty();
   @override

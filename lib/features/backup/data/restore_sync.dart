@@ -10,9 +10,9 @@ import '../../synchronization/domain/personal_entity.dart';
 /// Runs on the restored database **before** it replaces the live one, in a
 /// single SQLite transaction: the "replace everything in the account" step
 /// is queued first, then every personal record, so an interrupted restore
-/// continues in the right order on the next sync. Groups are not taken from
-/// the backup — other members rely on the account's copy, which is
-/// downloaded again.
+/// continues in the right order on the next sync. Groups and Family hisabs
+/// are not taken from the backup — other members rely on the account's
+/// copy, which is downloaded again.
 class RestoreSync {
   RestoreSync(this._db, this._clock, this._ids);
 
@@ -23,6 +23,7 @@ class RestoreSync {
   static const _syncKeys = [
     'sync.cursor',
     'sync.personalCursor',
+    'sync.familyCursor',
     'sync.lastSuccess',
     PersonalOutbox.ownResetOpIdKey,
   ];
@@ -38,6 +39,10 @@ class RestoreSync {
     await _db.delete(_db.groupSettlementsCache).go();
     await _db.delete(_db.groupMembersCache).go();
     await _db.delete(_db.groupsCache).go();
+    // Family hisabs too: a restore never changes them in the account.
+    await _db.delete(_db.familyEntriesCache).go();
+    await _db.delete(_db.familyMembersCache).go();
+    await _db.delete(_db.familyHisabsCache).go();
     await _db.delete(_db.syncOutbox).go();
     await _db.delete(_db.syncInbox).go();
     await _db.delete(_db.syncConflicts).go();

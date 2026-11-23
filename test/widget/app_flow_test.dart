@@ -146,8 +146,15 @@ void main() {
     );
     await tester.tap(find.text('વધુ'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('સેટિંગ્સ').last);
-    await tester.tap(find.text('સેટિંગ્સ').last);
+    // The Settings item, not the section header above it.
+    final settings = find.widgetWithIcon(ListTile, Icons.settings_rounded);
+    await tester.scrollUntilVisible(
+      settings,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(settings);
     await tester.pumpAndSettle();
     for (final title in [
       'દેખાવ',

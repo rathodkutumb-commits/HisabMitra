@@ -1187,6 +1187,202 @@ class AppLocalizationsEn extends AppLocalizations {
       'The number of payments must be more than those already paid.';
 
   @override
+  String familyPersonRemoved(String name) {
+    return '$name (removed)';
+  }
+
+  @override
+  String get entityFamily => 'Family hisab details';
+
+  @override
+  String get entityFamilyPerson => 'Person in Family hisab';
+
+  @override
+  String get entityFamilyEntry => 'Family hisab entry';
+
+  @override
+  String get familyHisab => 'Family hisab';
+
+  @override
+  String get familyHisabs => 'Family hisabs';
+
+  @override
+  String get familyButton => 'Family';
+
+  @override
+  String get familyMoreSubtitle =>
+      'Home money together: salaries, contributions and expenses';
+
+  @override
+  String get familyCreate => 'Create Family hisab';
+
+  @override
+  String get familyEdit => 'Edit Family hisab';
+
+  @override
+  String get familyNew => 'New Family hisab';
+
+  @override
+  String get familyDelete => 'Delete Family hisab';
+
+  @override
+  String get familyDeleteMessage =>
+      'Its people and every entry are deleted from the account.';
+
+  @override
+  String get familyEmptyTitle => 'Keep the home\'s hisab together';
+
+  @override
+  String get familyEmptyMessage =>
+      'Add everyone\'s salary and contributions, write down every home expense and get a passbook statement every month.';
+
+  @override
+  String get familyName => 'Name';
+
+  @override
+  String get familyNameHint => 'e.g. Home';
+
+  @override
+  String get familyStartingBalance => 'Starting balance (optional)';
+
+  @override
+  String get familyStartingBalanceHelp => 'Money already in the home today';
+
+  @override
+  String get familyPeople => 'People';
+
+  @override
+  String get familyPersonName => 'Person\'s name';
+
+  @override
+  String get familyAddPerson => 'Add person';
+
+  @override
+  String get familyEditPerson => 'Edit person';
+
+  @override
+  String get familyDeletePerson => 'Delete person';
+
+  @override
+  String familyDeletePersonMessage(String name) {
+    return 'Their entries stay in the hisab and show as \"$name (removed)\".';
+  }
+
+  @override
+  String get familyHasApp => 'Has the app';
+
+  @override
+  String get familyNotJoined => 'Not joined';
+
+  @override
+  String familyShowRemoved(int count) {
+    return 'Show removed ($count)';
+  }
+
+  @override
+  String get familyHideRemoved => 'Hide removed';
+
+  @override
+  String get familySaved => 'Family hisab saved';
+
+  @override
+  String get familyPersonSaved => 'Person saved';
+
+  @override
+  String get familyPersonDeleted => 'Person deleted. Their entries stay.';
+
+  @override
+  String get familyNoEntriesYet => 'No entries this month yet';
+
+  @override
+  String get familyOpening => 'Opening balance';
+
+  @override
+  String get familyClosing => 'Closing balance';
+
+  @override
+  String get familyMoneyIn => 'Money in';
+
+  @override
+  String get familyMoneyOut => 'Money out';
+
+  @override
+  String get familyAddMoneyIn => 'Add money in';
+
+  @override
+  String get familyAddMoneyOut => 'Add money out';
+
+  @override
+  String get familyEditMoneyIn => 'Edit money in';
+
+  @override
+  String get familyEditMoneyOut => 'Edit money out';
+
+  @override
+  String get familyKindSalary => 'Salary';
+
+  @override
+  String get familyKindExtraIncome => 'Extra income';
+
+  @override
+  String get familyKindContribution => 'Contribution';
+
+  @override
+  String get familyPerson => 'Person';
+
+  @override
+  String get familyKind => 'Type';
+
+  @override
+  String get familyDoubleCountNote =>
+      'Money here already counts on your Home screen — don\'t add your salary again in Hisab.';
+
+  @override
+  String get familyEntrySaved => 'Entry saved';
+
+  @override
+  String get familyEntryDeleted => 'Entry deleted';
+
+  @override
+  String get familyPreviousMonth => 'Previous month';
+
+  @override
+  String get familyNextMonth => 'Next month';
+
+  @override
+  String get familyStatement => 'Statement';
+
+  @override
+  String get familyStatementTitle => 'Family hisab statement';
+
+  @override
+  String get familyByPerson => 'By person';
+
+  @override
+  String get familyPaidForHome => 'Paid for home';
+
+  @override
+  String familyPersonLine(String name, String moneyIn, String paid) {
+    return '$name — in $moneyIn · paid $paid';
+  }
+
+  @override
+  String familySendWhatsApp(String name) {
+    return 'Send on WhatsApp to $name';
+  }
+
+  @override
+  String get familyMoneyInCredit => 'Money in (credit)';
+
+  @override
+  String get familyMoneyOutDebit => 'Money out (debit)';
+
+  @override
+  String familyIncludesLine(String moneyIn, String moneyOut) {
+    return 'Includes Family hisab: in $moneyIn · out $moneyOut';
+  }
+
+  @override
   String greeting(String name) {
     return 'Namaste, $name';
   }
