@@ -13,6 +13,8 @@ import '../../settings/application/settings_controller.dart';
 import '../../synchronization/application/sync_controller.dart';
 import '../../synchronization/domain/cloud_models.dart';
 import '../../authentication/application/auth_controller.dart';
+import '../../family/application/family_sharing.dart';
+import '../../family/data/family_repository.dart';
 import '../data/group_repository.dart';
 import '../domain/invite_code.dart';
 import '../../../core/share/share_messages.dart';
@@ -281,14 +283,29 @@ class _JoinGroupScreenState extends ConsumerState<JoinGroupScreen> {
               : p,
         );
       }
-      await ref.read(syncServiceProvider).joinGroup(accepted.groupId);
+      // One code for both: a Family hisab opens its passbook, a group its
+      // page.
+      final familyId = accepted.familyId;
+      if (familyId != null) {
+        await ref.read(familySharingProvider).join(accepted);
+        final family = await ref
+            .read(familyRepositoryProvider)
+            .watchFamily(familyId)
+            .first;
+        if (!mounted) return;
+        showAppSnack(context, l.joinDone(family?.family.name ?? ''));
+        context.pushReplacement(Routes.familyHome(familyId));
+        return;
+      }
+      final groupId = accepted.groupId!;
+      await ref.read(syncServiceProvider).joinGroup(groupId);
       final group = await ref
           .read(groupRepositoryProvider)
-          .watchGroup(accepted.groupId)
+          .watchGroup(groupId)
           .first;
       if (!mounted) return;
       showAppSnack(context, l.joinDone(group?.group.name ?? ''));
-      context.pushReplacement(Routes.group(accepted.groupId));
+      context.pushReplacement(Routes.group(groupId));
     } catch (e) {
       if (mounted) showFailure(context, e);
     } finally {

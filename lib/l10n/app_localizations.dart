@@ -1285,7 +1285,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinTitle.
   ///
   /// In en, this message translates to:
-  /// **'Join a group'**
+  /// **'Join with a code'**
   String get joinTitle;
 
   /// No description provided for @joinCode.
@@ -1297,7 +1297,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinButton.
   ///
   /// In en, this message translates to:
-  /// **'Join group'**
+  /// **'Join'**
   String get joinButton;
 
   /// No description provided for @joinDone.
@@ -2433,6 +2433,65 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Includes Family hisab: in {moneyIn} · out {moneyOut}'**
   String familyIncludesLine(String moneyIn, String moneyOut);
+
+  /// No description provided for @familyInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get familyInvite;
+
+  /// No description provided for @familyInviteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite to Family hisab'**
+  String get familyInviteTitle;
+
+  /// No description provided for @familyMakeAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Make admin'**
+  String get familyMakeAdmin;
+
+  /// No description provided for @familyRemoveAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove admin'**
+  String get familyRemoveAdmin;
+
+  /// No description provided for @familyNowAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is now an admin'**
+  String familyNowAdmin(String name);
+
+  /// No description provided for @familyNowMember.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is now a member'**
+  String familyNowMember(String name);
+
+  /// No description provided for @familyJoinWithCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Join with a code'**
+  String get familyJoinWithCode;
+
+  /// No description provided for @familyInviteShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'👋 *Join our Family hisab on HisabMitra!*\n\n🏠 Family hisab: *{family}*\n🔑 Invite code: *{code}*\n\nOpen HisabMitra → More → Family hisab → Join with a code, and enter the code.\n\n⏳ The code is valid till *{date}*.'**
+  String familyInviteShareText(String family, String code, String date);
+
+  /// No description provided for @familyInviteShareTextLink.
+  ///
+  /// In en, this message translates to:
+  /// **'👋 *Join our Family hisab on HisabMitra!*\n\n🏠 Family hisab: *{family}*\n🔑 Invite code: *{code}*\n\n👉 Tap to join: {link}\nOr open HisabMitra → More → Family hisab → Join with a code, and enter the code.\n\n⏳ The code is valid till *{date}*.'**
+  String familyInviteShareTextLink(
+    String family,
+    String code,
+    String link,
+    String date,
+  );
 
   /// No description provided for @greeting.
   ///

@@ -54,12 +54,13 @@ test in `test/widget/app_flow_test.dart`, also run on device through
 | 44 | Profile / account | `/profile` | `ProfileScreen` | Done; delete account blocked on Edge Function | — |
 | 45 | About, release info, update check | `/about` | `AboutScreen` | Blocked — GitHub owner/repo not configured | U (update checker) |
 | + | Group invitation | `/groups/:id/invite` | `GroupInviteScreen` | Blocked — needs sign-in | U |
-| + | Join group with code | `/join` | `JoinGroupScreen` | Blocked — needs sign-in | U |
+| + | Join with a code (group or Family hisab) | `/join` | `JoinGroupScreen` | Blocked — needs sign-in | U, W (`invite_link_test`, `family_join_test`) |
 | + | More (menu tab) | `/more` | `MoreScreen` | Done | W |
 | + | Family hisab list (opens the only one directly) | `/family` | `FamilyListScreen` | Done | W (`family_setup_test`) |
 | + | Create/edit Family hisab | `/family/new`, `/family/:id/edit` | `FamilyFormScreen` | Done | W (`family_setup_test`) |
 | + | Family hisab (month passbook) | `/family/:id` | `FamilyHomeScreen` | Done | W (`family_entries_test`), U (passbook) |
-| + | Family hisab people | `/family/:id/people` | `FamilyPeopleScreen` | Done | W (`family_setup_test`) |
+| + | Family hisab people (invite, admin/member, managers only) | `/family/:id/people` | `FamilyPeopleScreen` | Done | W (`family_setup_test`, `family_invite_test`) |
+| + | Invite to Family hisab | `/family/:id/invite?member=` | `FamilyInviteScreen` | Blocked — needs sign-in | W (`family_invite_test`), U (sharing) |
 | + | Money in / money out | `/family/:id/entries/new?kind=in\|out`, `/family/:id/entries/:eid/edit` | `FamilyEntryFormScreen` | Done | W (`family_entries_test`) |
 | + | Family hisab statement (PDF, WhatsApp) | `/family/:id/statement?year=&month=` | `FamilyStatementScreen` | Done | W (`family_statement_test`), U (text, PDF) |
 | + | Guided tour + sample data (overlay, prompt, banner) | overlay on any route | `TourOverlay`, `TourPromptHost`, `SampleDataBanner` | Done | W (tour, banner)

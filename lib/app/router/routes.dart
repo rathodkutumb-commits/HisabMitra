@@ -91,6 +91,8 @@ abstract final class Routes {
   static String familyHome(String id) => '/family/$id';
   static String editFamily(String id) => '/family/$id/edit';
   static String familyPeople(String id) => '/family/$id/people';
+  static String familyInvite(String id, {String? memberId}) =>
+      '/family/$id/invite${memberId == null ? '' : '?member=$memberId'}';
   static String newFamilyEntry(String id, {required String kind}) =>
       '/family/$id/entries/new?kind=$kind';
   static String editFamilyEntry(String id, String entryId) =>

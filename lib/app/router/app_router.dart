@@ -18,6 +18,7 @@ import '../../features/dashboard/presentation/dashboard_screen.dart';
 import '../../features/family/presentation/family_entry_form_screen.dart';
 import '../../features/family/presentation/family_form_screen.dart';
 import '../../features/family/presentation/family_home_screen.dart';
+import '../../features/family/presentation/family_invite_screen.dart';
 import '../../features/family/presentation/family_list_screen.dart';
 import '../../features/family/presentation/family_people_screen.dart';
 import '../../features/family/presentation/family_statement_screen.dart';
@@ -416,6 +417,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                 parentNavigatorKey: _rootKey,
                 builder: (_, s) =>
                     FamilyPeopleScreen(familyId: s.pathParameters['id']!),
+              ),
+              GoRoute(
+                path: 'invite',
+                parentNavigatorKey: _rootKey,
+                builder: (_, s) => FamilyInviteScreen(
+                  familyId: s.pathParameters['id']!,
+                  memberId: q(s, 'member'),
+                ),
               ),
               GoRoute(
                 path: 'statement',

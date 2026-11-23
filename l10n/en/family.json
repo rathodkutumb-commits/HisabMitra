@@ -67,5 +67,19 @@
   "familyMoneyInCredit": "Money in (credit)",
   "familyMoneyOutDebit": "Money out (debit)",
   "familyIncludesLine": "Includes Family hisab: in {moneyIn} · out {moneyOut}",
-  "@familyIncludesLine": {"placeholders": {"moneyIn": {"type": "String"}, "moneyOut": {"type": "String"}}}
+  "@familyIncludesLine": {"placeholders": {"moneyIn": {"type": "String"}, "moneyOut": {"type": "String"}}},
+
+  "familyInvite": "Invite",
+  "familyInviteTitle": "Invite to Family hisab",
+  "familyMakeAdmin": "Make admin",
+  "familyRemoveAdmin": "Remove admin",
+  "familyNowAdmin": "{name} is now an admin",
+  "@familyNowAdmin": {"placeholders": {"name": {"type": "String"}}},
+  "familyNowMember": "{name} is now a member",
+  "@familyNowMember": {"placeholders": {"name": {"type": "String"}}},
+  "familyJoinWithCode": "Join with a code",
+  "familyInviteShareText": "👋 *Join our Family hisab on HisabMitra!*\n\n🏠 Family hisab: *{family}*\n🔑 Invite code: *{code}*\n\nOpen HisabMitra → More → Family hisab → Join with a code, and enter the code.\n\n⏳ The code is valid till *{date}*.",
+  "@familyInviteShareText": {"placeholders": {"family": {"type": "String"}, "code": {"type": "String"}, "date": {"type": "String"}}},
+  "familyInviteShareTextLink": "👋 *Join our Family hisab on HisabMitra!*\n\n🏠 Family hisab: *{family}*\n🔑 Invite code: *{code}*\n\n👉 Tap to join: {link}\nOr open HisabMitra → More → Family hisab → Join with a code, and enter the code.\n\n⏳ The code is valid till *{date}*.",
+  "@familyInviteShareTextLink": {"placeholders": {"family": {"type": "String"}, "code": {"type": "String"}, "link": {"type": "String"}, "date": {"type": "String"}}}
 }

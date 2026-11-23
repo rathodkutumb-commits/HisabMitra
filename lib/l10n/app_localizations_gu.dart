@@ -739,13 +739,13 @@ class AppLocalizationsGu extends AppLocalizations {
       'આ કોડ હમણાં જ શેર કરો. સુરક્ષા માટે તે ફક્ત એક જ વાર દેખાય છે.';
 
   @override
-  String get joinTitle => 'ગ્રુપમાં જોડાઓ';
+  String get joinTitle => 'કોડથી જોડાઓ';
 
   @override
   String get joinCode => 'આમંત્રણ કોડ';
 
   @override
-  String get joinButton => 'ગ્રુપમાં જોડાઓ';
+  String get joinButton => 'જોડાઓ';
 
   @override
   String joinDone(String group) {
@@ -1376,6 +1376,46 @@ class AppLocalizationsGu extends AppLocalizations {
   @override
   String familyIncludesLine(String moneyIn, String moneyOut) {
     return 'પરિવારનો હિસાબ સામેલ: જમા $moneyIn · ખર્ચ $moneyOut';
+  }
+
+  @override
+  String get familyInvite => 'આમંત્રણ મોકલો';
+
+  @override
+  String get familyInviteTitle => 'પરિવારના હિસાબમાં આમંત્રણ';
+
+  @override
+  String get familyMakeAdmin => 'એડમિન બનાવો';
+
+  @override
+  String get familyRemoveAdmin => 'એડમિન દૂર કરો';
+
+  @override
+  String familyNowAdmin(String name) {
+    return '$name હવે એડમિન છે';
+  }
+
+  @override
+  String familyNowMember(String name) {
+    return '$name હવે સભ્ય છે';
+  }
+
+  @override
+  String get familyJoinWithCode => 'કોડથી જોડાઓ';
+
+  @override
+  String familyInviteShareText(String family, String code, String date) {
+    return '👋 *હિસાબમિત્રમાં અમારા પરિવારના હિસાબમાં જોડાઓ!*\n\n🏠 પરિવારનો હિસાબ: *$family*\n🔑 આમંત્રણ કોડ: *$code*\n\nહિસાબમિત્ર ખોલો → વધુ → પરિવારનો હિસાબ → કોડથી જોડાઓ, અને કોડ લખો.\n\n⏳ કોડ *$date* સુધી માન્ય છે.';
+  }
+
+  @override
+  String familyInviteShareTextLink(
+    String family,
+    String code,
+    String link,
+    String date,
+  ) {
+    return '👋 *હિસાબમિત્રમાં અમારા પરિવારના હિસાબમાં જોડાઓ!*\n\n🏠 પરિવારનો હિસાબ: *$family*\n🔑 આમંત્રણ કોડ: *$code*\n\n👉 જોડાવા માટે ટેપ કરો: $link\nઅથવા હિસાબમિત્ર ખોલો → વધુ → પરિવારનો હિસાબ → કોડથી જોડાઓ, અને કોડ લખો.\n\n⏳ કોડ *$date* સુધી માન્ય છે.';
   }
 
   @override

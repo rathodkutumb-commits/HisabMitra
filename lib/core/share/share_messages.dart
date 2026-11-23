@@ -49,6 +49,21 @@ String inviteMessage(
   downloadUrl == null ? null : l.inviteShareDownload(downloadUrl),
 );
 
+/// The Family hisab invitation (same layout as the group one).
+String familyInviteMessage(
+  AppLocalizations l, {
+  required String family,
+  required String code,
+  required String date,
+  String? link,
+  String? downloadUrl,
+}) => _withDownload(
+  link == null
+      ? l.familyInviteShareText(family, code, date)
+      : l.familyInviteShareTextLink(family, code, link, date),
+  downloadUrl == null ? null : l.inviteShareDownload(downloadUrl),
+);
+
 /// "Share HisabMitra" from About.
 String appShareMessage(AppLocalizations l, {String? downloadUrl}) =>
     _withDownload(

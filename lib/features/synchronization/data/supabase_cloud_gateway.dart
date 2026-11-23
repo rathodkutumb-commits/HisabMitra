@@ -118,6 +118,7 @@ class SupabaseCloudGateway implements CloudGateway {
       'already_member',
       'invitation_pending',
       'invalid_member',
+      'invalid_data',
       'not_authenticated',
     };
     if (code == 'PGRST301' || message == 'not_authenticated') {
@@ -287,6 +288,14 @@ class SupabaseCloudGateway implements CloudGateway {
   /// connection: after a quick pause/resume the old channel may still be
   /// leaving, and a shared name would let its leave close the new one.
   @visibleForTesting
+  /// Change feeds that live updates listen to (RLS decides which rows reach
+  /// this user; personal rows are also filtered by owner).
+  static const liveFeeds = [
+    'sync_events',
+    'personal_sync_events',
+    'family_sync_events',
+  ];
+
   static String feedTopic(String uid) => 'feeds:$uid:${++_feedConnections}';
 
   @override
@@ -301,34 +310,32 @@ class SupabaseCloudGateway implements CloudGateway {
 
     signals = StreamController<void>(
       onListen: () {
-        // Realtime applies each feed's RLS: group events only reach members.
-        channel = _client
-            .channel(feedTopic(uid))
-            .onPostgresChanges(
-              event: PostgresChangeEvent.insert,
-              schema: 'public',
-              table: 'sync_events',
-              callback: signal,
-            )
-            .onPostgresChanges(
-              event: PostgresChangeEvent.insert,
-              schema: 'public',
-              table: 'personal_sync_events',
-              filter: PostgresChangeFilter(
-                type: PostgresChangeFilterType.eq,
-                column: 'owner_id',
-                value: uid,
-              ),
-              callback: signal,
-            )
-            .subscribe((status, error) {
-              if (status == RealtimeSubscribeStatus.subscribed) {
-                // Changes made while disconnected: sync once on (re)connect.
-                if (!signals.isClosed) signals.add(null);
-              } else {
-                SafeLogger.info('realtime', {'status': status.name});
-              }
-            });
+        // Realtime applies each feed's RLS: group and Family hisab events
+        // only reach their members.
+        var c = _client.channel(feedTopic(uid));
+        for (final table in liveFeeds) {
+          c = c.onPostgresChanges(
+            event: PostgresChangeEvent.insert,
+            schema: 'public',
+            table: table,
+            filter: table == 'personal_sync_events'
+                ? PostgresChangeFilter(
+                    type: PostgresChangeFilterType.eq,
+                    column: 'owner_id',
+                    value: uid,
+                  )
+                : null,
+            callback: signal,
+          );
+        }
+        channel = c.subscribe((status, error) {
+          if (status == RealtimeSubscribeStatus.subscribed) {
+            // Changes made while disconnected: sync once on (re)connect.
+            if (!signals.isClosed) signals.add(null);
+          } else {
+            SafeLogger.info('realtime', {'status': status.name});
+          }
+        });
       },
       onCancel: () async {
         final c = channel;
@@ -401,18 +408,70 @@ class SupabaseCloudGateway implements CloudGateway {
     required String displayName,
   }) => _call(() async {
     final res = await _client.rpc<Object?>(
-      'accept_group_invitation',
+      'accept_invitation',
       params: {
         'p_code': code.trim().toUpperCase(),
         'p_display_name': displayName,
       },
     );
+    return AcceptedInvitation.fromJson((res! as Map).cast<String, Object?>());
+  });
+
+  @override
+  Future<CreatedInvitation> createFamilyInvitation({
+    required String familyId,
+    String? memberId,
+  }) => _call(() async {
+    final res = await _client.rpc<Object?>(
+      'create_family_invitation',
+      params: {'p_family_id': familyId, 'p_member_id': memberId},
+    );
     final j = (res! as Map).cast<String, Object?>();
-    return AcceptedInvitation(
-      groupId: j['group_id']! as String,
-      memberId: j['member_id']! as String,
+    return CreatedInvitation(
+      id: j['invitation_id']! as String,
+      code: j['code']! as String,
+      expiresAt: DateTime.parse(j['expires_at']! as String).toLocal(),
     );
   });
+
+  @override
+  Future<List<InvitationInfo>> listFamilyInvitations(String familyId) =>
+      _call(() async {
+        final rows = await _client
+            .from('family_invitations')
+            .select('id, status, expires_at, member_id, created_at')
+            .eq('family_id', familyId)
+            .order('created_at', ascending: false);
+        return [
+          for (final r in rows)
+            InvitationInfo(
+              id: r['id'] as String,
+              status: r['status'] as String,
+              expiresAt: DateTime.parse(r['expires_at'] as String).toLocal(),
+              memberId: r['member_id'] as String?,
+              createdAt: DateTime.parse(r['created_at'] as String).toLocal(),
+            ),
+        ];
+      });
+
+  @override
+  Future<void> cancelFamilyInvitation(String invitationId) => _call(
+    () => _client.rpc<Object?>(
+      'cancel_family_invitation',
+      params: {'p_invitation_id': invitationId},
+    ),
+  );
+
+  @override
+  Future<void> setFamilyRole({
+    required String memberId,
+    required String role,
+  }) => _call(
+    () => _client.rpc<Object?>(
+      'set_family_member_role',
+      params: {'p_member_id': memberId, 'p_role': role},
+    ),
+  );
 
   // ------------------------------------------------------- attachments
 

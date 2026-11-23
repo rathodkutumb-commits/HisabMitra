@@ -109,9 +109,9 @@
   "inviteCancel": "Cancel invitation",
   "invitesEmpty": "No invitations yet",
   "inviteCodeOnce": "Share this code now. For security it is shown only once.",
-  "joinTitle": "Join a group",
+  "joinTitle": "Join with a code",
   "joinCode": "Invitation code",
-  "joinButton": "Join group",
+  "joinButton": "Join",
   "joinDone": "You joined {group}",
   "@joinDone": {
     "placeholders": {

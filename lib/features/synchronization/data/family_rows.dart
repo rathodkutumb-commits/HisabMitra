@@ -204,6 +204,29 @@ class FamilyRowApplier {
     );
   }
 
+  /// Removes a Family hisab from the phone (this user was removed from it):
+  /// its entries, people, unsent uploads, feed rows and open conflicts.
+  Future<void> forgetFamily(String familyId) => _db.transaction(() async {
+    await (_db.delete(
+      _db.familyEntriesCache,
+    )..where((e) => e.familyId.equals(familyId))).go();
+    await (_db.delete(
+      _db.familyMembersCache,
+    )..where((m) => m.familyId.equals(familyId))).go();
+    await (_db.delete(
+      _db.familyHisabsCache,
+    )..where((f) => f.id.equals(familyId))).go();
+    await (_db.delete(_db.syncOutbox)
+          ..where((o) => o.scope.equals('family') & o.groupId.equals(familyId)))
+        .go();
+    await (_db.delete(_db.syncInbox)
+          ..where((i) => i.scope.equals('family') & i.groupId.equals(familyId)))
+        .go();
+    await (_db.delete(_db.syncConflicts)
+          ..where((c) => c.scope.equals('family') & c.groupId.equals(familyId)))
+        .go();
+  });
+
   /// The account creates "You" together with the Family hisab (revision 1).
   Future<void> markOwnerSynced(String familyId) => _db.customUpdate(
     "UPDATE family_members_cache SET revision = 1, sync_state = 'synced' "

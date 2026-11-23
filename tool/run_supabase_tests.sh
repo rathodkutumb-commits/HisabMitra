@@ -26,3 +26,4 @@ run < supabase/tests/10_rls_and_rpc_test.sql
 run < supabase/tests/20_personal_data_test.sql
 run < supabase/tests/30_realtime_test.sql
 run < supabase/tests/40_family_hisab_test.sql
+run < supabase/tests/50_family_sharing_test.sql

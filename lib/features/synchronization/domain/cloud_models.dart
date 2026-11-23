@@ -227,10 +227,33 @@ class InvitationInfo {
 
 @immutable
 class AcceptedInvitation {
-  const AcceptedInvitation({required this.groupId, required this.memberId});
+  const AcceptedInvitation({
+    this.groupId,
+    this.familyId,
+    required this.memberId,
+  });
 
-  final String groupId;
+  /// `accept_invitation`: `{kind, group_id | family_id, member_id}`; no
+  /// `kind` means a group (`accept_group_invitation`).
+  factory AcceptedInvitation.fromJson(Map<String, Object?> j) =>
+      j['kind'] == 'family'
+      ? AcceptedInvitation(
+          familyId: j['family_id']! as String,
+          memberId: j['member_id']! as String,
+        )
+      : AcceptedInvitation(
+          groupId: j['group_id']! as String,
+          memberId: j['member_id']! as String,
+        );
+
+  /// Set for a group code.
+  final String? groupId;
+
+  /// Set for a Family hisab code.
+  final String? familyId;
   final String memberId;
+
+  bool get isFamily => familyId != null;
 }
 
 /// Full current state of one Family hisab (`get_family_snapshot`).

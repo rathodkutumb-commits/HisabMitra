@@ -723,14 +723,36 @@ class SyncService {
       )..where((o) => o.scope.equals('family'))).get())
         o.entityId,
     };
-    // Deleted before this phone ever had it: nothing to show.
-    final deletedFamilies = {
+    // This user's own person removed: the phone forgets that Family hisab —
+    // unless a later event in the same batch adds them again (invited back).
+    final me = _myUserId;
+    bool aboutMe(InboxRow e) =>
+        me != null &&
+        e.entityType == 'member' &&
+        (jsonDecode(e.payload) as Map)['user_id'] == me;
+    final stillIn = <String, bool>{};
+    for (final e in pending) {
+      if (!aboutMe(e)) continue;
+      final p = jsonDecode(e.payload) as Map;
+      stillIn[e.groupId] =
+          e.opType != 'delete' &&
+          p['deleted_at'] == null &&
+          p['status'] != 'removed';
+    }
+    bool removesMe(InboxRow e) =>
+        e.opType == 'delete' && aboutMe(e) && stillIn[e.groupId] == false;
+    // Deleted (or left) before this phone ever had it: nothing to show.
+    final goneFamilies = {
       for (final e in pending)
-        if (e.entityType == 'family' && e.opType == 'delete') e.groupId,
+        if ((e.entityType == 'family' && e.opType == 'delete') || removesMe(e))
+          e.groupId,
     };
+    final forgotten = <String>{};
     final loadedUpTo = <String, int>{};
     var applied = 0;
     for (final e in pending) {
+      // Its feed rows went with it.
+      if (forgotten.contains(e.groupId)) continue;
       Future<void> done({String? error}) =>
           (_db.update(_db.syncInbox)
                 ..where((i) => i.scope.equals('family') & i.seq.equals(e.seq)))
@@ -749,7 +771,7 @@ class SyncService {
               )..where((f) => f.id.equals(e.groupId))).getSingleOrNull() !=
               null;
       if (!known) {
-        if (deletedFamilies.contains(e.groupId)) {
+        if (goneFamilies.contains(e.groupId)) {
           await done();
           continue;
         }
@@ -763,6 +785,12 @@ class SyncService {
       }
       // Already part of the snapshot (marked applied there).
       if (e.seq <= (loadedUpTo[e.groupId] ?? 0)) continue;
+      if (removesMe(e)) {
+        await familyRows.forgetFamily(e.groupId);
+        forgotten.add(e.groupId);
+        applied++;
+        continue;
+      }
       if (conflicted.contains(e.entityId) || queued.contains(e.entityId)) {
         continue;
       }

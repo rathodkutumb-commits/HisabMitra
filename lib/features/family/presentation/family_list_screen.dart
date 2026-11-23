@@ -39,7 +39,17 @@ class _FamilyListScreenState extends ConsumerState<FamilyListScreen> {
     }
     final hasAny = families.value?.isNotEmpty ?? false;
     return Scaffold(
-      appBar: AppBar(title: Text(l.familyHisabs)),
+      appBar: AppBar(
+        title: Text(l.familyHisabs),
+        actions: [
+          // Invited by someone: the same join screen as groups.
+          TextButton.icon(
+            onPressed: () => context.push(Routes.joinGroup),
+            icon: const Icon(Icons.vpn_key_rounded),
+            label: Text(l.familyJoinWithCode),
+          ),
+        ],
+      ),
       floatingActionButton: hasAny
           ? FloatingActionButton.extended(
               heroTag: 'fab-family-list',

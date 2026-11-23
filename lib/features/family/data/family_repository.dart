@@ -93,6 +93,17 @@ class FamilyDetail {
 
   FamilyMemberRow? get self => members.where((m) => m.isSelf).firstOrNull;
 
+  /// The owner and admins manage the Family hisab, its people and
+  /// invitations; members add entries.
+  bool get canManage {
+    final me = self;
+    return me != null &&
+        me.status == 'active' &&
+        (me.role == 'owner' || me.role == 'admin');
+  }
+
+  bool get isOwner => self?.role == 'owner';
+
   List<FamilyMemberRow> get activeMembers =>
       members.where((m) => m.status == 'active').toList();
 

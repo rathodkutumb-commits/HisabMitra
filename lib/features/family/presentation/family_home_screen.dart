@@ -87,9 +87,12 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
               _ => _delete(),
             },
             itemBuilder: (_) => [
-              PopupMenuItem(value: 'edit', child: Text(l.familyEdit)),
+              // Only the owner and admins change or delete it.
+              if (detail.value?.canManage ?? false)
+                PopupMenuItem(value: 'edit', child: Text(l.familyEdit)),
               PopupMenuItem(value: 'new', child: Text(l.familyNew)),
-              PopupMenuItem(value: 'delete', child: Text(l.familyDelete)),
+              if (detail.value?.canManage ?? false)
+                PopupMenuItem(value: 'delete', child: Text(l.familyDelete)),
             ],
           ),
         ],

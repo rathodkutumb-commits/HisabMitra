@@ -10,4 +10,12 @@ void main() {
     expect(first, startsWith('feeds:user-1'));
     expect(second, isNot(first));
   });
+
+  test('live updates listen to all three feeds', () {
+    expect(SupabaseCloudGateway.liveFeeds, [
+      'sync_events',
+      'personal_sync_events',
+      'family_sync_events',
+    ]);
+  });
 }

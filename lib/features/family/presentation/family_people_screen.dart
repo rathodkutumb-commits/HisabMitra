@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:go_router/go_router.dart';
+
+import '../../../app/router/routes.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/l10n/l10n_x.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../../core/widgets/dialogs.dart';
+import '../application/family_sharing.dart';
 import '../data/family_repository.dart';
 import 'family_person_fields.dart';
 
@@ -59,6 +63,21 @@ class _FamilyPeopleScreenState extends ConsumerState<FamilyPeopleScreen> {
     await _guard(() => ref.read(familyRepositoryProvider).savePerson(p));
   }
 
+  Future<void> _setRole(FamilyMemberRow m, String role) async {
+    final l = context.l10n;
+    await _guard(() async {
+      await ref.read(familySharingProvider).setRole(m.id, role);
+      if (mounted) {
+        showAppSnack(
+          context,
+          role == 'admin'
+              ? l.familyNowAdmin(m.name)
+              : l.familyNowMember(m.name),
+        );
+      }
+    });
+  }
+
   Future<void> _delete(FamilyMemberRow m) async {
     final l = context.l10n;
     final ok = await confirmAction(
@@ -78,16 +97,27 @@ class _FamilyPeopleScreenState extends ConsumerState<FamilyPeopleScreen> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final detail = ref.watch(familyDetailProvider(widget.familyId));
+    // The owner and admins manage people; members only read this list.
+    final canManage = detail.value?.canManage ?? false;
+    final isOwner = detail.value?.isOwner ?? false;
+    String roleLabel(String role) => switch (role) {
+      'owner' => l.roleOwner,
+      'admin' => l.roleAdmin,
+      _ => l.roleMember,
+    };
     return Scaffold(
       appBar: AppBar(title: Text(l.familyPeople)),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'fab-family-people',
-        onPressed: _add,
-        icon: const Icon(Icons.person_add_alt_1_rounded),
-        label: Text(l.familyAddPerson),
-      ),
+      floatingActionButton: canManage
+          ? FloatingActionButton.extended(
+              heroTag: 'fab-family-people',
+              onPressed: _add,
+              icon: const Icon(Icons.person_add_alt_1_rounded),
+              label: Text(l.familyAddPerson),
+            )
+          : null,
       body: AsyncValueView(
-        value: ref.watch(familyDetailProvider(widget.familyId)),
+        value: detail,
         data: (d) {
           if (d == null) {
             return EmptyState(
@@ -105,29 +135,60 @@ class _FamilyPeopleScreenState extends ConsumerState<FamilyPeopleScreen> {
                   title: Text(m.isSelf ? l.memberYou(m.name) : m.name),
                   subtitle: Text(
                     m.isSelf
-                        ? l.roleOwner
+                        ? roleLabel(m.role)
                         : [
                             if (m.phone != null) m.phone!,
+                            if (m.userId != null) roleLabel(m.role),
                             m.userId != null
                                 ? l.familyHasApp
                                 : l.familyNotJoined,
                           ].join(' · '),
                   ),
-                  trailing: PopupMenuButton<String>(
-                    onSelected: (action) =>
-                        action == 'edit' ? _edit(m) : _delete(m),
-                    itemBuilder: (_) => [
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: Text(l.familyEditPerson),
-                      ),
-                      if (m.role != 'owner')
-                        PopupMenuItem(
-                          value: 'delete',
-                          child: Text(l.familyDeletePerson),
+                  trailing: !canManage
+                      ? null
+                      : PopupMenuButton<String>(
+                          onSelected: (action) => switch (action) {
+                            'edit' => _edit(m),
+                            'invite' => context.push(
+                              Routes.familyInvite(
+                                widget.familyId,
+                                memberId: m.id,
+                              ),
+                            ),
+                            'admin' => _setRole(m, 'admin'),
+                            'member' => _setRole(m, 'member'),
+                            _ => _delete(m),
+                          },
+                          itemBuilder: (_) => [
+                            PopupMenuItem(
+                              value: 'edit',
+                              child: Text(l.familyEditPerson),
+                            ),
+                            if (m.userId == null && !m.isSelf)
+                              PopupMenuItem(
+                                value: 'invite',
+                                child: Text(l.familyInvite),
+                              ),
+                            if (isOwner &&
+                                m.userId != null &&
+                                !m.isSelf &&
+                                m.role != 'owner')
+                              m.role == 'admin'
+                                  ? PopupMenuItem(
+                                      value: 'member',
+                                      child: Text(l.familyRemoveAdmin),
+                                    )
+                                  : PopupMenuItem(
+                                      value: 'admin',
+                                      child: Text(l.familyMakeAdmin),
+                                    ),
+                            if (m.role != 'owner')
+                              PopupMenuItem(
+                                value: 'delete',
+                                child: Text(l.familyDeletePerson),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
                 ),
               if (removed.isNotEmpty)
                 Align(

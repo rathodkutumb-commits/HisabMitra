@@ -6,6 +6,8 @@ import 'package:hisabmitra/app/router/app_router.dart';
 import 'package:hisabmitra/app/router/routes.dart';
 import 'package:hisabmitra/core/database/app_database.dart';
 import 'package:hisabmitra/core/providers.dart';
+import 'package:hisabmitra/features/family/data/family_repository.dart';
+import 'package:hisabmitra/features/family/domain/family_models.dart';
 import 'package:hisabmitra/features/groups/data/group_repository.dart';
 import 'package:hisabmitra/features/groups/domain/group_models.dart';
 import 'package:hisabmitra/features/groups/domain/split_calculator.dart';
@@ -105,6 +107,51 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
     expect(find.text('Hotel'), findsWidgets);
+  });
+
+  testApp('an entry from another phone appears on the open Family hisab', (
+    tester,
+  ) async {
+    await hemangSharesGoaTrip();
+    final hemangFamily = FamilyRepository(
+      hemangDb,
+      const Clock(),
+      const IdGenerator(),
+      currentUserId: () => 'hemang',
+    );
+    final home = await hemangFamily.createFamily(
+      const FamilyDraft(name: 'Home'),
+      selfName: 'Hemang',
+      people: const [FamilyPersonDraft(name: 'Rahul Patel')],
+    );
+    final members = (await hemangFamily.watchFamily(home).first)!.members;
+    await hemangSync.syncOnce();
+    server.acceptAny(
+      server.family.createInvitation(home, members.last.id, 'hemang'),
+      'rahul',
+      'Rahul',
+    );
+
+    final container = await openAppAsRahul(tester);
+    await container.read(syncServiceProvider).loadFamilySnapshot(home);
+    container.read(routerProvider).go(Routes.familyHome(home));
+    await tester.pumpAndSettle();
+    expect(find.text('Salary'), findsNothing);
+
+    await hemangFamily.saveEntry(
+      FamilyEntryDraft(
+        familyId: home,
+        memberId: members.first.id,
+        kind: FamilyEntryKind.salary,
+        amountPaise: 6000000,
+        date: DateTime.now(),
+      ),
+    );
+    await hemangSync.syncOnce();
+
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(find.text('Salary'), findsOneWidget);
   });
 
   testApp('the app stops listening in the background', (tester) async {

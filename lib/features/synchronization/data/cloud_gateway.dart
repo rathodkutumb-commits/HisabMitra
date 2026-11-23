@@ -86,10 +86,24 @@ abstract interface class CloudGateway {
   });
   Future<List<InvitationInfo>> listInvitations(String groupId);
   Future<void> cancelInvitation(String invitationId);
+
+  /// Accepts a group **or** Family hisab code (`accept_invitation`).
   Future<AcceptedInvitation> acceptInvitation({
     required String code,
     required String displayName,
   });
+
+  /// Family hisab invitations (admins only), optionally for a named person
+  /// who has no account yet.
+  Future<CreatedInvitation> createFamilyInvitation({
+    required String familyId,
+    String? memberId,
+  });
+  Future<List<InvitationInfo>> listFamilyInvitations(String familyId);
+  Future<void> cancelFamilyInvitation(String invitationId);
+
+  /// The owner makes a person with the app an `admin` or a `member`.
+  Future<void> setFamilyRole({required String memberId, required String role});
 
   Future<void> uploadGroupAttachment({
     required String storagePath,
@@ -185,6 +199,21 @@ class NotConfiguredCloudGateway implements CloudGateway {
   Future<AcceptedInvitation> acceptInvitation({
     required String code,
     required String displayName,
+  }) async => _fail();
+  @override
+  Future<CreatedInvitation> createFamilyInvitation({
+    required String familyId,
+    String? memberId,
+  }) async => _fail();
+  @override
+  Future<List<InvitationInfo>> listFamilyInvitations(String familyId) async =>
+      _fail();
+  @override
+  Future<void> cancelFamilyInvitation(String invitationId) async => _fail();
+  @override
+  Future<void> setFamilyRole({
+    required String memberId,
+    required String role,
   }) async => _fail();
   @override
   Future<void> uploadGroupAttachment({

@@ -166,7 +166,7 @@ void main() {
         code: code,
         displayName: 'Rahul Patel',
       );
-      await rahul.sync.joinGroup(accepted.groupId);
+      await rahul.sync.joinGroup(accepted.groupId!);
     }
 
     Future<void> hemangAddsHotel() async {

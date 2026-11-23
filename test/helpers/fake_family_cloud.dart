@@ -1,3 +1,4 @@
+import 'package:hisabmitra/core/errors/app_failure.dart';
 import 'package:hisabmitra/features/synchronization/domain/cloud_models.dart';
 
 /// In-memory mirror of `apply_family_op`, `family_sync_events` and
@@ -250,10 +251,161 @@ class FakeFamilyStore {
     return const OpRejected('bad_request');
   }
 
+  /// `can_read_family_event`: readers see the feed; a removed person still
+  /// sees the events of their own person row (their removal).
+  bool canRead(RemoteEvent e, String uid) =>
+      isReader(e.groupId, uid) ||
+      (e.entityType == 'member' && members[e.entityId]?['user_id'] == uid);
+
   List<RemoteEvent> pull(String uid, int afterSeq, int limit) => events
-      .where((e) => e.seq > afterSeq && isReader(e.groupId, uid))
+      .where((e) => e.seq > afterSeq && canRead(e, uid))
       .take(limit)
       .toList();
+
+  // ------------------------------------------------------------ invitations
+
+  /// Codes of `family_invitations` (plain, as the inviter sees them).
+  final Map<
+    String,
+    ({String id, String familyId, String? memberId, String status})
+  >
+  invitations = {};
+  var _codes = 0;
+  var _joined = 0;
+
+  String createInvitation(String familyId, String? memberId, String uid) {
+    if (!isMember(familyId, uid) || !isAdmin(familyId, uid)) {
+      throw const ValidationFailure('forbidden');
+    }
+    if (memberId != null) {
+      final m = members[memberId];
+      if (m == null ||
+          m['family_id'] != familyId ||
+          m['user_id'] != null ||
+          m['status'] != 'active') {
+        throw const ValidationFailure('invalid_member');
+      }
+      if (invitations.values.any(
+        (i) => i.memberId == memberId && i.status == 'pending',
+      )) {
+        throw const ValidationFailure('invitation_pending');
+      }
+    }
+    final code = 'FAMCODE${(_codes++).toString().padLeft(3, '0')}';
+    invitations[code] = (
+      id: 'finv-$_codes',
+      familyId: familyId,
+      memberId: memberId,
+      status: 'pending',
+    );
+    return code;
+  }
+
+  List<InvitationInfo> listInvitations(String familyId) => [
+    for (final i in invitations.values)
+      if (i.familyId == familyId)
+        InvitationInfo(
+          id: i.id,
+          status: i.status,
+          expiresAt: DateTime(2030),
+          memberId: i.memberId,
+          createdAt: DateTime(2026),
+        ),
+  ];
+
+  void cancelInvitation(String id) {
+    final code = invitations.keys.firstWhere((k) => invitations[k]!.id == id);
+    final i = invitations[code]!;
+    invitations[code] = (
+      id: i.id,
+      familyId: i.familyId,
+      memberId: i.memberId,
+      status: 'cancelled',
+    );
+  }
+
+  AcceptedInvitation accept(String code, String uid, String name) {
+    final inv = invitations[code];
+    if (inv == null ||
+        inv.status != 'pending' ||
+        families[inv.familyId]?['deleted_at'] != null) {
+      throw const ValidationFailure('invalid_code');
+    }
+    if (isMember(inv.familyId, uid)) {
+      throw const ValidationFailure('already_member');
+    }
+    final String memberId;
+    if (inv.memberId != null) {
+      final m = members[inv.memberId];
+      if (m == null || m['user_id'] != null || m['status'] != 'active') {
+        throw const ValidationFailure('invalid_code');
+      }
+      m
+        ..['user_id'] = uid
+        ..['revision'] = (m['revision']! as int) + 1;
+      memberId = inv.memberId!;
+    } else {
+      memberId = 'fm-joined-${++_joined}';
+      members[memberId] = {
+        'id': memberId,
+        'family_id': inv.familyId,
+        'user_id': uid,
+        'name': name,
+        'phone': null,
+        'role': 'member',
+        'status': 'active',
+        'sort_order': 99,
+        'revision': 1,
+        'deleted_at': null,
+      };
+    }
+    invitations[code] = (
+      id: inv.id,
+      familyId: inv.familyId,
+      memberId: inv.memberId,
+      status: 'accepted',
+    );
+    final m = members[memberId]!;
+    _emit(
+      inv.familyId,
+      'member',
+      memberId,
+      'upsert',
+      m['revision']! as int,
+      m,
+      'accept-$code',
+    );
+    return AcceptedInvitation(familyId: inv.familyId, memberId: memberId);
+  }
+
+  /// `set_family_member_role`.
+  void setRole(String memberId, String role, String uid) {
+    final m = members[memberId];
+    final f = m == null ? null : families[m['family_id']];
+    if (m == null || f == null || f['owner_id'] != uid) {
+      throw const ValidationFailure('forbidden');
+    }
+    if (m['role'] == 'owner' ||
+        m['user_id'] == null ||
+        m['status'] != 'active') {
+      throw const ValidationFailure('forbidden');
+    }
+    if (role != 'admin' && role != 'member') {
+      throw const ValidationFailure('invalid_data');
+    }
+    m
+      ..['role'] = role
+      ..['revision'] = (m['revision']! as int) + 1;
+    _emit(
+      m['family_id']! as String,
+      'member',
+      memberId,
+      'upsert',
+      m['revision']! as int,
+      m,
+      'role-$memberId-${m['revision']}',
+    );
+  }
 
   FamilySnapshot snapshot(String familyId, String uid) {
     if (!isMember(familyId, uid)) throw StateError('forbidden');

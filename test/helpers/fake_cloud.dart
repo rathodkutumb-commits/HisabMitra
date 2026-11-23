@@ -202,6 +202,12 @@ class FakeCloudServer {
     return code;
   }
 
+  /// `accept_invitation`: a group code, else a Family hisab code.
+  AcceptedInvitation acceptAny(String code, String uid, String name) =>
+      invitations.containsKey(code)
+      ? accept(code, uid, name)
+      : family.accept(code, uid, name);
+
   AcceptedInvitation accept(String code, String uid, String name) {
     final inv = invitations[code];
     if (inv == null || inv.used) throw const ValidationFailure('invalid_code');
@@ -389,7 +395,41 @@ class FakeCloudClient implements CloudGateway {
     required String displayName,
   }) async {
     _net();
-    return server.accept(code, userId, displayName);
+    return server.acceptAny(code, userId, displayName);
+  }
+
+  @override
+  Future<CreatedInvitation> createFamilyInvitation({
+    required String familyId,
+    String? memberId,
+  }) async {
+    _net();
+    return CreatedInvitation(
+      id: 'finv',
+      code: server.family.createInvitation(familyId, memberId, userId),
+      expiresAt: DateTime(2030),
+    );
+  }
+
+  @override
+  Future<List<InvitationInfo>> listFamilyInvitations(String familyId) async {
+    _net();
+    return server.family.listInvitations(familyId);
+  }
+
+  @override
+  Future<void> cancelFamilyInvitation(String invitationId) async {
+    _net();
+    server.family.cancelInvitation(invitationId);
+  }
+
+  @override
+  Future<void> setFamilyRole({
+    required String memberId,
+    required String role,
+  }) async {
+    _net();
+    server.family.setRole(memberId, role, userId);
   }
 
   @override

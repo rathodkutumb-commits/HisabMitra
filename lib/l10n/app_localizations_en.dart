@@ -742,13 +742,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Share this code now. For security it is shown only once.';
 
   @override
-  String get joinTitle => 'Join a group';
+  String get joinTitle => 'Join with a code';
 
   @override
   String get joinCode => 'Invitation code';
 
   @override
-  String get joinButton => 'Join group';
+  String get joinButton => 'Join';
 
   @override
   String joinDone(String group) {
@@ -1380,6 +1380,46 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String familyIncludesLine(String moneyIn, String moneyOut) {
     return 'Includes Family hisab: in $moneyIn · out $moneyOut';
+  }
+
+  @override
+  String get familyInvite => 'Invite';
+
+  @override
+  String get familyInviteTitle => 'Invite to Family hisab';
+
+  @override
+  String get familyMakeAdmin => 'Make admin';
+
+  @override
+  String get familyRemoveAdmin => 'Remove admin';
+
+  @override
+  String familyNowAdmin(String name) {
+    return '$name is now an admin';
+  }
+
+  @override
+  String familyNowMember(String name) {
+    return '$name is now a member';
+  }
+
+  @override
+  String get familyJoinWithCode => 'Join with a code';
+
+  @override
+  String familyInviteShareText(String family, String code, String date) {
+    return '👋 *Join our Family hisab on HisabMitra!*\n\n🏠 Family hisab: *$family*\n🔑 Invite code: *$code*\n\nOpen HisabMitra → More → Family hisab → Join with a code, and enter the code.\n\n⏳ The code is valid till *$date*.';
+  }
+
+  @override
+  String familyInviteShareTextLink(
+    String family,
+    String code,
+    String link,
+    String date,
+  ) {
+    return '👋 *Join our Family hisab on HisabMitra!*\n\n🏠 Family hisab: *$family*\n🔑 Invite code: *$code*\n\n👉 Tap to join: $link\nOr open HisabMitra → More → Family hisab → Join with a code, and enter the code.\n\n⏳ The code is valid till *$date*.';
   }
 
   @override

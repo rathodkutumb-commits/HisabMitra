@@ -157,7 +157,7 @@ void main() {
         code: code,
         displayName: 'Bhavna',
       );
-      await b.sync.joinGroup(accepted.groupId);
+      await b.sync.joinGroup(accepted.groupId!);
       bhavnaOnB = accepted.memberId;
       await a.sync.pull();
     });

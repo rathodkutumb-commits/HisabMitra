@@ -61,5 +61,15 @@
   "familySendWhatsApp": "{name}ને WhatsApp પર મોકલો",
   "familyMoneyInCredit": "જમા (આવક)",
   "familyMoneyOutDebit": "ખર્ચ (ઉધાર)",
-  "familyIncludesLine": "પરિવારનો હિસાબ સામેલ: જમા {moneyIn} · ખર્ચ {moneyOut}"
+  "familyIncludesLine": "પરિવારનો હિસાબ સામેલ: જમા {moneyIn} · ખર્ચ {moneyOut}",
+
+  "familyInvite": "આમંત્રણ મોકલો",
+  "familyInviteTitle": "પરિવારના હિસાબમાં આમંત્રણ",
+  "familyMakeAdmin": "એડમિન બનાવો",
+  "familyRemoveAdmin": "એડમિન દૂર કરો",
+  "familyNowAdmin": "{name} હવે એડમિન છે",
+  "familyNowMember": "{name} હવે સભ્ય છે",
+  "familyJoinWithCode": "કોડથી જોડાઓ",
+  "familyInviteShareText": "👋 *હિસાબમિત્રમાં અમારા પરિવારના હિસાબમાં જોડાઓ!*\n\n🏠 પરિવારનો હિસાબ: *{family}*\n🔑 આમંત્રણ કોડ: *{code}*\n\nહિસાબમિત્ર ખોલો → વધુ → પરિવારનો હિસાબ → કોડથી જોડાઓ, અને કોડ લખો.\n\n⏳ કોડ *{date}* સુધી માન્ય છે.",
+  "familyInviteShareTextLink": "👋 *હિસાબમિત્રમાં અમારા પરિવારના હિસાબમાં જોડાઓ!*\n\n🏠 પરિવારનો હિસાબ: *{family}*\n🔑 આમંત્રણ કોડ: *{code}*\n\n👉 જોડાવા માટે ટેપ કરો: {link}\nઅથવા હિસાબમિત્ર ખોલો → વધુ → પરિવારનો હિસાબ → કોડથી જોડાઓ, અને કોડ લખો.\n\n⏳ કોડ *{date}* સુધી માન્ય છે."
 }

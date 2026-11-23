@@ -171,4 +171,48 @@ void main() {
       isNot(contains('password')),
     );
   });
+
+  group('Family hisab invite', () {
+    const link = 'https://hisab-mitra-web.vercel.app/join?code=FAMCODE001';
+
+    test('English, with the tap-to-join link', () {
+      final m = familyInviteMessage(
+        en,
+        family: 'Home',
+        code: 'FAMCODE001',
+        date: '26 Nov 2026',
+        link: link,
+        downloadUrl: url,
+      );
+      expect(m, startsWith('👋 *Join our Family hisab on HisabMitra!*'));
+      expect(m, contains('🏠 Family hisab: *Home*'));
+      expect(m, contains('🔑 Invite code: *FAMCODE001*'));
+      expect(m, contains('👉 Tap to join: $link'));
+      expect(m, contains('⏳ The code is valid till *26 Nov 2026*.'));
+      expect(m, endsWith("📲 Don't have the app? Download it free: $url"));
+    });
+
+    test('Gujarati', () {
+      final m = familyInviteMessage(
+        gu,
+        family: 'ઘર',
+        code: 'FAMCODE001',
+        date: '26 નવે 2026',
+        link: link,
+      );
+      expect(m, contains('🏠 પરિવારનો હિસાબ: *ઘર*'));
+      expect(m, contains('👉 જોડાવા માટે ટેપ કરો: $link'));
+    });
+
+    test('no link line without a website', () {
+      final m = familyInviteMessage(
+        en,
+        family: 'Home',
+        code: 'FAMCODE001',
+        date: '26 Nov 2026',
+      );
+      expect(m, isNot(contains('Tap to join')));
+      expect(m, contains('Join with a code'));
+    });
+  });
 }

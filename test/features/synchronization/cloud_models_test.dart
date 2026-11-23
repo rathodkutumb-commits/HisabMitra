@@ -113,4 +113,21 @@ void main() {
     expect(s.entries, isEmpty);
     expect(s.maxSeq, 9);
   });
+
+  test('an accepted Family hisab code says so', () {
+    final f = AcceptedInvitation.fromJson(const {
+      'kind': 'family',
+      'family_id': 'f1',
+      'member_id': 'm1',
+    });
+    expect(
+      (f.isFamily, f.familyId, f.groupId, f.memberId),
+      (true, 'f1', null, 'm1'),
+    );
+    final g = AcceptedInvitation.fromJson(const {
+      'group_id': 'g1',
+      'member_id': 'm2',
+    });
+    expect((g.isFamily, g.groupId, g.familyId), (false, 'g1', null));
+  });
 }
