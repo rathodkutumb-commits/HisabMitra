@@ -42,7 +42,17 @@ phone so the app also works without internet.
   <tr>
     <td align="center"><img src="docs/screenshots/10_ai_assistant.png" width="230" alt="HisabMitra assistant"><br><sub>The assistant answers from your hisab</sub></td>
     <td align="center"><img src="docs/screenshots/11_group_invite.png" width="230" alt="Group invitation"><br><sub>Invite family with a link</sub></td>
-    <td></td>
+    <td align="center"><img src="docs/screenshots/12_dashboard_family.png" width="230" alt="Dashboard with Family hisab"><br><sub>Home screen includes Family hisab</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/13_family_passbook.png" width="230" alt="Family hisab passbook"><br><sub>Family hisab — the month's passbook</sub></td>
+    <td align="center"><img src="docs/screenshots/14_family_money_out.png" width="230" alt="Money out"><br><sub>Money out, with category and who paid</sub></td>
+    <td align="center"><img src="docs/screenshots/15_family_statement.png" width="230" alt="Monthly statement"><br><sub>Monthly statement (PDF, WhatsApp)</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/16_family_passbook_gujarati.png" width="230" alt="Family hisab in Gujarati"><br><sub>પરિવારનો હિસાબ — in Gujarati</sub></td>
+    <td align="center"><img src="docs/screenshots/17_family_people.png" width="230" alt="Family hisab people"><br><sub>People, with or without the app</sub></td>
+    <td align="center"><img src="docs/screenshots/18_family_invite.png" width="230" alt="Family hisab invitation"><br><sub>Invite family to the Family hisab</sub></td>
   </tr>
 </table>
 
@@ -63,14 +73,28 @@ phone so the app also works without internet.
 ## Features
 
 **Daily hisab**
-- Income and expenses with categories (custom icons and colours), payment
-  method, person, notes and bill photos or PDFs.
+- Income and expenses with categories (custom icons and colours, names in
+  English and Gujarati), payment method, person, notes and bill photos or
+  PDFs.
 - Day-by-day list or an **Excel-like sheet** with Income, Expense and a
   running balance; search, filters, period switch (this month, last month,
   this year, custom).
 - Dashboard with savings, money to receive / pay, quick actions, recent
   entries and a monthly income-vs-expense chart.
 - Built-in calculator (unit price × quantity) with exact paisa arithmetic.
+
+**Family hisab — the home's shared money (પરિવારનો હિસાબ)**
+- One hisab for everyone who shares a home: people by name and mobile
+  number (no app needed), money in (salary, extra income, contribution) and
+  money out (category, who paid, bill photos). Nothing is split.
+- A **passbook** month by month: opening balance, money in, money out,
+  closing balance, carried forward; a monthly statement as **PDF** or
+  **WhatsApp** text.
+- Family members with the app join with a link and see changes live; the
+  owner and admins manage, members add entries.
+- The Home screen's figures and chart include it, with an "Includes Family
+  hisab" line; the assistant answers questions about it; reminders can
+  belong to it.
 
 **Khata — money given and taken**
 - Record money lent or borrowed per person, with due dates and **partial
@@ -97,7 +121,7 @@ phone so the app also works without internet.
   after sign-in; two phones on one account stay in sync.
 - **Encrypted backup and restore** (AES-256) with checksum validation and
   an automatic safety backup before every restore. Restoring replaces the
-  hisab saved in your account (groups are not changed).
+  hisab saved in your account (groups and Family hisab are not changed).
 - Optional AI assistant: answers from your own data on the phone; online
   wording only with your own API key and consent.
 

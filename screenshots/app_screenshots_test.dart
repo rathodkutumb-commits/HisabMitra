@@ -15,7 +15,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hisabmitra/app/router/routes.dart';
-import 'package:hisabmitra/core/database/app_database.dart' show GroupType;
+import 'package:drift/drift.dart' show Value;
+import 'package:hisabmitra/core/database/app_database.dart';
+import 'package:hisabmitra/features/family/data/family_repository.dart';
+import 'package:hisabmitra/features/family/domain/family_models.dart';
 import 'package:hisabmitra/features/groups/data/group_repository.dart';
 import 'package:hisabmitra/features/groups/domain/group_models.dart';
 import 'package:hisabmitra/features/gujarati_input/presentation/gujarati_keypad.dart';
@@ -126,6 +129,114 @@ void main() {
     await pumpFor(tester, const Duration(seconds: 2));
     await shot('10_ai_assistant');
 
+    // Family hisab: Home, kept together by Hemang and Rahul.
+    final family = container.read(familyRepositoryProvider);
+    final home = await family.createFamily(
+      const FamilyDraft(name: 'Home', startingBalancePaise: 1200000),
+      selfName: 'Hemang',
+      people: const [
+        FamilyPersonDraft(name: 'Rahul Patel', phone: '+919800000001'),
+        FamilyPersonDraft(name: 'Priya Shah'),
+      ],
+    );
+    final homePeople = (await family.watchFamily(home).first)!.members;
+    final you = homePeople[0].id;
+    final rahul = homePeople[1].id;
+    final today = DateTime.now();
+    DateTime day(int d) =>
+        DateTime(today.year, today.month, d > today.day ? today.day : d);
+    Future<String> entry(
+      String who,
+      FamilyEntryKind kind,
+      int paise,
+      int d, {
+      String? category,
+      String? note,
+    }) => family.saveEntry(
+      FamilyEntryDraft(
+        familyId: home,
+        memberId: who,
+        kind: kind,
+        amountPaise: paise,
+        date: day(d),
+        categoryId: category,
+        note: note,
+      ),
+    );
+    await entry(you, FamilyEntryKind.salary, 6000000, 1);
+    await entry(rahul, FamilyEntryKind.salary, 3500000, 1);
+    final rent = await entry(
+      you,
+      FamilyEntryKind.expense,
+      2500000,
+      3,
+      category: 'cat_rent',
+    );
+    await entry(rahul, FamilyEntryKind.contribution, 1000000, 5);
+    await entry(
+      rahul,
+      FamilyEntryKind.expense,
+      780000,
+      8,
+      category: 'cat_groceries',
+      note: 'Monthly ration',
+    );
+    await entry(
+      you,
+      FamilyEntryKind.expense,
+      230000,
+      10,
+      category: 'cat_bills',
+    );
+    await entry(you, FamilyEntryKind.extraIncome, 500000, 12);
+    await entry(
+      rahul,
+      FamilyEntryKind.expense,
+      180000,
+      15,
+      category: 'cat_household',
+    );
+    // The rent receipt (only its record: the passbook shows the bill icon).
+    await db
+        .into(db.attachments)
+        .insert(
+          AttachmentsCompanion.insert(
+            id: 'rent-receipt',
+            familyEntryId: Value(rent),
+            storedName: 'rent-receipt.jpg',
+            originalName: 'rent.jpg',
+            mimeType: 'image/jpeg',
+            sizeBytes: 1,
+            sha256: 'screenshot',
+            createdAt: today,
+          ),
+        );
+    await settings.update((p) => p.copyWith(sampleDataLoaded: false));
+    router().go(Routes.home);
+    await shot('12_dashboard_family');
+    await open(Routes.familyHome(home), '13_family_passbook');
+    unawaited(
+      router().push(
+        Routes.newFamilyEntry(
+          home,
+          kind: 'out',
+          amountPaise: 450000,
+          categoryId: 'cat_groceries',
+          note: 'Vegetables and fruits',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await shot('14_family_money_out');
+    await open(
+      Routes.familyStatement(home, year: today.year, month: today.month),
+      '15_family_statement',
+    );
+    await settings.update((p) => p.copyWith(languageCode: 'gu'));
+    await open(Routes.familyHome(home), '16_family_passbook_gujarati');
+    await settings.update((p) => p.copyWith(languageCode: 'en'));
+
     // A group invitation. Invitations need a group saved to an account, so
     // restart the app on the in-memory test cloud (nothing leaves the phone).
     await tester.pumpWidget(const SizedBox());
@@ -159,6 +270,31 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Create invitation code'));
     await shot('11_group_invite');
+
+    // Home on the account: Rahul has joined, Priya is invited next.
+    final cloudFamily = cloudApp.read(familyRepositoryProvider);
+    final cloudHome = await cloudFamily.createFamily(
+      const FamilyDraft(name: 'Home', startingBalancePaise: 1200000),
+      selfName: 'Hemang',
+      people: const [
+        FamilyPersonDraft(name: 'Rahul Patel', phone: '+919800000001'),
+        FamilyPersonDraft(name: 'Priya Shah', phone: '+919800000002'),
+      ],
+    );
+    await cloudApp.read(syncServiceProvider).syncOnce();
+    final cloudPeople =
+        (await cloudFamily.watchFamily(cloudHome).first)!.members;
+    server.acceptAny(
+      server.family.createInvitation(cloudHome, cloudPeople[1].id, 'hemang'),
+      'rahul',
+      'Rahul',
+    );
+    await cloudApp.read(syncServiceProvider).syncOnce();
+    await open(Routes.familyPeople(cloudHome), '17_family_people');
+    router().go(Routes.familyInvite(cloudHome, memberId: cloudPeople[2].id));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Create invitation code'));
+    await shot('18_family_invite');
   });
 }
 
@@ -175,4 +311,33 @@ class _ScreenshotCloud extends FakeCloudClient {
     code: 'HSQPP7G9VD',
     expiresAt: DateTime.now().add(const Duration(hours: 72)),
   );
+
+  @override
+  Future<CreatedInvitation> createFamilyInvitation({
+    required String familyId,
+    String? memberId,
+  }) async {
+    final made = await super.createFamilyInvitation(
+      familyId: familyId,
+      memberId: memberId,
+    );
+    return CreatedInvitation(
+      id: made.id,
+      code: 'FKQ7M2HWNC',
+      expiresAt: DateTime.now().add(const Duration(hours: 72)),
+    );
+  }
+
+  /// Realistic expiry dates in the invitations list.
+  @override
+  Future<List<InvitationInfo>> listFamilyInvitations(String familyId) async => [
+    for (final i in await super.listFamilyInvitations(familyId))
+      InvitationInfo(
+        id: i.id,
+        status: i.status,
+        expiresAt: DateTime.now().add(const Duration(hours: 72)),
+        memberId: i.memberId,
+        createdAt: i.createdAt,
+      ),
+  ];
 }
