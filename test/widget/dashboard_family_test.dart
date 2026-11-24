@@ -1,4 +1,5 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:hisabmitra/features/tour/application/tour_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hisabmitra/features/dashboard/presentation/income_expense_chart.dart';
 
@@ -40,5 +41,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('₹50,000.00'), findsOneWidget);
     expect(find.textContaining('Includes Family hisab'), findsNothing);
+  });
+
+  testApp('Home has eight quick actions in two full rows', (tester) async {
+    await pumpHisabMitra(tester);
+    final actions = find.byKey(TourTargets.quickActions);
+    await tester.ensureVisible(actions);
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(of: actions, matching: find.byType(InkWell)),
+      findsNWidgets(8),
+    );
+    expect(
+      find.descendant(of: actions, matching: find.text('Family hisab')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: actions, matching: find.text('Calculator')),
+      findsNothing,
+      reason: 'the calculator stays in the top bar and in More',
+    );
+    expect(find.byTooltip('Calculator'), findsWidgets);
   });
 }

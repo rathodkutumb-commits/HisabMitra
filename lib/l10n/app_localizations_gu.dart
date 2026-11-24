@@ -397,7 +397,7 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String aiExampleFamilyGroceries(String family) {
-    return 'આ મહિને $familyમાં કરિયાણું કેટલું આવ્યું?';
+    return 'આ મહિને $familyમાં કરિયાણા પર કેટલો ખર્ચ થયો?';
   }
 
   @override

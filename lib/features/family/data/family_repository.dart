@@ -11,6 +11,7 @@ import '../../../core/l10n/l10n_x.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/date_range.dart';
 import '../../../core/utils/stream_combine.dart';
+import '../../attachments/data/attachment_service.dart';
 import '../../categories/presentation/category_labels.dart';
 import '../../synchronization/application/sync_controller.dart';
 import '../../transactions/domain/transaction_models.dart';
@@ -135,7 +136,11 @@ class FamilyRepository {
     this._clock,
     this._ids, {
     String? Function()? currentUserId,
+    this._deleteFiles,
   }) : _currentUserId = currentUserId ?? (() => null);
+
+  /// Removes bill files from the phone (their records are already gone).
+  final Future<void> Function(List<String> storedNames)? _deleteFiles;
 
   final AppDatabase _db;
   final Clock _clock;
@@ -455,22 +460,36 @@ class FamilyRepository {
     });
   }
 
-  Future<void> deleteEntry(String id) => _db.transaction(() async {
-    final e = await (_db.select(
-      _db.familyEntriesCache,
-    )..where((x) => x.id.equals(id))).getSingle();
-    final now = _clock.now();
-    await (_db.update(
-      _db.familyEntriesCache,
-    )..where((x) => x.id.equals(id))).write(
-      FamilyEntriesCacheCompanion(
-        deletedAt: Value(now),
-        syncState: const Value(SyncState.pending),
-        updatedAt: Value(now),
-      ),
-    );
-    await _enqueue(e.familyId, 'entry', id, true, e.revision, const {}, now);
-  });
+  /// Deletes an entry; its bills go from the phone with it.
+  Future<void> deleteEntry(String id) async {
+    final files = await _db.transaction(() async {
+      final e = await (_db.select(
+        _db.familyEntriesCache,
+      )..where((x) => x.id.equals(id))).getSingle();
+      final now = _clock.now();
+      await (_db.update(
+        _db.familyEntriesCache,
+      )..where((x) => x.id.equals(id))).write(
+        FamilyEntriesCacheCompanion(
+          deletedAt: Value(now),
+          syncState: const Value(SyncState.pending),
+          updatedAt: Value(now),
+        ),
+      );
+      await _enqueue(e.familyId, 'entry', id, true, e.revision, const {}, now);
+      final bills = await (_db.select(
+        _db.attachments,
+      )..where((a) => a.familyEntryId.equals(id))).get();
+      await (_db.delete(
+        _db.attachments,
+      )..where((a) => a.familyEntryId.equals(id))).go();
+      return [
+        for (final b in bills)
+          if (b.storedName.isNotEmpty) b.storedName,
+      ];
+    });
+    if (files.isNotEmpty) await _deleteFiles?.call(files);
+  }
 
   // --------------------------------------------------------------- helpers
 
@@ -560,6 +579,8 @@ final familyRepositoryProvider = Provider<FamilyRepository>(
     ref.watch(clockProvider),
     ref.watch(idGeneratorProvider),
     currentUserId: () => ref.read(cloudGatewayProvider).currentSession?.userId,
+    deleteFiles: (names) =>
+        ref.read(attachmentServiceProvider).deleteFiles(names),
   ),
 );
 

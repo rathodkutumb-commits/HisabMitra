@@ -57,4 +57,41 @@ void main() {
     expect(find.byTooltip('Send on WhatsApp to Priya Shah'), findsNothing);
     expect(find.byTooltip('Share'), findsOneWidget);
   });
+
+  testApp('the statement says so when its Family hisab is deleted', (
+    tester,
+  ) async {
+    final db = await pumpHisabMitra(tester);
+    final repo = FamilyRepository(db, const Clock(), const IdGenerator());
+    final id = await repo.createFamily(
+      const FamilyDraft(name: 'Home'),
+      selfName: 'Hemang',
+    );
+    await tester.pumpAndSettle();
+    await tap(tester, find.text('More').last);
+    await tap(tester, find.byKey(const Key('more-family')));
+    await tap(tester, find.byTooltip('Statement'));
+    expect(find.text('Home — ${_month(DateTime.now())}'), findsOneWidget);
+
+    await repo.deleteFamily(id); // e.g. from another phone
+    await tester.pumpAndSettle();
+    expect(find.text('This record no longer exists.'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
 }
+
+const _months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+String _month(DateTime d) => '${_months[d.month - 1]} ${d.year}';

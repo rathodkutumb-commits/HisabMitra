@@ -404,12 +404,7 @@ class _QuickActions extends ConsumerWidget {
         scheme.primary,
         () => context.push(Routes.reports),
       ),
-      (
-        Icons.calculate_rounded,
-        l.calculatorTitle,
-        hm.accentInk,
-        () => context.push(Routes.calculator),
-      ),
+      // Eight tiles: two full rows. The calculator is in the top bar and More.
     ];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),

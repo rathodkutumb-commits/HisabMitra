@@ -162,6 +162,7 @@ class FamilyRowApplier {
             _db.familyEntriesCache,
           )..where((e) => e.id.equals(id))).write(row);
         }
+        if (deletedAt != null) await _removeBillsOf(id);
       case 'attachment':
         if (deleted) {
           final rows = await (_db.select(
@@ -203,6 +204,22 @@ class FamilyRowApplier {
         return false;
     }
     return true;
+  }
+
+  /// Removes the bills of a deleted entry (records and files).
+  Future<void> _removeBillsOf(String entryId) async {
+    final bills = await (_db.select(
+      _db.attachments,
+    )..where((a) => a.familyEntryId.equals(entryId))).get();
+    if (bills.isEmpty) return;
+    await (_db.delete(
+      _db.attachments,
+    )..where((a) => a.familyEntryId.equals(entryId))).go();
+    final names = [
+      for (final b in bills)
+        if (b.storedName.isNotEmpty) b.storedName,
+    ];
+    if (names.isNotEmpty) await onFilesRemoved?.call(names);
   }
 
   /// Sets the server revision and/or upload state of one row.

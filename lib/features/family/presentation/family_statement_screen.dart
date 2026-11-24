@@ -32,11 +32,19 @@ class FamilyStatementScreen extends ConsumerWidget {
     final l = context.l10n;
     final fmt = ref.watch(formattersProvider);
     final hm = HmColors.of(context);
-    final detail = ref.watch(familyDetailProvider(familyId)).value;
+    final loaded = ref.watch(familyDetailProvider(familyId));
+    final detail = loaded.value;
     if (detail == null) {
+      // Still loading, or the Family hisab was deleted (here or on another
+      // phone) while this page was open.
       return Scaffold(
         appBar: AppBar(title: Text(l.familyStatement)),
-        body: const LoadingView(),
+        body: loaded.hasValue
+            ? EmptyState(
+                icon: Icons.family_restroom_rounded,
+                title: l.errorNotFound,
+              )
+            : const LoadingView(),
       );
     }
     final s = detail.month(year, month);

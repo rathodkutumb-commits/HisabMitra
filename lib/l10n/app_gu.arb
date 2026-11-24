@@ -97,7 +97,7 @@
   "aiExampleGroupOwes": "{group} માં કોણે કોને કેટલા આપવાના છે?",
   "aiExamplesFamily": "પરિવારનો હિસાબ",
   "aiExampleFamilySpend": "આ મહિને {family}માં કેટલો ખર્ચ થયો?",
-  "aiExampleFamilyGroceries": "આ મહિને {family}માં કરિયાણું કેટલું આવ્યું?",
+  "aiExampleFamilyGroceries": "આ મહિને {family}માં કરિયાણા પર કેટલો ખર્ચ થયો?",
   "aiExampleFamilyPersonIn": "આ મહિને {name}એ કેટલા પૈસા આપ્યા?",
   "aiExampleFamilyBalance": "{family}ની સિલક કેટલી છે?",
   "aiFamilySpend": "{period}માં {family}માં {amount} ખર્ચ થયો ({count} એન્ટ્રી).",

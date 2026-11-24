@@ -288,6 +288,20 @@ class AiIntentParser {
     return best;
   }
 
+  /// A Gujarati word without its ending vowel signs, so "કરિયાણું" also
+  /// finds "કરિયાણા" and "કરિયાણામાં" (null when nothing was removed or the
+  /// stem would be too short to be safe).
+  static String? _stem(String word) {
+    var end = word.length;
+    bool sign(int c) =>
+        (c >= 0x0A81 && c <= 0x0A83) || // candrabindu, anusvara, visarga
+        (c >= 0x0ABE && c <= 0x0ACD); // vowel signs and virama
+    while (end > 0 && sign(word.codeUnitAt(end - 1))) {
+      end--;
+    }
+    return end < word.length && end >= 3 ? word.substring(0, end) : null;
+  }
+
   String? _category(String q, TransactionType type) {
     String? best;
     var bestLen = 0;
@@ -295,7 +309,12 @@ class AiIntentParser {
       for (final name in c.names) {
         final n = name.toLowerCase();
         final word = n.split(RegExp(r'[\s&]+')).first;
-        for (final candidate in [n, if (word.length >= 4) word]) {
+        for (final candidate in [
+          n,
+          if (word.length >= 4) word,
+          ?_stem(n),
+          if (word != n) ?_stem(word),
+        ]) {
           if (candidate.isNotEmpty &&
               q.contains(candidate) &&
               candidate.length > bestLen) {

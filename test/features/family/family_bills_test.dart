@@ -23,7 +23,6 @@ class Phone {
   Phone(FakeCloudServer server, String uid, this.dir) {
     cloud = FakeCloudClient(server, uid);
     const ids = IdGenerator();
-    family = FamilyRepository(db, clock, ids, currentUserId: () => uid);
     files = AttachmentService(
       db,
       clock,
@@ -39,6 +38,14 @@ class Phone {
       beforePush: files.uploadPendingFiles,
     );
     sharing = FamilySharing(cloud, sync);
+    family = FamilyRepository(
+      db,
+      clock,
+      ids,
+      currentUserId: () => uid,
+      deleteFiles: files.deleteFiles,
+    );
+    sync.familyRows.onFilesRemoved = files.deleteFiles;
   }
 
   final Directory dir;
@@ -140,6 +147,26 @@ void main() {
       (await hemang.family.watchFamily(home).first)!.billEntryIds,
       isEmpty,
     );
+  });
+
+  test('a deleted entry takes its bills off both phones', () async {
+    await hemang.sync.syncOnce();
+    await hemang.sync.syncOnce();
+    await rahul.sync.syncOnce();
+    final mine = (await hemang.bills()).single;
+    expect((await hemang.files.fileFor(mine.storedName)).existsSync(), isTrue);
+    expect(await rahul.bills(), hasLength(1));
+
+    await hemang.family.deleteEntry(rent);
+    expect(await hemang.bills(), isEmpty);
+    expect(
+      (await hemang.files.fileFor(mine.storedName)).existsSync(),
+      isFalse,
+      reason: 'the file goes too',
+    );
+    await hemang.sync.syncOnce();
+    await rahul.sync.syncOnce();
+    expect(await rahul.bills(), isEmpty);
   });
 
   test('a new phone gets the bills with the Family hisab', () async {

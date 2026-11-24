@@ -86,6 +86,25 @@ void main() {
       );
     });
 
+    test('Gujarati word endings still find the category', () {
+      for (final q in [
+        'આ મહિને ઘરમાં કરિયાણા પર કેટલો ખર્ચ થયો?',
+        'આ મહિને ઘરમાં કરિયાણામાં કેટલો ખર્ચ થયો?',
+      ]) {
+        final parsed = parser(family: 'ઘર').parse(q);
+        expect(
+          (parsed.intent, parsed.categoryId),
+          (AiIntent.familySpend, 'cat_groceries'),
+          reason: q,
+        );
+      }
+      final draft = parser().parse('કરિયાણા માટે 500 ઉમેરો');
+      expect(
+        (draft.intent, draft.categoryId),
+        (AiIntent.draft, 'cat_groceries'),
+      );
+    });
+
     test('Gujarati', () {
       final q = parser(family: 'ઘર')
           .parse('આ મહિને ઘરમાં કરિયાણું પર કેટલો ખર્ચ થયો?');
