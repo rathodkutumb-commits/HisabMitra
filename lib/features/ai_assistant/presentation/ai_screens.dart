@@ -62,6 +62,8 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
       l,
       personName: names?.person,
       groupName: names?.group,
+      familyName: names?.family,
+      familyPersonName: names?.familyPerson,
     );
 
     return Scaffold(

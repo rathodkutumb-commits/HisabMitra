@@ -5,6 +5,7 @@ import '../../../core/l10n/l10n_x.dart';
 import '../../../core/providers.dart';
 import '../../../core/security/safe_logger.dart';
 import '../../categories/data/category_repository.dart';
+import '../../family/data/family_repository.dart';
 import '../../groups/data/group_repository.dart';
 import '../../money_ledger/data/ledger_repository.dart';
 import '../../people/data/people_repository.dart';
@@ -44,6 +45,7 @@ final localAiEngineProvider = Provider<LocalAiEngine>(
     ledger: ref.watch(ledgerRepositoryProvider),
     groups: ref.watch(groupRepositoryProvider),
     categories: ref.watch(categoryRepositoryProvider),
+    families: ref.watch(familyRepositoryProvider),
     clock: ref.watch(clockProvider),
   ),
 );
@@ -51,7 +53,9 @@ final localAiEngineProvider = Provider<LocalAiEngine>(
 /// The user's most recently changed person and (active) group, used to
 /// personalise the example questions. Null when there are none.
 final aiExampleNamesProvider =
-    FutureProvider.autoDispose<({String? person, String? group})>((ref) async {
+    FutureProvider.autoDispose<
+      ({String? person, String? group, String? family, String? familyPerson})
+    >((ref) async {
       final people = await ref.watch(peopleRepositoryProvider).watchAll().first;
       final groups = await ref
           .watch(groupRepositoryProvider)
@@ -72,7 +76,28 @@ final aiExampleNamesProvider =
             .group
             .name;
       }
-      return (person: person, group: group);
+      // The newest Family hisab, and someone in it other than the user.
+      final familyRepo = ref.watch(familyRepositoryProvider);
+      final families = await familyRepo.watchFamilies().first;
+      String? family;
+      String? familyPerson;
+      if (families.isNotEmpty) {
+        final newest = families.reduce(
+          (a, b) => b.updatedAt.isAfter(a.updatedAt) ? b : a,
+        );
+        family = newest.name;
+        final d = await familyRepo.watchFamily(newest.id).first;
+        familyPerson = d?.activeMembers
+            .where((m) => !m.isSelf)
+            .firstOrNull
+            ?.name;
+      }
+      return (
+        person: person,
+        group: group,
+        family: family,
+        familyPerson: familyPerson,
+      );
     });
 
 /// Chat history lives in memory only and disappears when the app closes.

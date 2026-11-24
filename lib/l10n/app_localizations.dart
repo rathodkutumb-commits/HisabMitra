@@ -684,6 +684,77 @@ abstract class AppLocalizations {
   /// **'Who owes whom in {group}?'**
   String aiExampleGroupOwes(String group);
 
+  /// No description provided for @aiExamplesFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Family hisab'**
+  String get aiExamplesFamily;
+
+  /// No description provided for @aiExampleFamilySpend.
+  ///
+  /// In en, this message translates to:
+  /// **'How much did we spend at {family} this month?'**
+  String aiExampleFamilySpend(String family);
+
+  /// No description provided for @aiExampleFamilyGroceries.
+  ///
+  /// In en, this message translates to:
+  /// **'How much did we spend on groceries at {family} this month?'**
+  String aiExampleFamilyGroceries(String family);
+
+  /// No description provided for @aiExampleFamilyPersonIn.
+  ///
+  /// In en, this message translates to:
+  /// **'What did {name} put in this month?'**
+  String aiExampleFamilyPersonIn(String name);
+
+  /// No description provided for @aiExampleFamilyBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the {family} balance?'**
+  String aiExampleFamilyBalance(String family);
+
+  /// No description provided for @aiFamilySpend.
+  ///
+  /// In en, this message translates to:
+  /// **'At {family} you spent {amount} in {period} ({count} entries).'**
+  String aiFamilySpend(String family, String amount, String period, int count);
+
+  /// No description provided for @aiFamilySpendCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'At {family} you spent {amount} on {category} in {period}.'**
+  String aiFamilySpendCategory(
+    String family,
+    String amount,
+    String category,
+    String period,
+  );
+
+  /// No description provided for @aiFamilyPersonIn.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} put {amount} into {family} in {period}.'**
+  String aiFamilyPersonIn(
+    String name,
+    String amount,
+    String family,
+    String period,
+  );
+
+  /// No description provided for @aiFamilyBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'{family}, {period}: opening balance {opening}, money in {moneyIn}, money out {moneyOut}, closing balance {closing}.'**
+  String aiFamilyBalance(
+    String family,
+    String period,
+    String opening,
+    String moneyIn,
+    String moneyOut,
+    String closing,
+  );
+
   /// No description provided for @attachments.
   ///
   /// In en, this message translates to:

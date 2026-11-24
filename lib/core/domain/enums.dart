@@ -83,4 +83,4 @@ enum OutboxStatus { pending, failed }
 
 enum BackupKind { manual, automatic, safety }
 
-enum AttachmentParent { transaction, ledgerEntry, groupExpense }
+enum AttachmentParent { transaction, ledgerEntry, groupExpense, familyEntry }

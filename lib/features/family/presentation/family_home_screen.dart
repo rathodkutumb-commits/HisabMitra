@@ -84,12 +84,16 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
             onSelected: (action) => switch (action) {
               'edit' => context.push(Routes.editFamily(_id)),
               'new' => context.push(Routes.newFamily),
+              'reminder' => context.push(
+                Routes.newReminder(familyId: _id, payment: true),
+              ),
               _ => _delete(),
             },
             itemBuilder: (_) => [
               // Only the owner and admins change or delete it.
               if (detail.value?.canManage ?? false)
                 PopupMenuItem(value: 'edit', child: Text(l.familyEdit)),
+              PopupMenuItem(value: 'reminder', child: Text(l.addReminder)),
               PopupMenuItem(value: 'new', child: Text(l.familyNew)),
               if (detail.value?.canManage ?? false)
                 PopupMenuItem(value: 'delete', child: Text(l.familyDelete)),
@@ -199,6 +203,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                 for (final e in s.entries)
                   _EntryTile(
                     entry: e,
+                    hasBill: d.billEntryIds.contains(e.id),
                     person: d.memberName(e.memberId, l),
                     onTap: () =>
                         context.push(Routes.editFamilyEntry(_id, e.id)),
@@ -230,9 +235,11 @@ class _EntryTile extends ConsumerWidget {
     required this.entry,
     required this.person,
     required this.onTap,
+    this.hasBill = false,
   });
 
   final FamilyEntry entry;
+  final bool hasBill;
   final String person;
   final VoidCallback onTap;
 
@@ -260,12 +267,27 @@ class _EntryTile extends ConsumerWidget {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Text(
-        '${entry.kind.isMoneyIn ? '+' : '−'} ${fmt.money(entry.amountPaise)}',
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-          color: entry.kind.isMoneyIn ? hm.income : hm.expense,
-          fontWeight: FontWeight.w700,
-        ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (hasBill)
+            Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: Icon(
+                Icons.attach_file_rounded,
+                size: 16,
+                color: Theme.of(context).colorScheme.outline,
+                semanticLabel: l.attachments,
+              ),
+            ),
+          Text(
+            '${entry.kind.isMoneyIn ? '+' : '−'} ${fmt.money(entry.amountPaise)}',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: entry.kind.isMoneyIn ? hm.income : hm.expense,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }

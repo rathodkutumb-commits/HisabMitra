@@ -14,6 +14,7 @@ import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/form_fields.dart';
 import '../../categories/data/category_repository.dart';
 import '../../categories/presentation/category_labels.dart';
+import '../../family/data/family_repository.dart';
 import '../../groups/data/group_repository.dart';
 import '../../money_ledger/data/ledger_repository.dart';
 import '../../people/data/people_repository.dart';
@@ -127,12 +128,23 @@ Future<void> completeReminder(
   );
   if (choice == null || !context.mounted) return;
   if (choice) {
+    // A Family hisab payment is money out there, not a personal expense
+    // (it already counts on the Home screen through the Family hisab).
+    final familyId = r.familyId;
     final saved = await context.push<String>(
-      Routes.newTransaction(
-        amountPaise: amount,
-        categoryId: r.categoryId,
-        description: r.title,
-      ),
+      familyId != null
+          ? Routes.newFamilyEntry(
+              familyId,
+              kind: 'out',
+              amountPaise: amount,
+              categoryId: r.categoryId,
+              note: r.title,
+            )
+          : Routes.newTransaction(
+              amountPaise: amount,
+              categoryId: r.categoryId,
+              description: r.title,
+            ),
     );
     if (saved == null) return; // form closed without saving
   }
@@ -151,6 +163,9 @@ class ReminderTile extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     final hm = HmColors.of(context);
     final r = reminder;
+    final family = r.familyId == null
+        ? null
+        : ref.watch(familyDetailProvider(r.familyId!)).value?.family.name;
     final pending = r.status == ReminderStatus.pending;
     final overdue = pending && r.dueAt.isBefore(DateTime.now());
     final repo = ref.read(reminderRepositoryProvider);
@@ -165,6 +180,7 @@ class ReminderTile extends ConsumerWidget {
       subtitle: Text(
         [
           fmt.dateTime(r.dueAt),
+          ?family,
           if (r.repeat != ReminderRepeat.none) r.repeat.label(l),
           if (total != null) l.paymentProgress(r.completedOccurrences, total),
           if (r.status == ReminderStatus.done) l.statusDone,
@@ -415,6 +431,7 @@ class ReminderFormScreen extends ConsumerStatefulWidget {
     this.ledgerId,
     this.personId,
     this.groupId,
+    this.familyId,
     this.payment = false,
   });
 
@@ -422,6 +439,9 @@ class ReminderFormScreen extends ConsumerStatefulWidget {
   final String? ledgerId;
   final String? personId;
   final String? groupId;
+
+  /// Opened from a Family hisab: the reminder belongs to it.
+  final String? familyId;
 
   /// Start as a recurring payment (EMI, SIP, …) instead of a plain reminder.
   final bool payment;
@@ -444,6 +464,7 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
       ? ReminderRepeat.monthly
       : ReminderRepeat.none;
   String? _categoryId;
+  late String? _familyId = widget.familyId;
   var _hasEnd = false;
   var _completed = 0;
   late DateTime _due;
@@ -487,6 +508,7 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
           _amount.text = Money.toEditable(r.amountPaise!);
         }
         _categoryId = r.categoryId;
+        _familyId = r.familyId;
         _hasEnd = r.totalOccurrences != null;
         if (_hasEnd) _count.text = '${r.totalOccurrences}';
         _completed = r.completedOccurrences;
@@ -535,6 +557,11 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
         _kind = ReminderKind.groupSettlement;
         _title.text = l.reminderSettleTitle(g.group.name);
       }
+    } else if (widget.familyId != null && _isPayment) {
+      // Most Family hisab payments are the rent and the bills.
+      _kind = ReminderKind.rent;
+      _categoryId = 'cat_rent';
+      _applyAutoTitle(l);
     } else if (_isPayment) {
       _applyAutoTitle(l);
     }
@@ -602,6 +629,7 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
               personId: widget.personId,
               ledgerEntryId: widget.ledgerId,
               groupId: widget.groupId,
+              familyId: _familyId,
               amountPaise: _isPayment ? Money.tryParse(_amount.text) : null,
               categoryId: _isPayment ? _categoryId : null,
               totalOccurrences: _showEnds && _hasEnd

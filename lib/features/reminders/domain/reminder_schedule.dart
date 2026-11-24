@@ -76,6 +76,7 @@ class ReminderDraft {
     this.personId,
     this.ledgerEntryId,
     this.groupId,
+    this.familyId,
     this.amountPaise,
     this.categoryId,
     this.totalOccurrences,
@@ -90,6 +91,10 @@ class ReminderDraft {
   final String? personId;
   final String? ledgerEntryId;
   final String? groupId;
+
+  /// The Family hisab this reminder belongs to (its payment is recorded
+  /// there, and its notification opens it).
+  final String? familyId;
 
   /// Fixed amount; required for payment kinds (EMI, SIP, ...).
   final int? amountPaise;

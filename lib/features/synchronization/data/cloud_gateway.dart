@@ -113,6 +113,19 @@ abstract interface class CloudGateway {
   });
   Future<List<int>> downloadGroupAttachment(String storagePath);
 
+  /// Family hisab bills in the private `family-attachments` bucket at
+  /// `<family>/<entry>/<file>`; the record is registered after the upload.
+  Future<void> uploadFamilyAttachment({
+    required String storagePath,
+    required List<int> bytes,
+    required String mimeType,
+    required Map<String, Object?> metadata,
+  });
+  Future<List<int>> downloadFamilyAttachment(String storagePath);
+
+  /// Deletes a Family hisab bill for everyone.
+  Future<void> deleteFamilyAttachment(String attachmentId);
+
   /// Removes the cloud account (server-side Edge Function).
   Future<void> deleteAccount();
 }
@@ -225,6 +238,18 @@ class NotConfiguredCloudGateway implements CloudGateway {
   @override
   Future<List<int>> downloadGroupAttachment(String storagePath) async =>
       _fail();
+  @override
+  Future<void> uploadFamilyAttachment({
+    required String storagePath,
+    required List<int> bytes,
+    required String mimeType,
+    required Map<String, Object?> metadata,
+  }) async => _fail();
+  @override
+  Future<List<int>> downloadFamilyAttachment(String storagePath) async =>
+      _fail();
+  @override
+  Future<void> deleteFamilyAttachment(String attachmentId) async => _fail();
   @override
   Future<void> deleteAccount() async => _fail();
 }

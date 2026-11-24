@@ -250,6 +250,7 @@ class PersonalRowApplier {
                 personId: Value(r['person_id'] as String?),
                 ledgerEntryId: Value(r['ledger_entry_id'] as String?),
                 groupId: Value(r['group_id'] as String?),
+                familyId: Value(r['family_id'] as String?),
                 amountPaise: Value(_int(r['amount_paise'])),
                 categoryId: Value(r['category_id'] as String?),
                 anchorDay: Value(_int(r['anchor_day'])),
@@ -441,7 +442,8 @@ class PersonalRowApplier {
     );
     final files = [
       for (final a in await _db.select(_db.attachments).get())
-        if (a.groupExpenseId == null && !keep(a.id)) a.storedName,
+        if (a.groupExpenseId == null && a.familyEntryId == null && !keep(a.id))
+          a.storedName,
     ];
     await _db.transaction(() async {
       for (final type in const [
@@ -453,7 +455,7 @@ class PersonalRowApplier {
         PersonalEntity.person,
       ]) {
         final extra = type == PersonalEntity.attachment
-            ? ' AND group_expense_id IS NULL'
+            ? ' AND group_expense_id IS NULL AND family_entry_id IS NULL'
             : '';
         final keepIds = pending.toList();
         await _db.customStatement(

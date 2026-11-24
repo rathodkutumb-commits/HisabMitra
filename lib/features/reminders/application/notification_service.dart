@@ -13,6 +13,7 @@ import '../../../core/providers.dart';
 import '../../../core/security/safe_logger.dart';
 import '../../settings/application/settings_controller.dart';
 import '../data/reminder_repository.dart';
+import '../domain/notification_route.dart';
 import '../../synchronization/data/personal_outbox.dart';
 
 /// Localised notification texts, resolved by the UI layer.
@@ -98,7 +99,14 @@ class NotificationService implements ReminderScheduler {
         settings: const InitializationSettings(
           android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         ),
+        // Tapped while the app runs (or from the background).
+        onDidReceiveNotificationResponse: (r) => _open(r.payload),
       );
+      // Tapped while the app was closed: it was started by the tap.
+      final launch = await _plugin.getNotificationAppLaunchDetails();
+      if (launch?.didNotificationLaunchApp ?? false) {
+        _open(launch!.notificationResponse?.payload);
+      }
       return true;
     } catch (e, s) {
       SafeLogger.error('notifications_init', e, s);
@@ -135,6 +143,10 @@ class NotificationService implements ReminderScheduler {
           id: r.notificationId,
           scheduledDate: tz.TZDateTime.from(r.dueAt, tz.local),
           title: hide ? texts.genericTitle : r.title,
+          payload: notificationPayload(
+            familyId: r.familyId,
+            groupId: r.groupId,
+          ),
           body: hide ? texts.genericBody : _body(r),
           androidScheduleMode: mode,
           notificationDetails: const NotificationDetails(
@@ -154,6 +166,13 @@ class NotificationService implements ReminderScheduler {
     }
   }
 
+  void _open(String? payload) {
+    final route = routeForPayload(payload);
+    if (route != null) {
+      _ref.read(notificationRouteProvider.notifier).open(route);
+    }
+  }
+
   @override
   Future<void> cancel(int notificationId) async {
     if (!await initialize()) return;
@@ -168,6 +187,27 @@ class NotificationService implements ReminderScheduler {
 final notificationServiceProvider = Provider<NotificationService>(
   NotificationService.new,
 );
+
+/// A page a tapped notification asked for; the app's tab screen opens it
+/// (once it is on screen) and clears it.
+class NotificationRouteController extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void open(String route) => state = route;
+
+  /// The waiting page, if any; clears it.
+  String? take() {
+    final route = state;
+    state = null;
+    return route;
+  }
+}
+
+final notificationRouteProvider =
+    NotifierProvider<NotificationRouteController, String?>(
+      NotificationRouteController.new,
+    );
 
 final reminderRepositoryProvider = Provider<ReminderRepository>(
   (ref) => ReminderRepository(

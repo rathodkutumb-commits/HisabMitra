@@ -499,6 +499,53 @@ class SupabaseCloudGateway implements CloudGateway {
   Future<List<int>> downloadGroupAttachment(String storagePath) =>
       _call(() => _client.storage.from(_bucket).download(storagePath));
 
+  static const _familyBucket = 'family-attachments';
+
+  @override
+  Future<void> uploadFamilyAttachment({
+    required String storagePath,
+    required List<int> bytes,
+    required String mimeType,
+    required Map<String, Object?> metadata,
+  }) => _call(() async {
+    // upsert: a retry after a lost answer finds the file already there.
+    await _client.storage
+        .from(_familyBucket)
+        .uploadBinary(
+          storagePath,
+          Uint8List.fromList(bytes),
+          fileOptions: FileOptions(contentType: mimeType, upsert: true),
+        );
+    await _client.rpc<Object?>(
+      'register_family_attachment',
+      params: {'p': metadata},
+    );
+  });
+
+  @override
+  Future<List<int>> downloadFamilyAttachment(String storagePath) =>
+      _call(() => _client.storage.from(_familyBucket).download(storagePath));
+
+  @override
+  Future<void> deleteFamilyAttachment(String attachmentId) => _call(() async {
+    final rows = await _client
+        .from('family_attachments')
+        .select('storage_path')
+        .eq('id', attachmentId);
+    await _client.rpc<Object?>(
+      'delete_family_attachment',
+      params: {'p_id': attachmentId},
+    );
+    // The file too (best effort: the record is what other phones follow).
+    try {
+      await _client.storage.from(_familyBucket).remove([
+        for (final r in rows) r['storage_path'] as String,
+      ]);
+    } catch (e, s) {
+      SafeLogger.error('family_bill_file_delete', e, s);
+    }
+  });
+
   static const _personalBucket = 'personal-attachments';
 
   String _personalPath(String storageName) {

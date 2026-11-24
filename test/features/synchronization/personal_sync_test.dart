@@ -247,6 +247,23 @@ void main() {
     },
   );
 
+  test('a Family hisab reminder keeps its link on the other phone', () async {
+    final id = await p1.reminders.save(
+      ReminderDraft(
+        kind: ReminderKind.rent,
+        title: 'Rent',
+        dueAt: DateTime(2030, 1, 5, 10),
+        repeat: ReminderRepeat.monthly,
+        amountPaise: 1500000,
+        familyId: 'f-home',
+      ),
+    );
+    await p1.sync.syncOnce();
+    await p2.sync.syncOnce();
+    final theirs = (await p2.reminders.getById(id))!;
+    expect((theirs.title, theirs.familyId), ('Rent', 'f-home'));
+  });
+
   test('a custom category reaches the other phone with both names', () async {
     final cat = await p1.categories.save(
       const CategoryDraft(

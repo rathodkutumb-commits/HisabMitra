@@ -10,6 +10,8 @@ void main() {
     now: DateTime(2026, 11, 20, 12),
     people: const [(id: 'p1', name: 'Rahul Shah')],
     groups: const [(id: 'g1', name: 'Goa Trip')],
+    families: const [(id: 'f1', name: 'Home')],
+    familyPeople: const [(id: 'fm1', familyId: 'f1', name: 'Rahul Patel')],
     categories: const [
       (
         id: 'cat_groceries',
@@ -37,6 +39,8 @@ void main() {
         l,
         personName: 'Rahul Shah',
         groupName: 'Goa Trip',
+        familyName: 'Home',
+        familyPersonName: 'Rahul Patel',
       );
       for (final s in sections) {
         for (final e in s.examples) {
@@ -51,7 +55,7 @@ void main() {
     });
 
     test(
-      '18 examples with names, 15 without and no Groups section ($code)',
+      '22 examples with names, 15 without and no Groups or Family section ($code)',
       () {
         int count(List<AiExampleSection> s) =>
             s.fold(0, (n, section) => n + section.examples.length);
@@ -60,15 +64,22 @@ void main() {
           l,
           personName: 'Rahul Shah',
           groupName: 'Goa Trip',
+          familyName: 'Home',
+          familyPersonName: 'Rahul Patel',
         );
-        expect(count(withNames), 18);
+        expect(count(withNames), 22);
         expect(withNames.map((s) => s.title), contains(l.aiExamplesGroups));
+        expect(withNames.map((s) => s.title), contains(l.aiExamplesFamily));
 
         final without = buildAiExamples(l);
         expect(count(without), 15);
         expect(
           without.map((s) => s.title),
           isNot(contains(l.aiExamplesGroups)),
+        );
+        expect(
+          without.map((s) => s.title),
+          isNot(contains(l.aiExamplesFamily)),
         );
       },
     );

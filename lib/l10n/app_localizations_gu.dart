@@ -388,6 +388,66 @@ class AppLocalizationsGu extends AppLocalizations {
   }
 
   @override
+  String get aiExamplesFamily => 'પરિવારનો હિસાબ';
+
+  @override
+  String aiExampleFamilySpend(String family) {
+    return 'આ મહિને $familyમાં કેટલો ખર્ચ થયો?';
+  }
+
+  @override
+  String aiExampleFamilyGroceries(String family) {
+    return 'આ મહિને $familyમાં કરિયાણું કેટલું આવ્યું?';
+  }
+
+  @override
+  String aiExampleFamilyPersonIn(String name) {
+    return 'આ મહિને $nameએ કેટલા પૈસા આપ્યા?';
+  }
+
+  @override
+  String aiExampleFamilyBalance(String family) {
+    return '$familyની સિલક કેટલી છે?';
+  }
+
+  @override
+  String aiFamilySpend(String family, String amount, String period, int count) {
+    return '$periodમાં $familyમાં $amount ખર્ચ થયો ($count એન્ટ્રી).';
+  }
+
+  @override
+  String aiFamilySpendCategory(
+    String family,
+    String amount,
+    String category,
+    String period,
+  ) {
+    return '$periodમાં $familyમાં $category પર $amount ખર્ચ થયો.';
+  }
+
+  @override
+  String aiFamilyPersonIn(
+    String name,
+    String amount,
+    String family,
+    String period,
+  ) {
+    return '$periodમાં $nameએ $familyમાં $amount જમા કર્યા.';
+  }
+
+  @override
+  String aiFamilyBalance(
+    String family,
+    String period,
+    String opening,
+    String moneyIn,
+    String moneyOut,
+    String closing,
+  ) {
+    return '$family, $period: ઉઘડતી સિલક $opening, જમા $moneyIn, ખર્ચ $moneyOut, બંધ સિલક $closing.';
+  }
+
+  @override
   String get attachments => 'બિલ અને જોડાણો';
 
   @override

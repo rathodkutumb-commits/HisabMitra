@@ -147,4 +147,26 @@ void main() {
     await p1.sync.syncOnce();
     expect(cloudAmounts(), {100});
   });
+
+  test('Family hisab bills are dropped, never uploaded as personal', () async {
+    await p1.db
+        .into(p1.db.attachments)
+        .insert(
+          AttachmentsCompanion.insert(
+            id: 'fb1',
+            familyEntryId: const Value('e1'),
+            storedName: 'fb1.jpg',
+            originalName: 'rent.jpg',
+            mimeType: 'image/jpeg',
+            sizeBytes: 10,
+            sha256: 'x',
+            remotePath: const Value('f1/e1/fb1.jpg'),
+            createdAt: DateTime(2026),
+          ),
+        );
+    await p1.restore().afterRestore();
+    expect(await p1.db.select(p1.db.attachments).get(), isEmpty);
+    final ops = await p1.db.select(p1.db.syncOutbox).get();
+    expect(ops.where((o) => o.entityId == 'fb1'), isEmpty);
+  });
 }

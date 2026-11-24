@@ -44,7 +44,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Current schema version. Bump together with a new step in [migration]
   /// and a `dart run drift_dev make-migrations` schema dump.
-  static const int currentSchemaVersion = 6;
+  static const int currentSchemaVersion = 7;
 
   static const String fileName = 'hisabmitra.sqlite';
 
@@ -116,6 +116,17 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(schema.familyEntriesCache);
         await m.createIndex(schema.idxFamilyMembersFamily);
         await m.createIndex(schema.idxFamilyEntriesFamily);
+      },
+      from6To7: (m, schema) async {
+        // v7: bills on Family hisab money out (the table's check changes,
+        // so it is rebuilt) and reminders linked to a Family hisab.
+        await m.alterTable(
+          TableMigration(
+            schema.attachments,
+            newColumns: [schema.attachments.familyEntryId],
+          ),
+        );
+        await m.addColumn(schema.reminders, schema.reminders.familyId);
       },
     ),
     beforeOpen: (details) async {

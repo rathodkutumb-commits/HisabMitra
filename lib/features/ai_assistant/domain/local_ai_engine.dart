@@ -6,6 +6,7 @@ import '../../../core/providers.dart';
 import '../../../core/utils/date_range.dart';
 import '../../categories/data/category_repository.dart';
 import '../../categories/presentation/category_labels.dart';
+import '../../family/data/family_repository.dart';
 import '../../groups/data/group_repository.dart';
 import '../../money_ledger/data/ledger_repository.dart';
 import '../../people/data/people_repository.dart';
@@ -64,6 +65,7 @@ class LocalAiEngine {
     required this._ledger,
     required this._groups,
     required this._categories,
+    this._families,
     required this._clock,
   });
 
@@ -72,6 +74,7 @@ class LocalAiEngine {
   final LedgerRepository _ledger;
   final GroupRepository _groups;
   final CategoryRepository _categories;
+  final FamilyRepository? _families;
   final Clock _clock;
 
   Future<AiAnswer> ask(
@@ -83,10 +86,24 @@ class LocalAiEngine {
     final people = await _people.watchAll().first;
     final groups = await _groups.watchGroups(includeArchived: true).first;
     final categories = await _categories.watchAll().first;
+    final familyRepo = _families;
+    final familyDetails = <FamilyDetail>[
+      if (familyRepo != null)
+        for (final f in await familyRepo.watchFamilies().first)
+          ?(await familyRepo.watchFamily(f.id).first),
+    ];
     final parser = AiIntentParser(
       now: _clock.now(),
       people: [for (final p in people) (id: p.id, name: p.name)],
       groups: [for (final g in groups) (id: g.group.id, name: g.group.name)],
+      families: [
+        for (final d in familyDetails) (id: d.family.id, name: d.family.name),
+      ],
+      familyPeople: [
+        for (final d in familyDetails)
+          for (final m in d.members)
+            (id: m.id, familyId: d.family.id, name: m.name),
+      ],
       categories: [
         for (final c in categories)
           (
@@ -125,6 +142,21 @@ class LocalAiEngine {
         redacted = redacted.replaceAll(
           RegExp(RegExp.escape(g.group.name), caseSensitive: false),
           'the group',
+        );
+      }
+      for (final d in familyDetails) {
+        for (final m in d.members) {
+          for (final n in {m.name, m.name.split(' ').first}) {
+            if (n.length < 3) continue;
+            redacted = redacted.replaceAll(
+              RegExp(RegExp.escape(n), caseSensitive: false),
+              'the person',
+            );
+          }
+        }
+        redacted = redacted.replaceAll(
+          RegExp(RegExp.escape(d.family.name), caseSensitive: false),
+          'the Family hisab',
         );
       }
     }
@@ -426,6 +458,107 @@ class LocalAiEngine {
           bullets: bullets,
           withPeriod: false,
         );
+
+      case AiIntent.familySpend:
+      case AiIntent.familyPersonIn:
+      case AiIntent.familyBalance:
+        final d = familyDetails
+            .where((x) => x.family.id == query.familyId)
+            .firstOrNull;
+        if (d == null) return done(l.aiHelp, withPeriod: false);
+        final name = d.family.name;
+        facts['family'] = shareNames ? name : 'the Family hisab';
+        final inRange = [
+          for (final e in d.entries)
+            if (range.contains(e.date)) e,
+        ];
+        switch (query.intent) {
+          case AiIntent.familySpend:
+            final out = [
+              for (final e in inRange)
+                if (!e.kind.isMoneyIn &&
+                    (query.categoryId == null ||
+                        e.categoryId == query.categoryId))
+                  e,
+            ];
+            final total = out.fold<int>(0, (a, e) => a + e.amountPaise);
+            facts.addAll({
+              'expense_total': fmt.money(total),
+              'expense_entries': out.length,
+            });
+            if (query.categoryId == null) {
+              return done(
+                l.aiFamilySpend(
+                  name,
+                  fmt.money(total),
+                  periodLabel,
+                  out.length,
+                ),
+              );
+            }
+            final category =
+                categories
+                    .where((c) => c.id == query.categoryId)
+                    .firstOrNull
+                    ?.label(l) ??
+                out.firstOrNull?.categoryLabel(l.localeName) ??
+                '';
+            facts['category'] = category;
+            return done(
+              l.aiFamilySpendCategory(
+                name,
+                fmt.money(total),
+                category,
+                periodLabel,
+              ),
+            );
+          case AiIntent.familyPersonIn:
+            final person = d.memberName(query.familyMemberId!, l);
+            final total = inRange
+                .where(
+                  (e) => e.kind.isMoneyIn && e.memberId == query.familyMemberId,
+                )
+                .fold<int>(0, (a, e) => a + e.amountPaise);
+            facts.addAll({
+              'person': shareNames ? person : 'the person',
+              'money_in': fmt.money(total),
+            });
+            return done(
+              l.aiFamilyPersonIn(person, fmt.money(total), name, periodLabel),
+            );
+          default:
+            var opening = d.family.openingBalancePaise;
+            var moneyIn = 0;
+            var moneyOut = 0;
+            for (final e in d.entries) {
+              if (e.date.isBefore(range.start)) {
+                opening += e.signedPaise;
+              } else if (range.contains(e.date)) {
+                if (e.kind.isMoneyIn) {
+                  moneyIn += e.amountPaise;
+                } else {
+                  moneyOut += e.amountPaise;
+                }
+              }
+            }
+            final closing = opening + moneyIn - moneyOut;
+            facts.addAll({
+              'opening_balance': fmt.money(opening),
+              'money_in': fmt.money(moneyIn),
+              'money_out': fmt.money(moneyOut),
+              'closing_balance': fmt.money(closing),
+            });
+            return done(
+              l.aiFamilyBalance(
+                name,
+                periodLabel,
+                fmt.money(opening),
+                fmt.money(moneyIn),
+                fmt.money(moneyOut),
+                fmt.money(closing),
+              ),
+            );
+        }
 
       case AiIntent.draft:
         if (query.amountPaise == null) {

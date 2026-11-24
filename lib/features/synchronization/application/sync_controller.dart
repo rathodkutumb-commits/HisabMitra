@@ -53,6 +53,8 @@ final syncServiceProvider = Provider<SyncService>((ref) {
   );
   service.personal.onFilesRemoved = (names) =>
       ref.read(attachmentServiceProvider).deleteFiles(names);
+  service.familyRows.onFilesRemoved = (names) =>
+      ref.read(attachmentServiceProvider).deleteFiles(names);
   return service;
 });
 

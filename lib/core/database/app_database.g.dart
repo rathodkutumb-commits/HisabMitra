@@ -11105,6 +11105,17 @@ class $AttachmentsTable extends Attachments
       'REFERENCES group_expenses_cache (id) ON DELETE CASCADE',
     ),
   );
+  static const VerificationMeta _familyEntryIdMeta = const VerificationMeta(
+    'familyEntryId',
+  );
+  @override
+  late final GeneratedColumn<String> familyEntryId = GeneratedColumn<String>(
+    'family_entry_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _storedNameMeta = const VerificationMeta(
     'storedName',
   );
@@ -11188,6 +11199,7 @@ class $AttachmentsTable extends Attachments
     transactionId,
     ledgerEntryId,
     groupExpenseId,
+    familyEntryId,
     storedName,
     originalName,
     mimeType,
@@ -11243,6 +11255,15 @@ class $AttachmentsTable extends Attachments
         groupExpenseId.isAcceptableOrUnknown(
           data['group_expense_id']!,
           _groupExpenseIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('family_entry_id')) {
+      context.handle(
+        _familyEntryIdMeta,
+        familyEntryId.isAcceptableOrUnknown(
+          data['family_entry_id']!,
+          _familyEntryIdMeta,
         ),
       );
     }
@@ -11338,6 +11359,10 @@ class $AttachmentsTable extends Attachments
         DriftSqlType.string,
         data['${effectivePrefix}group_expense_id'],
       ),
+      familyEntryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_entry_id'],
+      ),
       storedName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}stored_name'],
@@ -11387,6 +11412,10 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
   final String? ledgerEntryId;
   final String? groupExpenseId;
 
+  /// Money out of a Family hisab (v7). No foreign key: entries are only
+  /// soft-deleted, and forgetting a Family hisab removes its bills itself.
+  final String? familyEntryId;
+
   /// Path relative to the app attachments directory.
   final String storedName;
   final String originalName;
@@ -11402,6 +11431,7 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
     this.transactionId,
     this.ledgerEntryId,
     this.groupExpenseId,
+    this.familyEntryId,
     required this.storedName,
     required this.originalName,
     required this.mimeType,
@@ -11429,6 +11459,9 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
     if (!nullToAbsent || groupExpenseId != null) {
       map['group_expense_id'] = Variable<String>(groupExpenseId);
     }
+    if (!nullToAbsent || familyEntryId != null) {
+      map['family_entry_id'] = Variable<String>(familyEntryId);
+    }
     map['stored_name'] = Variable<String>(storedName);
     map['original_name'] = Variable<String>(originalName);
     map['mime_type'] = Variable<String>(mimeType);
@@ -11455,6 +11488,9 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
       groupExpenseId: groupExpenseId == null && nullToAbsent
           ? const Value.absent()
           : Value(groupExpenseId),
+      familyEntryId: familyEntryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(familyEntryId),
       storedName: Value(storedName),
       originalName: Value(originalName),
       mimeType: Value(mimeType),
@@ -11481,6 +11517,7 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
       transactionId: serializer.fromJson<String?>(json['transactionId']),
       ledgerEntryId: serializer.fromJson<String?>(json['ledgerEntryId']),
       groupExpenseId: serializer.fromJson<String?>(json['groupExpenseId']),
+      familyEntryId: serializer.fromJson<String?>(json['familyEntryId']),
       storedName: serializer.fromJson<String>(json['storedName']),
       originalName: serializer.fromJson<String>(json['originalName']),
       mimeType: serializer.fromJson<String>(json['mimeType']),
@@ -11502,6 +11539,7 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
       'transactionId': serializer.toJson<String?>(transactionId),
       'ledgerEntryId': serializer.toJson<String?>(ledgerEntryId),
       'groupExpenseId': serializer.toJson<String?>(groupExpenseId),
+      'familyEntryId': serializer.toJson<String?>(familyEntryId),
       'storedName': serializer.toJson<String>(storedName),
       'originalName': serializer.toJson<String>(originalName),
       'mimeType': serializer.toJson<String>(mimeType),
@@ -11519,6 +11557,7 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
     Value<String?> transactionId = const Value.absent(),
     Value<String?> ledgerEntryId = const Value.absent(),
     Value<String?> groupExpenseId = const Value.absent(),
+    Value<String?> familyEntryId = const Value.absent(),
     String? storedName,
     String? originalName,
     String? mimeType,
@@ -11539,6 +11578,9 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
     groupExpenseId: groupExpenseId.present
         ? groupExpenseId.value
         : this.groupExpenseId,
+    familyEntryId: familyEntryId.present
+        ? familyEntryId.value
+        : this.familyEntryId,
     storedName: storedName ?? this.storedName,
     originalName: originalName ?? this.originalName,
     mimeType: mimeType ?? this.mimeType,
@@ -11561,6 +11603,9 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
       groupExpenseId: data.groupExpenseId.present
           ? data.groupExpenseId.value
           : this.groupExpenseId,
+      familyEntryId: data.familyEntryId.present
+          ? data.familyEntryId.value
+          : this.familyEntryId,
       storedName: data.storedName.present
           ? data.storedName.value
           : this.storedName,
@@ -11586,6 +11631,7 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
           ..write('transactionId: $transactionId, ')
           ..write('ledgerEntryId: $ledgerEntryId, ')
           ..write('groupExpenseId: $groupExpenseId, ')
+          ..write('familyEntryId: $familyEntryId, ')
           ..write('storedName: $storedName, ')
           ..write('originalName: $originalName, ')
           ..write('mimeType: $mimeType, ')
@@ -11605,6 +11651,7 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
     transactionId,
     ledgerEntryId,
     groupExpenseId,
+    familyEntryId,
     storedName,
     originalName,
     mimeType,
@@ -11623,6 +11670,7 @@ class AttachmentRow extends DataClass implements Insertable<AttachmentRow> {
           other.transactionId == this.transactionId &&
           other.ledgerEntryId == this.ledgerEntryId &&
           other.groupExpenseId == this.groupExpenseId &&
+          other.familyEntryId == this.familyEntryId &&
           other.storedName == this.storedName &&
           other.originalName == this.originalName &&
           other.mimeType == this.mimeType &&
@@ -11639,6 +11687,7 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
   final Value<String?> transactionId;
   final Value<String?> ledgerEntryId;
   final Value<String?> groupExpenseId;
+  final Value<String?> familyEntryId;
   final Value<String> storedName;
   final Value<String> originalName;
   final Value<String> mimeType;
@@ -11654,6 +11703,7 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
     this.transactionId = const Value.absent(),
     this.ledgerEntryId = const Value.absent(),
     this.groupExpenseId = const Value.absent(),
+    this.familyEntryId = const Value.absent(),
     this.storedName = const Value.absent(),
     this.originalName = const Value.absent(),
     this.mimeType = const Value.absent(),
@@ -11670,6 +11720,7 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
     this.transactionId = const Value.absent(),
     this.ledgerEntryId = const Value.absent(),
     this.groupExpenseId = const Value.absent(),
+    this.familyEntryId = const Value.absent(),
     required String storedName,
     required String originalName,
     required String mimeType,
@@ -11692,6 +11743,7 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
     Expression<String>? transactionId,
     Expression<String>? ledgerEntryId,
     Expression<String>? groupExpenseId,
+    Expression<String>? familyEntryId,
     Expression<String>? storedName,
     Expression<String>? originalName,
     Expression<String>? mimeType,
@@ -11708,6 +11760,7 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
       if (transactionId != null) 'transaction_id': transactionId,
       if (ledgerEntryId != null) 'ledger_entry_id': ledgerEntryId,
       if (groupExpenseId != null) 'group_expense_id': groupExpenseId,
+      if (familyEntryId != null) 'family_entry_id': familyEntryId,
       if (storedName != null) 'stored_name': storedName,
       if (originalName != null) 'original_name': originalName,
       if (mimeType != null) 'mime_type': mimeType,
@@ -11726,6 +11779,7 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
     Value<String?>? transactionId,
     Value<String?>? ledgerEntryId,
     Value<String?>? groupExpenseId,
+    Value<String?>? familyEntryId,
     Value<String>? storedName,
     Value<String>? originalName,
     Value<String>? mimeType,
@@ -11742,6 +11796,7 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
       transactionId: transactionId ?? this.transactionId,
       ledgerEntryId: ledgerEntryId ?? this.ledgerEntryId,
       groupExpenseId: groupExpenseId ?? this.groupExpenseId,
+      familyEntryId: familyEntryId ?? this.familyEntryId,
       storedName: storedName ?? this.storedName,
       originalName: originalName ?? this.originalName,
       mimeType: mimeType ?? this.mimeType,
@@ -11775,6 +11830,9 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
     }
     if (groupExpenseId.present) {
       map['group_expense_id'] = Variable<String>(groupExpenseId.value);
+    }
+    if (familyEntryId.present) {
+      map['family_entry_id'] = Variable<String>(familyEntryId.value);
     }
     if (storedName.present) {
       map['stored_name'] = Variable<String>(storedName.value);
@@ -11812,6 +11870,7 @@ class AttachmentsCompanion extends UpdateCompanion<AttachmentRow> {
           ..write('transactionId: $transactionId, ')
           ..write('ledgerEntryId: $ledgerEntryId, ')
           ..write('groupExpenseId: $groupExpenseId, ')
+          ..write('familyEntryId: $familyEntryId, ')
           ..write('storedName: $storedName, ')
           ..write('originalName: $originalName, ')
           ..write('mimeType: $mimeType, ')
@@ -11976,6 +12035,17 @@ class $RemindersTable extends Reminders
       'REFERENCES groups_cache (id) ON DELETE CASCADE',
     ),
   );
+  static const VerificationMeta _familyIdMeta = const VerificationMeta(
+    'familyId',
+  );
+  @override
+  late final GeneratedColumn<String> familyId = GeneratedColumn<String>(
+    'family_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _amountPaiseMeta = const VerificationMeta(
     'amountPaise',
   );
@@ -12075,6 +12145,7 @@ class $RemindersTable extends Reminders
     personId,
     ledgerEntryId,
     groupId,
+    familyId,
     amountPaise,
     categoryId,
     anchorDay,
@@ -12163,6 +12234,12 @@ class $RemindersTable extends Reminders
       context.handle(
         _groupIdMeta,
         groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    }
+    if (data.containsKey('family_id')) {
+      context.handle(
+        _familyIdMeta,
+        familyId.isAcceptableOrUnknown(data['family_id']!, _familyIdMeta),
       );
     }
     if (data.containsKey('amount_paise')) {
@@ -12282,6 +12359,10 @@ class $RemindersTable extends Reminders
         DriftSqlType.string,
         data['${effectivePrefix}group_id'],
       ),
+      familyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_id'],
+      ),
       amountPaise: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}amount_paise'],
@@ -12347,6 +12428,10 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
   final String? ledgerEntryId;
   final String? groupId;
 
+  /// The Family hisab this reminder belongs to (v7). No foreign key: the
+  /// reminder is personal and may arrive before its Family hisab.
+  final String? familyId;
+
   /// Fixed amount for recurring payments (EMI, SIP, maintenance, …). (v2)
   final int? amountPaise;
 
@@ -12380,6 +12465,7 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     this.personId,
     this.ledgerEntryId,
     this.groupId,
+    this.familyId,
     this.amountPaise,
     this.categoryId,
     this.anchorDay,
@@ -12424,6 +12510,9 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     if (!nullToAbsent || groupId != null) {
       map['group_id'] = Variable<String>(groupId);
     }
+    if (!nullToAbsent || familyId != null) {
+      map['family_id'] = Variable<String>(familyId);
+    }
     if (!nullToAbsent || amountPaise != null) {
       map['amount_paise'] = Variable<int>(amountPaise);
     }
@@ -12467,6 +12556,9 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
       groupId: groupId == null && nullToAbsent
           ? const Value.absent()
           : Value(groupId),
+      familyId: familyId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(familyId),
       amountPaise: amountPaise == null && nullToAbsent
           ? const Value.absent()
           : Value(amountPaise),
@@ -12510,6 +12602,7 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
       personId: serializer.fromJson<String?>(json['personId']),
       ledgerEntryId: serializer.fromJson<String?>(json['ledgerEntryId']),
       groupId: serializer.fromJson<String?>(json['groupId']),
+      familyId: serializer.fromJson<String?>(json['familyId']),
       amountPaise: serializer.fromJson<int?>(json['amountPaise']),
       categoryId: serializer.fromJson<String?>(json['categoryId']),
       anchorDay: serializer.fromJson<int?>(json['anchorDay']),
@@ -12546,6 +12639,7 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
       'personId': serializer.toJson<String?>(personId),
       'ledgerEntryId': serializer.toJson<String?>(ledgerEntryId),
       'groupId': serializer.toJson<String?>(groupId),
+      'familyId': serializer.toJson<String?>(familyId),
       'amountPaise': serializer.toJson<int?>(amountPaise),
       'categoryId': serializer.toJson<String?>(categoryId),
       'anchorDay': serializer.toJson<int?>(anchorDay),
@@ -12572,6 +12666,7 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     Value<String?> personId = const Value.absent(),
     Value<String?> ledgerEntryId = const Value.absent(),
     Value<String?> groupId = const Value.absent(),
+    Value<String?> familyId = const Value.absent(),
     Value<int?> amountPaise = const Value.absent(),
     Value<String?> categoryId = const Value.absent(),
     Value<int?> anchorDay = const Value.absent(),
@@ -12595,6 +12690,7 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
         ? ledgerEntryId.value
         : this.ledgerEntryId,
     groupId: groupId.present ? groupId.value : this.groupId,
+    familyId: familyId.present ? familyId.value : this.familyId,
     amountPaise: amountPaise.present ? amountPaise.value : this.amountPaise,
     categoryId: categoryId.present ? categoryId.value : this.categoryId,
     anchorDay: anchorDay.present ? anchorDay.value : this.anchorDay,
@@ -12622,6 +12718,7 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
           ? data.ledgerEntryId.value
           : this.ledgerEntryId,
       groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      familyId: data.familyId.present ? data.familyId.value : this.familyId,
       amountPaise: data.amountPaise.present
           ? data.amountPaise.value
           : this.amountPaise,
@@ -12658,6 +12755,7 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
           ..write('personId: $personId, ')
           ..write('ledgerEntryId: $ledgerEntryId, ')
           ..write('groupId: $groupId, ')
+          ..write('familyId: $familyId, ')
           ..write('amountPaise: $amountPaise, ')
           ..write('categoryId: $categoryId, ')
           ..write('anchorDay: $anchorDay, ')
@@ -12670,7 +12768,7 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     createdAt,
     updatedAt,
     revision,
@@ -12684,6 +12782,7 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     personId,
     ledgerEntryId,
     groupId,
+    familyId,
     amountPaise,
     categoryId,
     anchorDay,
@@ -12691,7 +12790,7 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     completedOccurrences,
     notificationId,
     status,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -12709,6 +12808,7 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
           other.personId == this.personId &&
           other.ledgerEntryId == this.ledgerEntryId &&
           other.groupId == this.groupId &&
+          other.familyId == this.familyId &&
           other.amountPaise == this.amountPaise &&
           other.categoryId == this.categoryId &&
           other.anchorDay == this.anchorDay &&
@@ -12732,6 +12832,7 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
   final Value<String?> personId;
   final Value<String?> ledgerEntryId;
   final Value<String?> groupId;
+  final Value<String?> familyId;
   final Value<int?> amountPaise;
   final Value<String?> categoryId;
   final Value<int?> anchorDay;
@@ -12754,6 +12855,7 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     this.personId = const Value.absent(),
     this.ledgerEntryId = const Value.absent(),
     this.groupId = const Value.absent(),
+    this.familyId = const Value.absent(),
     this.amountPaise = const Value.absent(),
     this.categoryId = const Value.absent(),
     this.anchorDay = const Value.absent(),
@@ -12777,6 +12879,7 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     this.personId = const Value.absent(),
     this.ledgerEntryId = const Value.absent(),
     this.groupId = const Value.absent(),
+    this.familyId = const Value.absent(),
     this.amountPaise = const Value.absent(),
     this.categoryId = const Value.absent(),
     this.anchorDay = const Value.absent(),
@@ -12806,6 +12909,7 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     Expression<String>? personId,
     Expression<String>? ledgerEntryId,
     Expression<String>? groupId,
+    Expression<String>? familyId,
     Expression<int>? amountPaise,
     Expression<String>? categoryId,
     Expression<int>? anchorDay,
@@ -12829,6 +12933,7 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
       if (personId != null) 'person_id': personId,
       if (ledgerEntryId != null) 'ledger_entry_id': ledgerEntryId,
       if (groupId != null) 'group_id': groupId,
+      if (familyId != null) 'family_id': familyId,
       if (amountPaise != null) 'amount_paise': amountPaise,
       if (categoryId != null) 'category_id': categoryId,
       if (anchorDay != null) 'anchor_day': anchorDay,
@@ -12855,6 +12960,7 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     Value<String?>? personId,
     Value<String?>? ledgerEntryId,
     Value<String?>? groupId,
+    Value<String?>? familyId,
     Value<int?>? amountPaise,
     Value<String?>? categoryId,
     Value<int?>? anchorDay,
@@ -12878,6 +12984,7 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
       personId: personId ?? this.personId,
       ledgerEntryId: ledgerEntryId ?? this.ledgerEntryId,
       groupId: groupId ?? this.groupId,
+      familyId: familyId ?? this.familyId,
       amountPaise: amountPaise ?? this.amountPaise,
       categoryId: categoryId ?? this.categoryId,
       anchorDay: anchorDay ?? this.anchorDay,
@@ -12937,6 +13044,9 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     if (groupId.present) {
       map['group_id'] = Variable<String>(groupId.value);
     }
+    if (familyId.present) {
+      map['family_id'] = Variable<String>(familyId.value);
+    }
     if (amountPaise.present) {
       map['amount_paise'] = Variable<int>(amountPaise.value);
     }
@@ -12982,6 +13092,7 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
           ..write('personId: $personId, ')
           ..write('ledgerEntryId: $ledgerEntryId, ')
           ..write('groupId: $groupId, ')
+          ..write('familyId: $familyId, ')
           ..write('amountPaise: $amountPaise, ')
           ..write('categoryId: $categoryId, ')
           ..write('anchorDay: $anchorDay, ')
@@ -24180,6 +24291,7 @@ typedef $$AttachmentsTableCreateCompanionBuilder =
       Value<String?> transactionId,
       Value<String?> ledgerEntryId,
       Value<String?> groupExpenseId,
+      Value<String?> familyEntryId,
       required String storedName,
       required String originalName,
       required String mimeType,
@@ -24197,6 +24309,7 @@ typedef $$AttachmentsTableUpdateCompanionBuilder =
       Value<String?> transactionId,
       Value<String?> ledgerEntryId,
       Value<String?> groupExpenseId,
+      Value<String?> familyEntryId,
       Value<String> storedName,
       Value<String> originalName,
       Value<String> mimeType,
@@ -24288,6 +24401,11 @@ class $$AttachmentsTableFilterComposer
 
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get familyEntryId => $composableBuilder(
+    column: $table.familyEntryId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -24420,6 +24538,11 @@ class $$AttachmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get familyEntryId => $composableBuilder(
+    column: $table.familyEntryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get storedName => $composableBuilder(
     column: $table.storedName,
     builder: (column) => ColumnOrderings(column),
@@ -24542,6 +24665,11 @@ class $$AttachmentsTableAnnotationComposer
 
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get familyEntryId => $composableBuilder(
+    column: $table.familyEntryId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get storedName => $composableBuilder(
     column: $table.storedName,
@@ -24679,6 +24807,7 @@ class $$AttachmentsTableTableManager
                 Value<String?> transactionId = const Value.absent(),
                 Value<String?> ledgerEntryId = const Value.absent(),
                 Value<String?> groupExpenseId = const Value.absent(),
+                Value<String?> familyEntryId = const Value.absent(),
                 Value<String> storedName = const Value.absent(),
                 Value<String> originalName = const Value.absent(),
                 Value<String> mimeType = const Value.absent(),
@@ -24694,6 +24823,7 @@ class $$AttachmentsTableTableManager
                 transactionId: transactionId,
                 ledgerEntryId: ledgerEntryId,
                 groupExpenseId: groupExpenseId,
+                familyEntryId: familyEntryId,
                 storedName: storedName,
                 originalName: originalName,
                 mimeType: mimeType,
@@ -24711,6 +24841,7 @@ class $$AttachmentsTableTableManager
                 Value<String?> transactionId = const Value.absent(),
                 Value<String?> ledgerEntryId = const Value.absent(),
                 Value<String?> groupExpenseId = const Value.absent(),
+                Value<String?> familyEntryId = const Value.absent(),
                 required String storedName,
                 required String originalName,
                 required String mimeType,
@@ -24726,6 +24857,7 @@ class $$AttachmentsTableTableManager
                 transactionId: transactionId,
                 ledgerEntryId: ledgerEntryId,
                 groupExpenseId: groupExpenseId,
+                familyEntryId: familyEntryId,
                 storedName: storedName,
                 originalName: originalName,
                 mimeType: mimeType,
@@ -24845,6 +24977,7 @@ typedef $$RemindersTableCreateCompanionBuilder = RemindersCompanion Function({
   Value<String?> personId,
   Value<String?> ledgerEntryId,
   Value<String?> groupId,
+  Value<String?> familyId,
   Value<int?> amountPaise,
   Value<String?> categoryId,
   Value<int?> anchorDay,
@@ -24868,6 +25001,7 @@ typedef $$RemindersTableUpdateCompanionBuilder = RemindersCompanion Function({
   Value<String?> personId,
   Value<String?> ledgerEntryId,
   Value<String?> groupId,
+  Value<String?> familyId,
   Value<int?> amountPaise,
   Value<String?> categoryId,
   Value<int?> anchorDay,
@@ -25012,6 +25146,11 @@ class $$RemindersTableFilterComposer
   get repeat => $composableBuilder(
     column: $table.repeat,
     builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<String> get familyId => $composableBuilder(
+    column: $table.familyId,
+    builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<int> get amountPaise => $composableBuilder(
@@ -25197,6 +25336,11 @@ class $$RemindersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get familyId => $composableBuilder(
+    column: $table.familyId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get amountPaise => $composableBuilder(
     column: $table.amountPaise,
     builder: (column) => ColumnOrderings(column),
@@ -25358,6 +25502,9 @@ class $$RemindersTableAnnotationComposer
 
   GeneratedColumnWithTypeConverter<ReminderRepeat, String> get repeat =>
       $composableBuilder(column: $table.repeat, builder: (column) => column);
+
+  GeneratedColumn<String> get familyId =>
+      $composableBuilder(column: $table.familyId, builder: (column) => column);
 
   GeneratedColumn<int> get amountPaise => $composableBuilder(
     column: $table.amountPaise,
@@ -25524,6 +25671,7 @@ class $$RemindersTableTableManager
                 Value<String?> personId = const Value.absent(),
                 Value<String?> ledgerEntryId = const Value.absent(),
                 Value<String?> groupId = const Value.absent(),
+                Value<String?> familyId = const Value.absent(),
                 Value<int?> amountPaise = const Value.absent(),
                 Value<String?> categoryId = const Value.absent(),
                 Value<int?> anchorDay = const Value.absent(),
@@ -25546,6 +25694,7 @@ class $$RemindersTableTableManager
                 personId: personId,
                 ledgerEntryId: ledgerEntryId,
                 groupId: groupId,
+                familyId: familyId,
                 amountPaise: amountPaise,
                 categoryId: categoryId,
                 anchorDay: anchorDay,
@@ -25570,6 +25719,7 @@ class $$RemindersTableTableManager
                 Value<String?> personId = const Value.absent(),
                 Value<String?> ledgerEntryId = const Value.absent(),
                 Value<String?> groupId = const Value.absent(),
+                Value<String?> familyId = const Value.absent(),
                 Value<int?> amountPaise = const Value.absent(),
                 Value<String?> categoryId = const Value.absent(),
                 Value<int?> anchorDay = const Value.absent(),
@@ -25592,6 +25742,7 @@ class $$RemindersTableTableManager
                 personId: personId,
                 ledgerEntryId: ledgerEntryId,
                 groupId: groupId,
+                familyId: familyId,
                 amountPaise: amountPaise,
                 categoryId: categoryId,
                 anchorDay: anchorDay,

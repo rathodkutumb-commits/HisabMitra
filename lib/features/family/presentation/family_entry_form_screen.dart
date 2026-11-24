@@ -10,6 +10,8 @@ import '../../../core/providers.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../../core/widgets/dialogs.dart';
 import '../../../core/widgets/form_fields.dart';
+import '../../attachments/data/attachment_service.dart';
+import '../../attachments/presentation/attachments_editor.dart';
 import '../../categories/data/category_repository.dart';
 import '../../categories/presentation/category_labels.dart';
 import '../data/family_repository.dart';
@@ -25,10 +27,18 @@ class FamilyEntryFormScreen extends ConsumerStatefulWidget {
     required this.familyId,
     this.entryId,
     this.moneyIn = true,
+    this.initialAmountPaise,
+    this.initialCategoryId,
+    this.initialNote,
   });
 
   final String familyId;
   final String? entryId;
+
+  /// Prefill for a new entry (a reminder's payment being recorded).
+  final int? initialAmountPaise;
+  final String? initialCategoryId;
+  final String? initialNote;
 
   /// For a new entry: money in (true) or money out (false).
   final bool moneyIn;
@@ -42,6 +52,12 @@ class _FamilyEntryFormScreenState extends ConsumerState<FamilyEntryFormScreen> {
   final _form = GlobalKey<FormState>();
   final _amount = TextEditingController();
   final _note = TextEditingController();
+
+  /// Bill photos or PDFs (money out only).
+  final _attachments = AttachmentDraft();
+  late final AttachmentService _attachmentService = ref.read(
+    attachmentServiceProvider,
+  );
   late bool _moneyIn = widget.moneyIn;
   var _kind = FamilyEntryKind.salary;
   String? _memberId;
@@ -57,6 +73,7 @@ class _FamilyEntryFormScreenState extends ConsumerState<FamilyEntryFormScreen> {
   @override
   void initState() {
     super.initState();
+    _attachmentService; // resolve while mounted
     _load();
   }
 
@@ -86,6 +103,11 @@ class _FamilyEntryFormScreenState extends ConsumerState<FamilyEntryFormScreen> {
         _note.text = e.note ?? '';
       } else {
         _memberId = d.self?.id ?? d.activeMembers.firstOrNull?.id;
+        if (widget.initialAmountPaise != null) {
+          _amount.text = Money.toEditable(widget.initialAmountPaise!);
+        }
+        _categoryId = widget.initialCategoryId;
+        _note.text = widget.initialNote ?? '';
       }
       _loaded = true;
     });
@@ -95,6 +117,7 @@ class _FamilyEntryFormScreenState extends ConsumerState<FamilyEntryFormScreen> {
   void dispose() {
     _amount.dispose();
     _note.dispose();
+    _attachments.discard(_attachmentService).whenComplete(_attachments.dispose);
     super.dispose();
   }
 
@@ -107,7 +130,7 @@ class _FamilyEntryFormScreenState extends ConsumerState<FamilyEntryFormScreen> {
     if (!valid || _categoryError || _memberId == null) return;
     setState(() => _saving = true);
     try {
-      await ref
+      final id = await ref
           .read(familyRepositoryProvider)
           .saveEntry(
             FamilyEntryDraft(
@@ -121,10 +144,17 @@ class _FamilyEntryFormScreenState extends ConsumerState<FamilyEntryFormScreen> {
               note: _note.text,
             ),
           );
+      if (!_moneyIn) {
+        await _attachments.apply(
+          _attachmentService,
+          parent: AttachmentParent.familyEntry,
+          parentId: id,
+        );
+      }
       if (!mounted) return;
       _dirty = false;
       showAppSnack(context, context.l10n.familyEntrySaved);
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(id);
     } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
@@ -165,7 +195,7 @@ class _FamilyEntryFormScreenState extends ConsumerState<FamilyEntryFormScreen> {
     );
 
     return UnsavedChangesGuard(
-      hasChanges: _dirty && !_saving,
+      hasChanges: (_dirty || _attachments.hasChanges) && !_saving,
       child: Scaffold(
         appBar: AppBar(
           title: Text(title),
@@ -307,6 +337,14 @@ class _FamilyEntryFormScreenState extends ConsumerState<FamilyEntryFormScreen> {
                         maxLength: 200,
                         onChanged: (_) => _markDirty(),
                       ),
+                      if (!_moneyIn) ...[
+                        const SizedBox(height: 20),
+                        AttachmentsEditor(
+                          draft: _attachments,
+                          parent: AttachmentParent.familyEntry,
+                          parentId: widget.entryId,
+                        ),
+                      ],
                     ],
                   ),
                 ),

@@ -93,5 +93,22 @@
   "aiExampleGroupTotal": "How much did {group} cost?",
   "@aiExampleGroupTotal": {"placeholders": {"group": {"type": "String"}}},
   "aiExampleGroupOwes": "Who owes whom in {group}?",
-  "@aiExampleGroupOwes": {"placeholders": {"group": {"type": "String"}}}
+  "@aiExampleGroupOwes": {"placeholders": {"group": {"type": "String"}}},
+  "aiExamplesFamily": "Family hisab",
+  "aiExampleFamilySpend": "How much did we spend at {family} this month?",
+  "@aiExampleFamilySpend": {"placeholders": {"family": {"type": "String"}}},
+  "aiExampleFamilyGroceries": "How much did we spend on groceries at {family} this month?",
+  "@aiExampleFamilyGroceries": {"placeholders": {"family": {"type": "String"}}},
+  "aiExampleFamilyPersonIn": "What did {name} put in this month?",
+  "@aiExampleFamilyPersonIn": {"placeholders": {"name": {"type": "String"}}},
+  "aiExampleFamilyBalance": "What is the {family} balance?",
+  "@aiExampleFamilyBalance": {"placeholders": {"family": {"type": "String"}}},
+  "aiFamilySpend": "At {family} you spent {amount} in {period} ({count} entries).",
+  "@aiFamilySpend": {"placeholders": {"family": {"type": "String"}, "amount": {"type": "String"}, "period": {"type": "String"}, "count": {"type": "int"}}},
+  "aiFamilySpendCategory": "At {family} you spent {amount} on {category} in {period}.",
+  "@aiFamilySpendCategory": {"placeholders": {"family": {"type": "String"}, "amount": {"type": "String"}, "category": {"type": "String"}, "period": {"type": "String"}}},
+  "aiFamilyPersonIn": "{name} put {amount} into {family} in {period}.",
+  "@aiFamilyPersonIn": {"placeholders": {"name": {"type": "String"}, "amount": {"type": "String"}, "family": {"type": "String"}, "period": {"type": "String"}}},
+  "aiFamilyBalance": "{family}, {period}: opening balance {opening}, money in {moneyIn}, money out {moneyOut}, closing balance {closing}.",
+  "@aiFamilyBalance": {"placeholders": {"family": {"type": "String"}, "period": {"type": "String"}, "opening": {"type": "String"}, "moneyIn": {"type": "String"}, "moneyOut": {"type": "String"}, "closing": {"type": "String"}}}
 }

@@ -93,8 +93,21 @@ abstract final class Routes {
   static String familyPeople(String id) => '/family/$id/people';
   static String familyInvite(String id, {String? memberId}) =>
       '/family/$id/invite${memberId == null ? '' : '?member=$memberId'}';
-  static String newFamilyEntry(String id, {required String kind}) =>
-      '/family/$id/entries/new?kind=$kind';
+  static String newFamilyEntry(
+    String id, {
+    required String kind,
+    int? amountPaise,
+    String? categoryId,
+    String? note,
+  }) => Uri(
+    path: '/family/$id/entries/new',
+    queryParameters: {
+      'kind': kind,
+      if (amountPaise != null) 'amount': '$amountPaise',
+      'category': ?categoryId,
+      'note': ?note,
+    },
+  ).toString();
   static String editFamilyEntry(String id, String entryId) =>
       '/family/$id/entries/$entryId/edit';
   static String familyStatement(
@@ -111,12 +124,14 @@ abstract final class Routes {
   static String newReminder({
     String? ledgerId,
     String? groupId,
+    String? familyId,
     String? personId,
     bool payment = false,
   }) {
     final q = [
       if (ledgerId != null) 'ledgerId=$ledgerId',
       if (groupId != null) 'groupId=$groupId',
+      if (familyId != null) 'familyId=$familyId',
       if (personId != null) 'personId=$personId',
       if (payment) 'payment=1',
     ].join('&');

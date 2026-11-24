@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hisabmitra/core/database/app_database.dart';
@@ -149,6 +150,44 @@ void main() {
     await tap(tester, button('Delete'));
     expect(text(tester, 'passbook-in'), isNot(contains('65,000')));
     expect(find.text('No entries this month yet'), findsOneWidget);
+  });
+
+  testApp('the passbook shows a bill icon on entries with a bill', (
+    tester,
+  ) async {
+    await open(tester);
+    await add('Rahul Patel', FamilyEntryKind.expense, 750000);
+    final rent = (await db.select(db.familyEntriesCache).getSingle()).id;
+    await add('Hemang', FamilyEntryKind.salary, 6000000);
+    await db
+        .into(db.attachments)
+        .insert(
+          AttachmentsCompanion.insert(
+            id: 'bill1',
+            familyEntryId: Value(rent),
+            storedName: 'bill1.jpg',
+            originalName: 'rent.jpg',
+            mimeType: 'image/jpeg',
+            sizeBytes: 10,
+            sha256: 'x',
+            createdAt: DateTime(2026),
+          ),
+        );
+    await openHome(tester, 'More');
+    expect(
+      find.descendant(
+        of: find.widgetWithText(ListTile, 'Rent'),
+        matching: find.byIcon(Icons.attach_file_rounded),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.widgetWithText(ListTile, 'Salary'),
+        matching: find.byIcon(Icons.attach_file_rounded),
+      ),
+      findsNothing,
+    );
   });
 
   testApp('in Gujarati the card and categories read in Gujarati', (

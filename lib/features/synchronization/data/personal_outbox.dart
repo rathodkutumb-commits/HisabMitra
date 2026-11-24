@@ -117,7 +117,7 @@ class PersonalOutbox {
       PersonalEntity.attachment,
     ]) {
       final groupBills = type == PersonalEntity.attachment
-          ? ' AND group_expense_id IS NULL'
+          ? ' AND group_expense_id IS NULL AND family_entry_id IS NULL'
           : '';
       final ids = await _db
           .customSelect(
@@ -328,6 +328,7 @@ Future<PersonalRowPayload?> personalPayload(
           'person_id': r.personId,
           'ledger_entry_id': r.ledgerEntryId,
           'group_id': r.groupId,
+          'family_id': r.familyId,
           'amount_paise': r.amountPaise,
           ...await _categorySnapshot(db, r.categoryId),
           'anchor_day': r.anchorDay,

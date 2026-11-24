@@ -493,5 +493,32 @@ class FakeCloudClient implements CloudGateway {
   }
 
   @override
+  Future<void> uploadFamilyAttachment({
+    required String storagePath,
+    required List<int> bytes,
+    required String mimeType,
+    required Map<String, Object?> metadata,
+  }) async {
+    _net();
+    if (failFileUploads) throw const NetworkFailure();
+    server.family.files[storagePath] = List.of(bytes);
+    server.family.registerAttachment(metadata, userId);
+  }
+
+  @override
+  Future<List<int>> downloadFamilyAttachment(String storagePath) async {
+    _net();
+    final f = server.family.files[storagePath];
+    if (f == null) throw const NotFoundFailure();
+    return f;
+  }
+
+  @override
+  Future<void> deleteFamilyAttachment(String attachmentId) async {
+    _net();
+    server.family.deleteAttachment(attachmentId, userId);
+  }
+
+  @override
   Future<void> deleteAccount() async {}
 }

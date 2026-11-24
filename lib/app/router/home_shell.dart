@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/l10n/l10n_x.dart';
 import '../../core/widgets/exit_confirm_scope.dart';
+import '../../features/reminders/application/notification_service.dart';
 import '../../features/tour/application/tour_controller.dart';
 
 /// Bottom navigation scaffold for the five main tabs.
@@ -20,7 +22,7 @@ class HomeShell extends StatelessWidget {
       onBack: navigationShell.currentIndex == 0
           ? null
           : () => navigationShell.goBranch(0),
-      child: _scaffold(l),
+      child: _NotificationOpener(child: _scaffold(l)),
     );
   }
 
@@ -63,5 +65,41 @@ class HomeShell extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Opens the page a tapped reminder notification asked for, once the tabs
+/// are on screen (also when the tap started the app).
+class _NotificationOpener extends ConsumerStatefulWidget {
+  const _NotificationOpener({required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<_NotificationOpener> createState() =>
+      _NotificationOpenerState();
+}
+
+class _NotificationOpenerState extends ConsumerState<_NotificationOpener> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _openWaiting());
+  }
+
+  void _openWaiting() {
+    if (!mounted) return;
+    final route = ref.read(notificationRouteProvider.notifier).take();
+    if (route != null) context.push(route);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen(notificationRouteProvider, (_, route) {
+      if (route != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _openWaiting());
+      }
+    });
+    return widget.child;
   }
 }

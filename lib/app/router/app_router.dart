@@ -444,6 +444,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (_, s) => FamilyEntryFormScreen(
                   familyId: s.pathParameters['id']!,
                   moneyIn: q(s, 'kind') != 'out',
+                  initialAmountPaise: int.tryParse(q(s, 'amount') ?? ''),
+                  initialCategoryId: q(s, 'category'),
+                  initialNote: q(s, 'note'),
                 ),
               ),
               GoRoute(
@@ -479,6 +482,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, s) => ReminderFormScreen(
           ledgerId: q(s, 'ledgerId'),
           groupId: q(s, 'groupId'),
+          familyId: q(s, 'familyId'),
           personId: q(s, 'personId'),
           payment: q(s, 'payment') == '1',
         ),

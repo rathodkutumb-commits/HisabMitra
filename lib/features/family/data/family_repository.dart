@@ -83,6 +83,7 @@ class FamilyDetail {
     required this.family,
     required this.members,
     required this.entries,
+    this.billEntryIds = const {},
   });
 
   final FamilyRow family;
@@ -90,6 +91,9 @@ class FamilyDetail {
   /// Active people first (in order), then removed people.
   final List<FamilyMemberRow> members;
   final List<FamilyEntry> entries;
+
+  /// Entries (money out) that have at least one bill.
+  final Set<String> billEntryIds;
 
   FamilyMemberRow? get self => members.where((m) => m.isSelf).firstOrNull;
 
@@ -160,17 +164,37 @@ class FamilyRepository {
               ]))
             .watch();
     final entries = _entries(familyId: id).watch();
-    return combineLatest3(
-      family,
-      members,
-      entries,
-      (f, ms, es) => f == null
-          ? null
-          : FamilyDetail(
-              family: f,
-              members: ms,
-              entries: [for (final e in es) FamilyEntry.fromRow(e)],
-            ),
+    final bills =
+        (_db.selectOnly(_db.attachments, distinct: true)
+              ..addColumns([_db.attachments.familyEntryId])
+              ..where(
+                _db.attachments.familyEntryId.isInQuery(
+                  _db.selectOnly(_db.familyEntriesCache)
+                    ..addColumns([_db.familyEntriesCache.id])
+                    ..where(_db.familyEntriesCache.familyId.equals(id)),
+                ),
+              ))
+            .watch()
+            .map(
+              (rows) => {
+                for (final r in rows) r.read(_db.attachments.familyEntryId)!,
+              },
+            );
+    return combineLatestList<Object?, FamilyDetail?>(
+      [family, members, entries, bills],
+      (v) {
+        final f = v[0] as FamilyRow?;
+        if (f == null) return null;
+        return FamilyDetail(
+          family: f,
+          members: v[1]! as List<FamilyMemberRow>,
+          entries: [
+            for (final e in v[2]! as List<FamilyEntryRow>)
+              FamilyEntry.fromRow(e),
+          ],
+          billEntryIds: v[3]! as Set<String>,
+        );
+      },
     );
   }
 

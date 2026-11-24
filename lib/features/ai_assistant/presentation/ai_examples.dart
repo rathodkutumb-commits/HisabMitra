@@ -17,11 +17,14 @@ AiExample _q(String text, AiIntent intent, [TransactionType? draftType]) =>
 
 /// Example questions grouped by topic. [personName] and [groupName] (the
 /// user's most recent person and group) add personal examples; the Groups
-/// section appears only when there is a group.
+/// section appears only when there is a group, the Family hisab section
+/// only when there is a Family hisab ([familyPersonName]: one of its people).
 List<AiExampleSection> buildAiExamples(
   AppLocalizations l, {
   String? personName,
   String? groupName,
+  String? familyName,
+  String? familyPersonName,
 }) {
   return [
     (
@@ -59,6 +62,20 @@ List<AiExampleSection> buildAiExamples(
         examples: [
           _q(l.aiExampleGroupTotal(groupName), AiIntent.groupTotal),
           _q(l.aiExampleGroupOwes(groupName), AiIntent.whoOwesWhom),
+        ],
+      ),
+    if (familyName != null)
+      (
+        title: l.aiExamplesFamily,
+        examples: [
+          _q(l.aiExampleFamilySpend(familyName), AiIntent.familySpend),
+          _q(l.aiExampleFamilyGroceries(familyName), AiIntent.familySpend),
+          if (familyPersonName != null)
+            _q(
+              l.aiExampleFamilyPersonIn(familyPersonName),
+              AiIntent.familyPersonIn,
+            ),
+          _q(l.aiExampleFamilyBalance(familyName), AiIntent.familyBalance),
         ],
       ),
     (

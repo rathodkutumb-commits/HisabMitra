@@ -830,7 +830,8 @@ class SyncService {
         await familyRows.apply(
           type,
           row,
-          (row['revision'] as num).toInt(),
+          // Bills have no revision: they are added and deleted, never edited.
+          (row['revision'] as num?)?.toInt() ?? 1,
           force: true,
         );
       }
@@ -841,6 +842,9 @@ class SyncService {
       }
       for (final x in snapshot.entries) {
         await put('entry', x);
+      }
+      for (final b in snapshot.attachments) {
+        await put('attachment', b);
       }
       await (_db.update(_db.syncInbox)..where(
             (i) =>

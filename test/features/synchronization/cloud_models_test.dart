@@ -106,11 +106,15 @@ void main() {
         {'id': 'm1', 'name': 'Hemang'},
       ],
       'entries': <Object?>[],
+      'attachments': [
+        {'id': 'b1', 'entry_id': 'e1'},
+      ],
       'max_seq': 9,
     });
     expect(s.family['name'], 'Home');
     expect(s.members.single['name'], 'Hemang');
     expect(s.entries, isEmpty);
+    expect(s.attachments.single['entry_id'], 'e1');
     expect(s.maxSeq, 9);
   });
 

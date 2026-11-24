@@ -105,6 +105,7 @@ class ReminderRepository {
                 personId: Value(d.personId),
                 ledgerEntryId: Value(d.ledgerEntryId),
                 groupId: Value(d.groupId),
+                familyId: Value(d.familyId),
                 notificationId: await newNotificationId(_db),
                 createdAt: now,
                 updatedAt: now,

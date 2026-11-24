@@ -13,8 +13,8 @@ void main() {
   setUp(() => db = newTestDatabase());
   tearDown(() => db.close());
 
-  test('schema version is 6 (v6: Family hisab)', () {
-    expect(db.schemaVersion, 6);
+  test('schema version is 7 (v7: Family hisab bills and reminder links)', () {
+    expect(db.schemaVersion, 7);
   });
 
   test('seeds all default categories exactly once', () async {

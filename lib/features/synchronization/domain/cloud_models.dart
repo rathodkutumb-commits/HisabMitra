@@ -262,6 +262,7 @@ class FamilySnapshot {
     required this.family,
     required this.members,
     required this.entries,
+    this.attachments = const [],
     required this.maxSeq,
   });
 
@@ -273,6 +274,7 @@ class FamilySnapshot {
       family: ((j['family'] as Map?) ?? const {}).cast<String, Object?>(),
       members: rows(j['members']),
       entries: rows(j['entries']),
+      attachments: rows(j['attachments']),
       maxSeq: (j['max_seq'] as num? ?? 0).toInt(),
     );
   }
@@ -280,5 +282,8 @@ class FamilySnapshot {
   final Map<String, Object?> family;
   final List<Map<String, Object?>> members;
   final List<Map<String, Object?>> entries;
+
+  /// Live bills of live entries.
+  final List<Map<String, Object?>> attachments;
   final int maxSeq;
 }

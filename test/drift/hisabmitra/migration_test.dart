@@ -13,6 +13,7 @@ import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
 import 'generated/schema_v5.dart' as v5;
 import 'generated/schema_v6.dart' as v6;
+import 'generated/schema_v7.dart' as v7;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -286,6 +287,71 @@ void main() {
         expect(await newDb.select(newDb.familyHisabsCache).get(), isEmpty);
         expect(await newDb.select(newDb.familyMembersCache).get(), isEmpty);
         expect(await newDb.select(newDb.familyEntriesCache).get(), isEmpty);
+      },
+    );
+  });
+
+  test('v6 → v7 keeps bills and reminders', () async {
+    const txn = v6.TransactionsData(
+      createdAt: 0,
+      updatedAt: 0,
+      id: 't1',
+      ownerId: 'self',
+      type: 'expense',
+      amountPaise: 25000,
+      categoryId: 'cat_groceries',
+      txnDate: 0,
+      paymentMethod: 'upi',
+      description: 'Vegetables',
+      revision: 0,
+      syncState: 'localOnly',
+    );
+    const bill = v6.AttachmentsData(
+      revision: 1,
+      syncState: 'synced',
+      id: 'a1',
+      transactionId: 't1',
+      storedName: 'a1.jpg',
+      originalName: 'bill.jpg',
+      mimeType: 'image/jpeg',
+      sizeBytes: 2048,
+      sha256: 'abc',
+      remotePath: 'a1.jpg',
+      createdAt: 0,
+    );
+    const reminder = v6.RemindersData(
+      createdAt: 0,
+      updatedAt: 0,
+      revision: 0,
+      syncState: 'localOnly',
+      id: 'r1',
+      kind: 'rent',
+      title: 'Rent',
+      dueAt: 0,
+      repeat: 'monthly',
+      completedOccurrences: 0,
+      notificationId: 7,
+      status: 'pending',
+    );
+    await verifier.testWithDataIntegrity(
+      oldVersion: 6,
+      newVersion: 7,
+      createOld: v6.DatabaseAtV6.new,
+      createNew: v7.DatabaseAtV7.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) {
+        batch.insert(oldDb.transactions, txn);
+        batch.insert(oldDb.attachments, bill);
+        batch.insert(oldDb.reminders, reminder);
+      },
+      validateItems: (newDb) async {
+        final a = await newDb.select(newDb.attachments).getSingle();
+        expect(
+          (a.transactionId, a.storedName, a.familyEntryId),
+          ('t1', 'a1.jpg', null),
+        );
+        final r = await newDb.select(newDb.reminders).getSingle();
+        expect((r.title, r.familyId), ('Rent', null));
       },
     );
   });

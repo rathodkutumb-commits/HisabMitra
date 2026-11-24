@@ -61,7 +61,7 @@ test in `test/widget/app_flow_test.dart`, also run on device through
 | + | Family hisab (month passbook) | `/family/:id` | `FamilyHomeScreen` | Done | W (`family_entries_test`), U (passbook) |
 | + | Family hisab people (invite, admin/member, managers only) | `/family/:id/people` | `FamilyPeopleScreen` | Done | W (`family_setup_test`, `family_invite_test`) |
 | + | Invite to Family hisab | `/family/:id/invite?member=` | `FamilyInviteScreen` | Blocked — needs sign-in | W (`family_invite_test`), U (sharing) |
-| + | Money in / money out | `/family/:id/entries/new?kind=in\|out`, `/family/:id/entries/:eid/edit` | `FamilyEntryFormScreen` | Done | W (`family_entries_test`) |
+| + | Money in / money out (bills on money out) | `/family/:id/entries/new?kind=in\|out`, `/family/:id/entries/:eid/edit` | `FamilyEntryFormScreen` | Done | W (`family_entries_test`) |
 | + | Family hisab statement (PDF, WhatsApp) | `/family/:id/statement?year=&month=` | `FamilyStatementScreen` | Done | W (`family_statement_test`), U (text, PDF) |
 | + | Guided tour + sample data (overlay, prompt, banner) | overlay on any route | `TourOverlay`, `TourPromptHost`, `SampleDataBanner` | Done | W (tour, banner)
 | + | Floating AI button (above the page's own button; hidden on forms, chat, onboarding, with keyboard/keypad, or when AI is off) | tabs + list/detail pages | `AiFabStack` | Done | W (`ai_fab_test`) |

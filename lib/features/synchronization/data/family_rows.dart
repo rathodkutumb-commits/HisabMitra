@@ -14,6 +14,9 @@ class FamilyRowApplier {
   /// The signed-in user, to recognise "You" among the people.
   final String? Function() myUserId;
 
+  /// Removes local bill files whose records were deleted.
+  Future<void> Function(List<String> storedNames)? onFilesRemoved;
+
   static const types = {'family', 'member', 'entry'};
 
   /// Writes [p] at [revision]. Returns false when the phone's copy is
@@ -159,6 +162,43 @@ class FamilyRowApplier {
             _db.familyEntriesCache,
           )..where((e) => e.id.equals(id))).write(row);
         }
+      case 'attachment':
+        if (deleted) {
+          final rows = await (_db.select(
+            _db.attachments,
+          )..where((a) => a.id.equals(id))).get();
+          if (rows.isEmpty) return false;
+          await (_db.delete(
+            _db.attachments,
+          )..where((a) => a.id.equals(id))).go();
+          final names = [
+            for (final a in rows)
+              if (a.storedName.isNotEmpty) a.storedName,
+          ];
+          if (names.isNotEmpty) await onFilesRemoved?.call(names);
+          return true;
+        }
+        final mime = p['mime_type']! as String;
+        // A bill from another member arrives without a local file; it is
+        // downloaded when opened.
+        final inserted = await _db
+            .into(_db.attachments)
+            .insert(
+              AttachmentsCompanion.insert(
+                id: id,
+                familyEntryId: Value(p['entry_id']! as String),
+                storedName: '',
+                originalName:
+                    'bill_${id.substring(0, 8)}${mime == 'application/pdf' ? '.pdf' : '.jpg'}',
+                mimeType: mime,
+                sizeBytes: (p['size_bytes']! as num).toInt(),
+                sha256: p['sha256']! as String,
+                remotePath: Value(p['storage_path'] as String?),
+                createdAt: now,
+              ),
+              mode: InsertMode.insertOrIgnore,
+            );
+        return inserted > 0;
       default:
         return false;
     }
@@ -206,7 +246,29 @@ class FamilyRowApplier {
 
   /// Removes a Family hisab from the phone (this user was removed from it):
   /// its entries, people, unsent uploads, feed rows and open conflicts.
-  Future<void> forgetFamily(String familyId) => _db.transaction(() async {
+  Future<void> forgetFamily(String familyId) async {
+    final bills =
+        await (_db.select(_db.attachments)..where(
+              (a) => a.familyEntryId.isInQuery(
+                _db.selectOnly(_db.familyEntriesCache)
+                  ..addColumns([_db.familyEntriesCache.id])
+                  ..where(_db.familyEntriesCache.familyId.equals(familyId)),
+              ),
+            ))
+            .get();
+    await _forget(familyId, [for (final b in bills) b.id]);
+    final names = [
+      for (final b in bills)
+        if (b.storedName.isNotEmpty) b.storedName,
+    ];
+    if (names.isNotEmpty) await onFilesRemoved?.call(names);
+  }
+
+  Future<void> _forget(
+    String familyId,
+    List<String> billIds,
+  ) => _db.transaction(() async {
+    await (_db.delete(_db.attachments)..where((a) => a.id.isIn(billIds))).go();
     await (_db.delete(
       _db.familyEntriesCache,
     )..where((e) => e.familyId.equals(familyId))).go();

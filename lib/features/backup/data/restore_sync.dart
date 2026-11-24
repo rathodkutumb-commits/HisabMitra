@@ -31,9 +31,10 @@ class RestoreSync {
   Future<void> afterRestore() => _db.transaction(() async {
     // Groups come back from the account (attachments of group expenses go
     // with them through the foreign keys).
-    await (_db.delete(
-      _db.attachments,
-    )..where((a) => a.groupExpenseId.isNotNull())).go();
+    await (_db.delete(_db.attachments)..where(
+          (a) => a.groupExpenseId.isNotNull() | a.familyEntryId.isNotNull(),
+        ))
+        .go();
     await _db.delete(_db.groupExpenseSplitsCache).go();
     await _db.delete(_db.groupExpensesCache).go();
     await _db.delete(_db.groupSettlementsCache).go();
@@ -57,7 +58,8 @@ class RestoreSync {
       );
     }
     // Bill files are uploaded again too.
-    await (_db.update(_db.attachments)..where((a) => a.groupExpenseId.isNull()))
+    await (_db.update(_db.attachments)
+          ..where((a) => a.groupExpenseId.isNull() & a.familyEntryId.isNull()))
         .write(const AttachmentsCompanion(remotePath: Value(null)));
     final outbox = PersonalOutbox(_db, _clock, _ids);
     await outbox.reset();

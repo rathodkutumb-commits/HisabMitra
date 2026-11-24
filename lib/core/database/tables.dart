@@ -465,6 +465,10 @@ class Attachments extends Table with PersonalSyncColumns {
     onDelete: KeyAction.cascade,
   )();
 
+  /// Money out of a Family hisab (v7). No foreign key: entries are only
+  /// soft-deleted, and forgetting a Family hisab removes its bills itself.
+  TextColumn get familyEntryId => text().nullable()();
+
   /// Path relative to the app attachments directory.
   TextColumn get storedName => text()();
   TextColumn get originalName => text()();
@@ -480,7 +484,7 @@ class Attachments extends Table with PersonalSyncColumns {
   @override
   List<String> get customConstraints => [
     'CHECK ((transaction_id IS NOT NULL) + (ledger_entry_id IS NOT NULL) '
-        '+ (group_expense_id IS NOT NULL) = 1)',
+        '+ (group_expense_id IS NOT NULL) + (family_entry_id IS NOT NULL) = 1)',
   ];
 }
 
@@ -511,6 +515,10 @@ class Reminders extends Table with Timestamps, PersonalSyncColumns {
     #id,
     onDelete: KeyAction.cascade,
   )();
+
+  /// The Family hisab this reminder belongs to (v7). No foreign key: the
+  /// reminder is personal and may arrive before its Family hisab.
+  TextColumn get familyId => text().nullable()();
 
   /// Fixed amount for recurring payments (EMI, SIP, maintenance, …). (v2)
   IntColumn get amountPaise =>

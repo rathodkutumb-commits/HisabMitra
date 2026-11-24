@@ -388,6 +388,66 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get aiExamplesFamily => 'Family hisab';
+
+  @override
+  String aiExampleFamilySpend(String family) {
+    return 'How much did we spend at $family this month?';
+  }
+
+  @override
+  String aiExampleFamilyGroceries(String family) {
+    return 'How much did we spend on groceries at $family this month?';
+  }
+
+  @override
+  String aiExampleFamilyPersonIn(String name) {
+    return 'What did $name put in this month?';
+  }
+
+  @override
+  String aiExampleFamilyBalance(String family) {
+    return 'What is the $family balance?';
+  }
+
+  @override
+  String aiFamilySpend(String family, String amount, String period, int count) {
+    return 'At $family you spent $amount in $period ($count entries).';
+  }
+
+  @override
+  String aiFamilySpendCategory(
+    String family,
+    String amount,
+    String category,
+    String period,
+  ) {
+    return 'At $family you spent $amount on $category in $period.';
+  }
+
+  @override
+  String aiFamilyPersonIn(
+    String name,
+    String amount,
+    String family,
+    String period,
+  ) {
+    return '$name put $amount into $family in $period.';
+  }
+
+  @override
+  String aiFamilyBalance(
+    String family,
+    String period,
+    String opening,
+    String moneyIn,
+    String moneyOut,
+    String closing,
+  ) {
+    return '$family, $period: opening balance $opening, money in $moneyIn, money out $moneyOut, closing balance $closing.';
+  }
+
+  @override
   String get attachments => 'Bills & attachments';
 
   @override

@@ -38,3 +38,12 @@ begin
     create publication supabase_realtime;
   end if;
 end $$;
+
+-- Supabase Storage keeps uploaded files in storage.objects; functions that
+-- check an upload exists read it.
+create schema if not exists storage;
+create table if not exists storage.objects (
+  id uuid primary key default gen_random_uuid(),
+  bucket_id text,
+  name text
+);

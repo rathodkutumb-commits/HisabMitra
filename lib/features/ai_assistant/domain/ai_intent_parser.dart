@@ -16,6 +16,9 @@ enum AiIntent {
   personBalance,
   groupTotal,
   whoOwesWhom,
+  familySpend,
+  familyPersonIn,
+  familyBalance,
   draft,
   help,
 }
@@ -30,6 +33,8 @@ class AiQuery {
     required this.range,
     this.personId,
     this.groupId,
+    this.familyId,
+    this.familyMemberId,
     this.amountPaise,
     this.categoryId,
     this.draftType,
@@ -40,6 +45,10 @@ class AiQuery {
   final DateRange range;
   final String? personId;
   final String? groupId;
+
+  /// The Family hisab asked about, and one of its people.
+  final String? familyId;
+  final String? familyMemberId;
   final int? amountPaise;
   final String? categoryId;
   final TransactionType? draftType;
@@ -47,6 +56,7 @@ class AiQuery {
 
 typedef NamedEntity = ({String id, String name});
 typedef CategoryNames = ({String id, List<String> names, TransactionType type});
+typedef FamilyPersonName = ({String id, String familyId, String name});
 
 /// Deterministic keyword-based understanding of finance questions in
 /// English and Gujarati. No model is involved: what the assistant answers
@@ -57,11 +67,15 @@ class AiIntentParser {
     required this.people,
     required this.groups,
     required this.categories,
+    this.families = const [],
+    this.familyPeople = const [],
   });
 
   final DateTime now;
   final List<NamedEntity> people;
   final List<NamedEntity> groups;
+  final List<NamedEntity> families;
+  final List<FamilyPersonName> familyPeople;
   final List<CategoryNames> categories;
 
   static bool _any(String q, List<String> words) => words.any(q.contains);
@@ -103,6 +117,72 @@ class AiIntentParser {
         amountPaise: amount != null && amount > 0 ? amount : null,
         categoryId: _category(q, type),
         draftType: type,
+      );
+    }
+
+    // 2. Family hisab — named (or "family" when there is only one), or one
+    // of its people with money-in words. Before groups and Khata people, so
+    // "What did Rahul put in?" is about the Family hisab and "How much does
+    // Rahul owe me?" stays Khata.
+    final family =
+        _entity(q, families) ??
+        (families.length == 1 && _any(q, ['family', 'પરિવાર'])
+            ? families.single.id
+            : null);
+    final familyPerson = _entity(q, [
+      for (final p in familyPeople)
+        if (family == null || p.familyId == family) (id: p.id, name: p.name),
+    ]);
+    final moneyIn = _any(q, [
+      'put in',
+      'gave',
+      'given',
+      'contribut',
+      'salary',
+      'paid in',
+      'આપ્યા',
+      'આપ્યો',
+      'ફાળો',
+      'જમા',
+      'પગાર',
+    ]);
+    AiQuery familyQuery(
+      AiIntent intent,
+      String familyId, {
+      String? member,
+      String? category,
+    }) => AiQuery(
+      intent: intent,
+      period: period,
+      range: range,
+      familyId: familyId,
+      familyMemberId: member,
+      categoryId: category,
+    );
+    if (family != null) {
+      if (_any(q, ['balance', 'left', 'સિલક', 'બાકી'])) {
+        return familyQuery(AiIntent.familyBalance, family);
+      }
+      if (familyPerson != null && moneyIn) {
+        return familyQuery(
+          AiIntent.familyPersonIn,
+          family,
+          member: familyPerson,
+        );
+      }
+      final category = _category(q, TransactionType.expense);
+      if (category != null ||
+          _any(q, ['spend', 'spent', 'expense', 'expenditure', 'ખર્ચ'])) {
+        return familyQuery(AiIntent.familySpend, family, category: category);
+      }
+      return familyQuery(AiIntent.familyBalance, family);
+    }
+    if (familyPerson != null && moneyIn) {
+      final p = familyPeople.firstWhere((x) => x.id == familyPerson);
+      return familyQuery(
+        AiIntent.familyPersonIn,
+        p.familyId,
+        member: familyPerson,
       );
     }
 

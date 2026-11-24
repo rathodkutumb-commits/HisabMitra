@@ -262,6 +262,40 @@ class FakeFamilyStore {
       .take(limit)
       .toList();
 
+  // ------------------------------------------------------------------ bills
+
+  /// Files in `family-attachments` and `family_attachments` rows.
+  final Map<String, List<int>> files = {};
+  final Map<String, Map<String, Object?>> attachments = {};
+
+  void registerAttachment(Map<String, Object?> p, String uid) {
+    final f = p['family_id']! as String;
+    if (!isMember(f, uid)) throw const ValidationFailure('forbidden');
+    final id = p['id']! as String;
+    if (attachments.containsKey(id)) return;
+    final entry = entries[p['entry_id']];
+    if (entry == null ||
+        entry['family_id'] != f ||
+        entry['deleted_at'] != null) {
+      throw const ValidationFailure('invalid_entry');
+    }
+    if (!files.containsKey(p['storage_path'])) {
+      throw const ValidationFailure('invalid_path');
+    }
+    attachments[id] = {...p, 'deleted_at': null};
+    _emit(f, 'attachment', id, 'upsert', 1, attachments[id]!, 'bill-$id');
+  }
+
+  void deleteAttachment(String id, String uid) {
+    final a = attachments[id];
+    if (a == null || a['deleted_at'] != null) return;
+    final f = a['family_id']! as String;
+    if (!isMember(f, uid)) throw const ValidationFailure('forbidden');
+    a['deleted_at'] = '2026-01-01T00:00:00Z';
+    files.remove(a['storage_path']);
+    _emit(f, 'attachment', id, 'delete', 2, a, 'bill-del-$id');
+  }
+
   // ------------------------------------------------------------ invitations
 
   /// Codes of `family_invitations` (plain, as the inviter sees them).
@@ -418,6 +452,13 @@ class FakeFamilyStore {
       entries: [
         for (final e in entries.values)
           if (e['family_id'] == familyId && e['deleted_at'] == null) Map.of(e),
+      ],
+      attachments: [
+        for (final a in attachments.values)
+          if (a['family_id'] == familyId &&
+              a['deleted_at'] == null &&
+              entries[a['entry_id']]?['deleted_at'] == null)
+            Map.of(a),
       ],
       maxSeq: events
           .where((e) => e.groupId == familyId)

@@ -189,6 +189,9 @@ class AttachmentService {
               groupExpenseId: Value(
                 parent == AttachmentParent.groupExpense ? parentId : null,
               ),
+              familyEntryId: Value(
+                parent == AttachmentParent.familyEntry ? parentId : null,
+              ),
               storedName: storedName,
               originalName: staged.originalName,
               mimeType: staged.mimeType,
@@ -198,8 +201,10 @@ class AttachmentService {
             ),
           );
       // Personal bills are saved to the account (the file is uploaded
-      // first, see [uploadPendingFiles]); group bills go to the group.
-      if (parent != AttachmentParent.groupExpense) {
+      // first, see [uploadPendingFiles]); group and Family hisab bills go
+      // to the group or Family hisab.
+      if (parent == AttachmentParent.transaction ||
+          parent == AttachmentParent.ledgerEntry) {
         await _outbox.upsert(PersonalEntity.attachment, id);
       }
     });
@@ -222,6 +227,7 @@ class AttachmentService {
           AttachmentParent.transaction => t.transactionId.equals(parentId),
           AttachmentParent.ledgerEntry => t.ledgerEntryId.equals(parentId),
           AttachmentParent.groupExpense => t.groupExpenseId.equals(parentId),
+          AttachmentParent.familyEntry => t.familyEntryId.equals(parentId),
         },
       )
       ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]);
@@ -237,8 +243,14 @@ class AttachmentService {
       _db.attachments,
     )..where((a) => a.id.equals(id))).getSingleOrNull();
     if (row == null) return;
+    // A Family hisab bill already in the account is deleted there first, so
+    // it disappears for everyone (needs the internet).
+    final remote = row.remotePath;
+    if (row.familyEntryId != null && remote != null && remote.isNotEmpty) {
+      await _cloud.deleteFamilyAttachment(row.id);
+    }
     await _db.transaction(() async {
-      if (row.groupExpenseId == null) {
+      if (row.groupExpenseId == null && row.familyEntryId == null) {
         await _outbox.delete(
           PersonalEntity.attachment,
           id,
@@ -261,7 +273,33 @@ class AttachmentService {
     for (final a in rows) {
       final file = await fileFor(a.storedName);
       try {
-        if (a.groupExpenseId == null) {
+        if (a.familyEntryId != null) {
+          final entry = await (_db.select(
+            _db.familyEntriesCache,
+          )..where((e) => e.id.equals(a.familyEntryId!))).getSingleOrNull();
+          // The entry must be in the account first; retried next sync.
+          if (entry == null || entry.revision == 0) continue;
+          if (!file.existsSync()) {
+            await _setRemote(a.id, '');
+            continue;
+          }
+          final path = '${entry.familyId}/${entry.id}/${a.storedName}';
+          await _cloud.uploadFamilyAttachment(
+            storagePath: path,
+            bytes: await file.readAsBytes(),
+            mimeType: a.mimeType,
+            metadata: {
+              'id': a.id,
+              'family_id': entry.familyId,
+              'entry_id': entry.id,
+              'storage_path': path,
+              'mime_type': a.mimeType,
+              'size_bytes': a.sizeBytes,
+              'sha256': a.sha256,
+            },
+          );
+          await _setRemote(a.id, path);
+        } else if (a.groupExpenseId == null) {
           if (a.storedName.isEmpty || !file.existsSync()) {
             await _setRemote(a.id, '');
             continue;
@@ -332,12 +370,14 @@ class AttachmentService {
     final remote = a.remotePath;
     if (remote == null || remote.isEmpty) return null;
     try {
-      final bytes = a.groupExpenseId == null
+      final bytes = a.familyEntryId != null
+          ? await _cloud.downloadFamilyAttachment(remote)
+          : a.groupExpenseId == null
           ? await _cloud.downloadPersonalFile(a.storedName)
           : await _cloud.downloadGroupAttachment(remote);
       var name = a.storedName;
       if (name.isEmpty) {
-        // Bills shared by other group members arrive without a local name.
+        // Bills shared by other members arrive without a local name.
         name = '${a.id}${p.extension(remote)}';
         await (_db.update(_db.attachments)..where((x) => x.id.equals(a.id)))
             .write(AttachmentsCompanion(storedName: Value(name)));
