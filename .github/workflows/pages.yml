@@ -22,12 +22,11 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+# Two jobs, as GitHub recommends: deploying in the same job right after the
+# upload sometimes finds no artifact yet ("No artifacts named github-pages").
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       # The website (hisab-mitra-web.vercel.app) reads this list instead of the
@@ -45,5 +44,13 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v5
